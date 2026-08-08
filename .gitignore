@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual env
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Spiral runtime
+traces/
+state.json
+status.json
+memory/
+skills/
+
+# Environment
+.env
+.env.local
+
+# Agent artifacts
+.claude/
+.coverage
