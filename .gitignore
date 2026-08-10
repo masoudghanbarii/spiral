@@ -1,13 +1,19 @@
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
-dist/
-build/
+# Dependencies
+node_modules/
 
-# Virtual env
-.venv/
-venv/
+# Build
+dist/
+
+# Runtime
+traces/
+state.json
+status.json
+memory/
+skills/
+
+# Environment
+.env
+.env.local
 
 # IDE
 .vscode/
@@ -19,17 +25,5 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Spiral runtime
-traces/
-state.json
-status.json
-memory/
-skills/
-
-# Environment
-.env
-.env.local
-
-# Agent artifacts
-.claude/
-.coverage
+# Test
+coverage/.claude/

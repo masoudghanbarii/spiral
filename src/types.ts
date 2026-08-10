@@ -1,0 +1,65 @@
+export type AgentMode = "normal" | "plan" | "bypass" | "safe" | "interactive";
+
+export type TraceEventType =
+  | "agent_step"
+  | "tool_call"
+  | "tool_result"
+  | "verification"
+  | "verification_retry"
+  | "event_trigger"
+  | "event_complete"
+  | "engine_analysis"
+  | "harness_improvement"
+  | "error";
+
+export type VerificationStatus = "pass" | "fail" | "error";
+
+export type LLMProvider = "ollama" | "anthropic" | "openai";
+
+export type PermissionLevel = "auto" | "approve" | "deny";
+
+export interface ChatMessage {
+  role: "system" | "user" | "assistant" | "tool";
+  content: string;
+  tool_call_id?: string;
+}
+
+export interface ToolCall {
+  id: string;
+  function: {
+    name: string;
+    arguments: string;
+  };
+}
+
+export interface LLMResponse {
+  message: {
+    content: string;
+    tool_calls?: ToolCall[];
+  };
+}
+
+export interface ToolDefinition {
+  type: "function";
+  function: {
+    name: string;
+    description: string;
+    parameters: Record<string, unknown>;
+  };
+}
+
+export interface GrepMatch {
+  file: string;
+  line: number;
+  content: string;
+}
+
+export interface SessionInfo {
+  sessionId: string;
+  mode: string;
+  started: string;
+  completed: number;
+  failed: number;
+  total: number;
+  sizeBytes: number;
+}
