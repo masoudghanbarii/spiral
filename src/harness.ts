@@ -7,6 +7,7 @@ import { VerificationLoop } from "./loops/verifier.js";
 import { ManagerRegistry } from "./managers/index.js";
 import type { SessionMemory } from "./managers/memory.js";
 import { HarnessState } from "./models.js";
+import { Timer, type FeatureTiming, type LoopTiming } from "./timer.js";
 import type { AgentMode } from "./types.js";
 import { ToolRegistry } from "./tools/registry.js";
 
@@ -24,6 +25,8 @@ export class Harness {
   private mode = "run";
   session: SessionMemory;
   private sessionId?: string;
+  private loopTimer: Timer | null = null;
+  private featureTimings: FeatureTiming[] = [];
 
   constructor(config: Config) {
     this.config = config;
@@ -107,6 +110,8 @@ export class Harness {
 
   async run(): Promise<void> {
     await this.initialize();
+    this.loopTimer = Timer.start();
+    this.featureTimings = [];
 
     while (this.eventDriver.hasMoreWork(this.state!)) {
       const feature = this.eventDriver.getNextFeature(this.state!);
@@ -118,16 +123,19 @@ export class Harness {
       console.log(`[spiral] Attempt: ${feature.implementationAttempts + 1}`);
       console.log("=".repeat(60));
 
+      const featTimer = Timer.start();
       this.state!.totalAgentIterations++;
 
       await this.writeStatus("agent", "start", feature.name, {
         attempt: feature.implementationAttempts + 1,
       });
       const agentOutput = await this.agent.run(feature, this.state!.systemPrompt || undefined);
+      const agentMs = featTimer.lap("agent");
 
       this.state!.totalVerificationRuns++;
       await this.writeStatus("verifier", "grading", feature.name);
       const [passed, grade] = await this.verifier.run(feature, agentOutput);
+      const verifierMs = featTimer.lap("verifier") - agentMs;
 
       if (passed) {
         console.log(`[spiral] PASSED (score: ${grade.score.toFixed(2)})`);
@@ -144,17 +152,33 @@ export class Harness {
         });
       }
 
+      let engineMs = 0;
       if (this.engine.shouldAnalyze(this.state!)) {
         console.log("\n[spiral] ENGINE ANALYSIS...");
         await this.writeStatus("engine", "analyzing", "*");
         const improvements = await this.engine.analyze(this.state!);
         for (const imp of improvements) console.log(`  [engine] ${imp}`);
+        engineMs = featTimer.lap("engine") - agentMs - verifierMs;
       }
+
+      const totalMs = featTimer.elapsedMs();
+      this.featureTimings.push({
+        featureName: feature.name,
+        agentMs,
+        verifierMs,
+        engineMs,
+        totalMs,
+        passed,
+      });
+      console.log(
+        `[spiral] Time: ${Timer.format(totalMs)} (agent ${Timer.format(agentMs)}, verifier ${Timer.format(verifierMs)})`,
+      );
 
       await this.managers.state.save(this.state!);
       await this.session.saveState(this.state!.toDict());
     }
 
+    const totalMs = this.loopTimer.elapsedMs();
     console.log(`\n${"=".repeat(60)}`);
     console.log("[spiral] WORK COMPLETE");
     console.log(`  Completed: ${this.state!.completedFeatures.length}`);
@@ -163,8 +187,54 @@ export class Harness {
     console.log(`  Verification runs: ${this.state!.totalVerificationRuns}`);
     console.log(`  Engine analyses: ${this.state!.totalEngineAnalyses}`);
     console.log(`  Harness improvements: ${this.state!.harnessImprovements.length}`);
+    this.printTimingSummary(totalMs);
     console.log("=".repeat(60));
-    await this.writeStatus("harness", "idle", "*");
+    await this.writeStatus("harness", "idle", "*", { total_elapsed_ms: totalMs });
+  }
+
+  getLoopTiming(): LoopTiming | null {
+    if (!this.loopTimer) return null;
+    const totalMs = this.loopTimer.elapsedMs();
+    const avg =
+      this.featureTimings.length > 0
+        ? this.featureTimings.reduce((s, t) => s + t.totalMs, 0) / this.featureTimings.length
+        : 0;
+    const times = this.featureTimings.map((t) => t.totalMs);
+    return {
+      startedAt: new Date(Date.now() - totalMs).toISOString(),
+      endedAt: new Date().toISOString(),
+      totalMs,
+      features: [...this.featureTimings],
+      avgFeatureMs: avg,
+      fastestMs: times.length > 0 ? Math.min(...times) : 0,
+      slowestMs: times.length > 0 ? Math.max(...times) : 0,
+    };
+  }
+
+  private printTimingSummary(totalMs: number): void {
+    console.log("\n  ── Timing Summary ──");
+    console.log(`  Total elapsed:    ${Timer.format(totalMs)}`);
+    if (this.featureTimings.length > 0) {
+      const avg = totalMs / this.featureTimings.length;
+      const fastest = this.featureTimings.reduce((a, b) => (a.totalMs < b.totalMs ? a : b));
+      const slowest = this.featureTimings.reduce((a, b) => (a.totalMs > b.totalMs ? a : b));
+      console.log(`  Features timed:   ${this.featureTimings.length}`);
+      console.log(`  Avg per feature:  ${Timer.format(avg)}`);
+      console.log(`  Fastest:          ${Timer.format(fastest.totalMs)} (${fastest.featureName})`);
+      console.log(`  Slowest:          ${Timer.format(slowest.totalMs)} (${slowest.featureName})`);
+      const totalAgent = this.featureTimings.reduce((s, t) => s + t.agentMs, 0);
+      const totalVerifier = this.featureTimings.reduce((s, t) => s + t.verifierMs, 0);
+      const totalEngine = this.featureTimings.reduce((s, t) => s + t.engineMs, 0);
+      console.log(
+        `  Agent total:      ${Timer.format(totalAgent)} (${Math.round((totalAgent / totalMs) * 100)}%)`,
+      );
+      console.log(
+        `  Verifier total:   ${Timer.format(totalVerifier)} (${Math.round((totalVerifier / totalMs) * 100)}%)`,
+      );
+      console.log(
+        `  Engine total:     ${Timer.format(totalEngine)} (${Math.round((totalEngine / totalMs) * 100)}%)`,
+      );
+    }
   }
 
   async runForever(): Promise<void> {
@@ -203,16 +273,19 @@ export class Harness {
     if (!feature) return;
 
     console.log(`\n[spiral] FEATURE: ${feature.name}`);
+    const featTimer = Timer.start();
     this.state!.totalAgentIterations++;
 
     await this.writeStatus("agent", "start", feature.name, {
       attempt: feature.implementationAttempts + 1,
     });
     const agentOutput = await this.agent.run(feature, this.state!.systemPrompt || undefined);
+    const agentMs = featTimer.lap("agent");
 
     this.state!.totalVerificationRuns++;
     await this.writeStatus("verifier", "grading", feature.name);
     const [passed, grade] = await this.verifier.run(feature, agentOutput);
+    const verifierMs = featTimer.lap("verifier") - agentMs;
 
     if (passed) {
       console.log(`[spiral] PASSED (${grade.score.toFixed(2)})`);
@@ -223,9 +296,24 @@ export class Harness {
       await this.eventDriver.onFeatureFailed(this.state!, feature);
     }
 
+    let engineMs = 0;
     if (this.engine.shouldAnalyze(this.state!)) {
       await this.writeStatus("engine", "analyzing", "*");
       await this.engine.analyze(this.state!);
+      engineMs = featTimer.lap("engine") - agentMs - verifierMs;
     }
+
+    const totalMs = featTimer.elapsedMs();
+    this.featureTimings.push({
+      featureName: feature.name,
+      agentMs,
+      verifierMs,
+      engineMs,
+      totalMs,
+      passed,
+    });
+    console.log(
+      `[spiral] Time: ${Timer.format(totalMs)} (agent ${Timer.format(agentMs)}, verifier ${Timer.format(verifierMs)})`,
+    );
   }
 }

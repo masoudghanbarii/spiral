@@ -7,7 +7,38 @@ const program = new Command();
 program
   .name("spiral")
   .description("Spiral — AI Co-founder powered by hill climbing loop architecture")
-  .version("0.1.0");
+  .version("0.1.0")
+  .action(async () => {
+    const { startTui } = await import("./tui/index.js");
+    const config = new Config();
+    await startTui(config);
+  });
+
+program
+  .command("tui")
+  .description("Start the interactive TUI (terminal user interface)")
+  .option("--project-dir <path>", "Path to target project")
+  .option("--session-id <id>", "Session ID for multi-session support")
+  .option("--message <text>", "Send an initial message")
+  .action(async (opts: { projectDir?: string; sessionId?: string; message?: string }) => {
+    const { startTui } = await import("./tui/index.js");
+    const config = new Config();
+    if (opts.projectDir) config.setProjectDir(opts.projectDir);
+    await startTui(config, { sessionId: opts.sessionId, initialMessage: opts.message });
+  });
+
+program
+  .command("chat")
+  .description("Start the TUI in local mode (alias for tui)")
+  .option("--project-dir <path>", "Path to target project")
+  .option("--session-id <id>", "Session ID for multi-session support")
+  .option("--message <text>", "Send an initial message")
+  .action(async (opts: { projectDir?: string; sessionId?: string; message?: string }) => {
+    const { startTui } = await import("./tui/index.js");
+    const config = new Config();
+    if (opts.projectDir) config.setProjectDir(opts.projectDir);
+    await startTui(config, { sessionId: opts.sessionId, initialMessage: opts.message });
+  });
 
 program
   .command("run")

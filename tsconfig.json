@@ -18,8 +18,9 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "exactOptionalPropertyTypes": false
+    "exactOptionalPropertyTypes": false,
+    "jsx": "react-jsx"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/**/*.tsx"],
   "exclude": ["node_modules", "dist", "tests"]
 }

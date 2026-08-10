@@ -34,20 +34,74 @@ Named for the spiral — looping upward, evolving with each cycle.
 # Install globally
 npm install -g spiral
 
-# Or run directly
-npx spiral sessions
+# Start the TUI (interactive chat interface)
+spiral                    # enters TUI by default
+spiral tui                # explicit TUI
+spiral chat               # alias for tui
 
-# Configure
-export SPIRAL_OLLAMA_API_KEY=your-key
-export SPIRAL_PROJECT_DIR=/path/to/your-project
+# Autonomous modes
+spiral run                # Execute all features once
+spiral forever            # Continuous loop (Ctrl+C to stop)
+spiral init               # Parse ADR, show feature list
+spiral reset              # Clear state, start fresh
+spiral watch              # Live dashboard
+spiral sessions           # List all sessions
+```
 
-# Run
-spiral run         # One pass through all features
-spiral forever     # Continuous loop (Ctrl+C to stop)
-spiral init        # Parse ADR, show feature list
-spiral reset       # Clear state, start fresh
-spiral watch       # Live dashboard
-spiral sessions    # List all sessions
+## TUI — Terminal User Interface
+
+```bash
+spiral                    # enters TUI (default)
+spiral tui --message "hello"
+spiral chat --session-id my-session
+```
+
+The TUI provides an interactive chat interface with the AI agent:
+
+- **Header**: connection state, agent mode, model, session
+- **Chat log**: user messages, assistant replies, tool cards, system notices
+- **Status line**: running/idle/error, token counts, message count
+- **Input**: text editor with history navigation
+
+### Slash Commands
+
+```
+/help              Show help
+/exit              Exit (Ctrl+D also works)
+/clear             Clear conversation
+/mode <mode>       Switch: normal|plan|bypass|safe|interactive
+/model <model>     Switch LLM model
+/sessions          List all sessions
+/new               Start fresh session
+/reset             Reset session state
+/abort             Abort active run (Esc also works)
+/status            Show session summary
+/usage             Show token usage
+/verbose <on|off>  Toggle verbose tool output
+/tools             List available tools
+/history           Show conversation stats
+```
+
+### Keyboard Shortcuts
+
+```
+Enter              Send message
+Shift+Enter        Insert newline
+Ctrl+J             Insert newline
+Esc                Abort active run
+Ctrl+C             Clear input (press twice to exit)
+Ctrl+D             Exit
+Ctrl+L             Clear screen
+Up/Down            Navigate input history
+```
+
+### Local Shell
+
+Prefix with `!` to run a shell command:
+```
+!ls -la
+!git status
+!npm test
 ```
 
 ## Agent Modes
