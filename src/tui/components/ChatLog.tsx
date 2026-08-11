@@ -1,9 +1,10 @@
-import React from "react";
-import { Box, Text } from "ink";
+import React, { useEffect, useState } from "react";
+import { Box, Text, useStdout } from "ink";
 import type { LogEntry } from "./types.js";
 
 interface ChatLogProps {
   entries: LogEntry[];
+  scrollOffset?: number;
   isWaitingApproval: boolean;
   pendingTool: string;
   onApprove: () => void;
@@ -19,6 +20,7 @@ interface ChatLogProps {
 
 export function ChatLog({
   entries,
+  scrollOffset = 0,
   isWaitingApproval,
   pendingTool,
   onApprove: _onApprove,
@@ -31,31 +33,56 @@ export function ChatLog({
   loadingWord,
   elapsed,
 }: ChatLogProps): React.ReactElement {
+  const { stdout } = useStdout();
+  const termHeight = stdout?.rows ?? 24;
+  // Reserve rows for: top bar (3) + session header (3) + input bar (5) + status bar (5) = 16
+  const availableHeight = Math.max(termHeight - 16, 8);
+  const [internalOffset, setInternalOffset] = useState(0);
+
+  // Auto-scroll to bottom when new entries arrive
+  useEffect(() => {
+    setInternalOffset(0);
+  }, [entries.length]);
+
+  // Sync external scroll offset
+  useEffect(() => {
+    setInternalOffset(scrollOffset);
+  }, [scrollOffset]);
+
+  // Calculate visible window — show the most recent entries
+  const maxVisibleEntries = Math.min(entries.length, availableHeight);
+  const startIdx = Math.max(0, entries.length - maxVisibleEntries - internalOffset);
+  const visibleEntries = entries.slice(startIdx, startIdx + maxVisibleEntries);
+
   return (
-    <Box flexDirection="column" paddingX={18} paddingY={14} flexGrow={1} overflow="hidden">
-      {entries.map((entry, i) => (
-        <EntryView key={i} entry={entry} />
+    <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
+      {/* Scroll indicator */}
+      {internalOffset > 0 && (
+        <Text color="gray">↑ {internalOffset} entries hidden (Ctrl+Up/Down to scroll)</Text>
+      )}
+
+      {visibleEntries.map((entry, i) => (
+        <EntryView key={startIdx + i} entry={entry} />
       ))}
 
       {/* Permission approval box */}
       {isWaitingApproval && (
         <Box
-          marginTop={6}
+          marginTop={1}
           borderStyle="single"
-          borderColor="#c678dd"
-          paddingX={12}
-          paddingY={10}
+          borderColor="magenta"
+          paddingX={1}
           flexDirection="column"
         >
-          <Box marginBottom={8}>
-            <Text color="#c678dd">{"‼ permission required — "}{pendingTool}</Text>
+          <Box marginBottom={1}>
+            <Text color="magenta">{"‼ permission required — "}{pendingTool}</Text>
           </Box>
-          <Box gap={8}>
-            <Box borderStyle="single" borderColor="#3ecf6a" paddingX={10} paddingY={3}>
-              <Text color="#3ecf6a">approve</Text>
+          <Box gap={1}>
+            <Box borderStyle="single" borderColor="green" paddingX={1}>
+              <Text color="green">approve</Text>
             </Box>
-            <Box borderStyle="single" borderColor="#ef5350" paddingX={10} paddingY={3}>
-              <Text color="#ef5350">deny</Text>
+            <Box borderStyle="single" borderColor="red" paddingX={1}>
+              <Text color="red">deny</Text>
             </Box>
           </Box>
         </Box>
@@ -63,22 +90,22 @@ export function ChatLog({
 
       {/* Error */}
       {isError && (
-        <Box marginTop={6}>
-          <Text color="#ef5350">{"✕ "}{lastError}</Text>
+        <Box marginTop={1}>
+          <Text color="red">{"✕ "}{lastError}</Text>
         </Box>
       )}
 
       {/* Compacting */}
       {isCompacting && (
-        <Box marginTop={6}>
-          <Text color="#4f8cff">{"↻ compacting context — summarizing older trace entries…"}</Text>
+        <Box marginTop={1}>
+          <Text color="blue">{"↻ compacting context — summarizing older trace entries…"}</Text>
         </Box>
       )}
 
       {/* Running banner */}
       {isRunning && (
-        <Box marginTop={6}>
-          <Text color="#f2c94c">
+        <Box marginTop={1}>
+          <Text color="yellow">
             {statusIcon} {loadingWord}… · {elapsed} | connected
           </Text>
         </Box>
@@ -90,32 +117,32 @@ export function ChatLog({
 function EntryView({ entry }: { entry: LogEntry }): React.ReactElement {
   if (entry.kind === "user") {
     return (
-      <Box marginBottom={10}>
-        <Text bold color="#56c8d8">{"> "}</Text>
+      <Box>
+        <Text bold color="cyan">{"> "}</Text>
         <Text>{entry.text}</Text>
       </Box>
     );
   }
   if (entry.kind === "assistant") {
     return (
-      <Box marginBottom={10}>
-        <Text bold color="#3ecf6a">{"✦ "}</Text>
+      <Box>
+        <Text bold color="green">{"✦ "}</Text>
         <Text>{entry.text}</Text>
       </Box>
     );
   }
   if (entry.kind === "tool") {
     return (
-      <Box marginLeft={14} marginBottom={10}>
-        <Text color="#f2c94c">{"⚡ "}{entry.tool}</Text>
-        <Text color="#6b7383"> {entry.detail}</Text>
+      <Box marginLeft={2}>
+        <Text color="yellow">{"⚡ "}{entry.tool}</Text>
+        <Text color="gray"> {entry.detail}</Text>
       </Box>
     );
   }
   // system
   return (
-    <Box marginBottom={10}>
-      <Text color="#6b7383">{entry.text}</Text>
+    <Box>
+      <Text color="gray">{entry.text}</Text>
     </Box>
   );
 }

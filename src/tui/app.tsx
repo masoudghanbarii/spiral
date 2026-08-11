@@ -125,6 +125,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
   const [slashIndex, setSlashIndex] = useState(0);
   const [history, setHistory] = useState<string[]>([]);
   const [historyIdx, setHistoryIdx] = useState(-1);
+  const [scrollOffset, setScrollOffset] = useState(0);
 
   // ── Animation ──
   const [frame, setFrame] = useState(0);
@@ -154,11 +155,29 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
     return () => setRawMode(false);
   }, [setRawMode]);
 
-  // ── Frame animation loop (90ms) ──
+  // ── Raw stdin for Shift+Enter detection ──
+  // Ink's useInput doesn't reliably detect Shift+Enter, so we listen
+  // for the raw escape sequence on stdin
   useEffect(() => {
+    if (!stdin) return;
+    const onData = (data: Buffer) => {
+      const str = data.toString();
+      // Shift+Enter in some terminals: \x1b[13;2~
+      if (str === '\x1b[13;2~') {
+        setInput((prev) => prev + '\n');
+      }
+    };
+    stdin.on('data', onData);
+    return () => { stdin.off('data', onData); };
+  }, [stdin]);
+
+  // ── Frame animation loop (only when animating to prevent flicker) ──
+  const anyAnimating = sessions.some((s) => ANIMATED_STATUSES.has(s.status));
+  useEffect(() => {
+    if (!anyAnimating) return;
     const timer = setInterval(() => setFrame((f) => f + 1), 90);
     return () => clearInterval(timer);
-  }, []);
+  }, [anyAnimating]);
 
   // ── Ctrl+C reset timer ──
   useEffect(() => {
@@ -181,6 +200,11 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
   const updateSession = useCallback((id: string, patch: Partial<RuntimeSession>) => {
     setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   }, []);
+
+  // Reset scroll when switching sessions or when new entries arrive
+  useEffect(() => {
+    setScrollOffset(0);
+  }, [activeSessionId]);
 
   const addLogEntry = useCallback((id: string, entry: LogEntry) => {
     setSessions((prev) =>
@@ -714,6 +738,16 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
       return;
     }
 
+    // ── Ctrl+Up/Ctrl+Down to scroll chat log ──
+    if (key.ctrl && key.upArrow) {
+      setScrollOffset((o) => Math.min(o + 5, activeSession.log.length));
+      return;
+    }
+    if (key.ctrl && key.downArrow) {
+      setScrollOffset((o) => Math.max(o - 5, 0));
+      return;
+    }
+
     // ── Arrow up/down for slash menu or history ──
     if (key.upArrow) {
       if (input.startsWith("/")) {
@@ -947,6 +981,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
           {/* Chat log with banners */}
           <ChatLog
             entries={activeSession.log}
+            scrollOffset={scrollOffset}
             isWaitingApproval={activeSession.status === "waiting_approval"}
             pendingTool={activeSession.pendingTool ?? ""}
             onApprove={() => approve(activeSessionId)}

@@ -39,23 +39,16 @@ export function InputBar({
   slashIndex,
   onSlashSelect: _onSlashSelect,
 }: InputBarProps): React.ReactElement {
+  const lines = input.split("\n");
+  const hasInput = input.length > 0;
+
   return (
     <Box flexDirection="column" paddingX={1} paddingBottom={1} flexShrink={0}>
       {/* Slash command autocomplete popup */}
       {slashMenuOpen && (
-        <Box
-          flexDirection="column"
-          marginBottom={1}
-          borderStyle="single"
-          borderColor="blue"
-          padding={1}
-        >
+        <Box flexDirection="column" marginBottom={1} borderStyle="single" borderColor="blue" padding={1}>
           {slashCommands.map((sc, i) => (
-            <Box
-              key={sc.cmd}
-              paddingLeft={1}
-              paddingRight={1}
-            >
+            <Box key={sc.cmd} paddingLeft={1} paddingRight={1}>
               <Text bold color="blue" inverse={i === slashIndex}>{sc.cmd}</Text>
               <Text color="gray"> {sc.desc}</Text>
             </Box>
@@ -63,17 +56,20 @@ export function InputBar({
         </Box>
       )}
 
-      {/* Input box */}
-      <Box
-        borderStyle="round"
-        borderColor={borderColor as any}
-        paddingX={1}
-        paddingY={1}
-      >
-        <Text bold color="blue">{"> "}</Text>
-        <Text color={disabled ? "gray" : "white"}>
-          {input || (disabled ? "" : placeholder)}
-        </Text>
+      {/* Input box — render multi-line input with cursor */}
+      <Box borderStyle="round" borderColor={borderColor as any} paddingX={1} flexDirection="column">
+        {lines.map((line, i) => (
+          <Box key={i}>
+            {i === 0 && <Text bold color="blue">{"> "}</Text>}
+            {i > 0 && <Text color="gray">  </Text>}
+            {hasInput ? (
+              <Text color={disabled ? "gray" : "white"}>{line}</Text>
+            ) : i === 0 && !disabled ? (
+              <Text color="gray" italic>{placeholder}</Text>
+            ) : null}
+            {i === lines.length - 1 && !disabled && <Text color="gray">{"▋"}</Text>}
+          </Box>
+        ))}
       </Box>
 
       {/* Model/Mode/session info row */}
