@@ -27,3 +27,7 @@ Thumbs.db
 
 # Test
 coverage/.claude/
+
+# Harness analysis
+harnesses/
+.claude/
