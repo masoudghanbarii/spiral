@@ -133,6 +133,7 @@ export function TuiApp({
   const [history, setHistory] = useState<string[]>([]);
   const [historyIdx, setHistoryIdx] = useState(-1);
   const [scrollOffset, setScrollOffset] = useState(0);
+  const [pendingReRun, setPendingReRun] = useState<string | null>(null);
 
   // ── Animation ──
   const [frame, setFrame] = useState(0);
@@ -229,16 +230,27 @@ export function TuiApp({
 
   const approve = useCallback(
     (id: string) => {
+      const sess = sessions.find((s) => s.id === id);
+      if (!sess?.pendingTool) return;
+      // Add tool to approved list so it doesn't ask again
+      managers.permissions.addApproved(sess.pendingTool);
       updateSession(id, { status: "running", pendingTool: undefined });
+      // Re-run the agent turn with existing messages (delegated to effect)
+      setSessions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: "running", pendingTool: undefined } : s)),
+      );
+      // Trigger re-run via pendingReRun state
+      setPendingReRun(id);
     },
-    [updateSession],
+    [sessions, managers, updateSession],
   );
 
   const deny = useCallback(
     (id: string) => {
-      updateSession(id, { status: "error", pendingTool: undefined });
+      updateSession(id, { status: "idle", pendingTool: undefined });
+      addLogEntry(id, { kind: "system", text: "Tool execution denied by user." });
     },
-    [updateSession],
+    [updateSession, addLogEntry],
   );
 
   const toggleShare = useCallback(
@@ -526,6 +538,25 @@ export function TuiApp({
 
           const result = await tools.execute(funcName, funcArgs);
 
+          // Check if result is a permission denial
+          if (result.startsWith("Approval required") || result.startsWith("Error: Approval")) {
+            updateSession(sid, { status: "waiting_approval", pendingTool: funcName });
+            // Store the pending tool call for re-execution after approval
+            setSessions((prev) =>
+              prev.map((s) => {
+                if (s.id !== sid) return s;
+                const log = [...s.log];
+                const lastIdx = log.length - 1;
+                if (lastIdx >= 0 && log[lastIdx]!.kind === "tool") {
+                  log[lastIdx] = { ...log[lastIdx]!, detail: "awaiting approval…" };
+                }
+                return { ...s, log, pendingTool: funcName };
+              }),
+            );
+            // Don't continue — wait for user approval
+            return;
+          }
+
           // Update last tool entry with result
           setSessions((prev) =>
             prev.map((s) => {
@@ -584,6 +615,17 @@ export function TuiApp({
     },
     [systemPrompt, tools, llm, config, verbose, sessions, updateSession, addLogEntry],
   );
+
+  // ── Re-run agent turn after approval ──
+  useEffect(() => {
+    if (pendingReRun) {
+      const sess = sessions.find((s) => s.id === pendingReRun);
+      if (sess && sess.messages.length > 0) {
+        void runAgentTurn(pendingReRun, sess.messages);
+      }
+      setPendingReRun(null);
+    }
+  }, [pendingReRun, sessions, runAgentTurn]);
 
   // ── Send message ──
   const sendMessage = useCallback(
@@ -828,9 +870,20 @@ export function TuiApp({
       return;
     }
 
-    // ── Backspace ──
-    if (key.backspace || key.delete) {
+    // ── Backspace (delete last char) ──
+    if ((key.backspace || key.delete) && !key.ctrl) {
       setInput((prev) => prev.slice(0, -1));
+      return;
+    }
+
+    // ── Ctrl+Backspace or Ctrl+W (delete last word) ──
+    if ((key.ctrl && (key.backspace || key.delete)) || (key.ctrl && inputChar === "w")) {
+      setInput((prev) => {
+        // Remove trailing whitespace, then remove last word
+        const trimmed = prev.replace(/\s+$/, "");
+        const lastSpace = Math.max(trimmed.lastIndexOf(" "), trimmed.lastIndexOf("\n"));
+        return lastSpace >= 0 ? trimmed.slice(0, lastSpace + 1) : "";
+      });
       return;
     }
 
