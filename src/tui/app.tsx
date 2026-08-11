@@ -51,6 +51,7 @@ type OverlayType = "mode" | "session" | "agentplan" | null;
 interface RuntimeSession extends SessionData {
   messages: ChatMessage[];
   tokenCount: number;
+  runStartedAt?: number;
 }
 
 interface TuiProps {
@@ -88,6 +89,7 @@ function createSession(
     log: [],
     messages: [],
     tokenCount: 0,
+    runStartedAt: undefined,
   };
 }
 
@@ -171,11 +173,12 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
     return () => { stdin.off('data', onData); };
   }, [stdin]);
 
-  // ── Frame animation loop (only when animating to prevent flicker) ──
+  // ── Frame animation loop (only when animating, slower to prevent flicker) ──
   const anyAnimating = sessions.some((s) => ANIMATED_STATUSES.has(s.status));
   useEffect(() => {
     if (!anyAnimating) return;
-    const timer = setInterval(() => setFrame((f) => f + 1), 90);
+    // 250ms = 4fps — smooth enough for braille spinner, no flicker
+    const timer = setInterval(() => setFrame((f) => f + 1), 250);
     return () => clearInterval(timer);
   }, [anyAnimating]);
 
@@ -418,7 +421,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
       const sess = sessions.find((s) => s.id === sid);
       if (!sess) return;
 
-      updateSession(sid, { status: "running" });
+      updateSession(sid, { status: "running", runStartedAt: Date.now() });
       addLogEntry(sid, { kind: "assistant", text: "" });
 
       try {
@@ -428,25 +431,37 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
         ];
         const toolDefs = tools.getToolDefinitions();
 
+        // Timeout wrapper — prevent perpetual loading
+        const withTimeout = <T,>(p: Promise<T>, ms: number): Promise<T> =>
+          Promise.race([
+            p,
+            new Promise<T>((_, reject) =>
+              setTimeout(() => reject(new Error("Request timed out after " + Math.floor(ms / 1000) + "s")), ms),
+            ),
+          ]);
+
         let response;
         if (config.streamEnabled) {
           let accumulated = "";
-          response = await llm.chatStream(allMessages, toolDefs, (chunk: string) => {
-            accumulated += chunk;
-            setSessions((prev) =>
-              prev.map((s) => {
-                if (s.id !== sid) return s;
-                const log = [...s.log];
-                const lastIdx = log.length - 1;
-                if (lastIdx >= 0 && log[lastIdx]!.kind === "assistant") {
-                  log[lastIdx] = { ...log[lastIdx]!, text: accumulated };
-                }
-                return { ...s, log };
-              }),
-            );
-          });
+          response = await withTimeout(
+            llm.chatStream(allMessages, toolDefs, (chunk: string) => {
+              accumulated += chunk;
+              setSessions((prev) =>
+                prev.map((s) => {
+                  if (s.id !== sid) return s;
+                  const log = [...s.log];
+                  const lastIdx = log.length - 1;
+                  if (lastIdx >= 0 && log[lastIdx]!.kind === "assistant") {
+                    log[lastIdx] = { ...log[lastIdx]!, text: accumulated };
+                  }
+                  return { ...s, log };
+                }),
+              );
+            }),
+            120_000, // 2 min timeout
+          );
         } else {
-          response = await llm.chat(allMessages, toolDefs);
+          response = await withTimeout(llm.chat(allMessages, toolDefs), 120_000);
         }
 
         const msg = response.message;
@@ -509,7 +524,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
         }
 
         // Finalize
-        updateSession(sid, { status: "idle" });
+        updateSession(sid, { status: "idle", runStartedAt: undefined });
         const tokenCount = TokenCounter.estimateMessages(allMessages);
         setSessions((prev) =>
           prev.map((s) =>
@@ -533,7 +548,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
             if (lastIdx >= 0 && log[lastIdx]!.kind === "assistant") {
               log[lastIdx] = { ...log[lastIdx]!, text: `Error: ${errMsg}` };
             }
-            return { ...s, status: "error", lastError: errMsg, log };
+            return { ...s, status: "error", lastError: errMsg, log, runStartedAt: undefined };
           }),
         );
       }
@@ -809,8 +824,18 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
   const activeMeta = STATUS_META[activeSession.status];
   const modeMeta = MODE_META[activeSession.mode];
   const agentMeta = AGENT_META[activeSession.agent];
-  const loadingWord = LOADING_WORDS[Math.floor(frame / 24) % LOADING_WORDS.length];
-  const spinnerIcon = animate ? BRAILLE[frame % BRAILLE.length] : activeMeta.icon;
+  // Rotate loading word every 8 frames (2s at 250ms) instead of every 24 frames
+  const loadingWord = animate
+    ? LOADING_WORDS[Math.floor(frame / 8) % LOADING_WORDS.length]!
+    : activeMeta.label;
+  const spinnerIcon = animate ? BRAILLE[frame % BRAILLE.length]! : activeMeta.icon;
+  // Compute real elapsed time from runStartedAt
+  const elapsedSec = activeSession.runStartedAt
+    ? Math.floor((Date.now() - activeSession.runStartedAt) / 1000)
+    : 0;
+  const elapsedLabel = activeSession.runStartedAt
+    ? (elapsedSec < 60 ? `${elapsedSec}s` : `${Math.floor(elapsedSec / 60)}m${elapsedSec % 60}s`)
+    : "0s";
   const pct = Math.round((activeSession.tokensUsed / activeSession.tokensMax) * 100);
   const tokensLabel = `${fmtTok(activeSession.tokensUsed)}/${fmtTok(activeSession.tokensMax)} (${pct}%)`;
   const roleModelsLabel = `plan ${activeSession.roleModels.plan} · build ${activeSession.roleModels.build} · judge ${activeSession.roleModels.judge}`;
@@ -992,7 +1017,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
             isRunning={animate && activeSession.status === "running"}
             statusIcon={spinnerIcon}
             loadingWord={loadingWord}
-            elapsed="9s"
+            elapsed={elapsedLabel}
           />
 
           {/* Input bar */}
@@ -1036,7 +1061,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
             statusIcon={spinnerIcon}
             statusColor={activeMeta.color}
             statusLabel={activeMeta.label}
-            elapsed="9s"
+            elapsed={elapsedLabel}
             modeLabel={modeMeta.label}
             agentLabel={agentMeta.label}
             sessionName={activeSession.name}
