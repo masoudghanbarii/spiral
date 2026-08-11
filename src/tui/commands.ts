@@ -15,6 +15,7 @@ export type SlashCommandName =
   | "verbose"
   | "tools"
   | "history"
+  | "agentplan"
   | "unknown";
 
 export interface ParsedSlashCommand {
@@ -43,6 +44,7 @@ const COMMAND_MAP: Record<string, SlashCommandName> = {
   "/verbose": "verbose",
   "/tools": "tools",
   "/history": "history",
+  "/agentplan": "agentplan",
 };
 
 export function parseSlashCommand(input: string): ParsedSlashCommand | null {
@@ -62,8 +64,10 @@ export function getHelpText(): string {
 Core:
   /help              Show this help
   /exit              Exit Spiral TUI (Ctrl+D also works)
+  /agentplan         Set model per role — plan / build / judge
+  /mode [mode]       Switch agent mode: normal|plan|bypass|safe|interactive
+  /status            Show session + model summary
   /clear             Clear conversation history
-  /mode <mode>       Switch agent mode: normal|plan|bypass|safe|interactive
   /model <model>     Switch LLM model
   /sessions          List all sessions
   /session <id>      Switch to a specific session
@@ -71,21 +75,22 @@ Core:
   /reset             Reset current session state
   /abort             Abort the active run (Esc also works)
   /stop              Stop the active run
-  /status            Show session + model summary
   /usage             Show token usage
   /verbose <on|off>  Toggle verbose tool output
   /tools             List available tools
   /history           Show conversation history length
 
 Keyboard:
-  Enter              Send message
+  Enter              Send message (or approve pending tool)
   Shift+Enter        Insert newline
   Ctrl+J             Insert newline
-  Esc                Abort active run
+  Tab                Switch session (overlay)
+  Shift+Tab          Switch mode (overlay)
+  Esc                Close overlay / abort active run
   Ctrl+C             Clear input (press twice to exit)
   Ctrl+D             Exit
   Ctrl+L             Clear screen
-  Up/Down            Navigate input history
+  Up/Down            Navigate input history / overlay / slash menu
 
 Local shell:
   !<command>         Run a local shell command`;
