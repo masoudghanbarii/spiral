@@ -13,7 +13,7 @@ interface Snapshot {
   isAlive: boolean;
 }
 
-async function loadSnapshot(config: Config): Promise<Snapshot> {
+export async function loadSnapshot(config: Config): Promise<Snapshot> {
   const statusMgr = new StatusManager(config);
   const stateMgr = new StateManager(config);
 
@@ -44,7 +44,7 @@ async function loadSnapshot(config: Config): Promise<Snapshot> {
   return { status, state, traces: traces.slice(-15), isAlive };
 }
 
-function checkPid(pid: number): boolean {
+export function checkPid(pid: number): boolean {
   try {
     process.kill(pid, 0);
     return true;
@@ -53,7 +53,7 @@ function checkPid(pid: number): boolean {
   }
 }
 
-function fmtDur(s: number): string {
+export function fmtDur(s: number): string {
   if (s <= 0) return "--";
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);

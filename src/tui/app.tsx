@@ -140,7 +140,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
   const activeSession = sessions.find((s) => s.id === activeSessionId) ?? sessions[0]!;
 
   const tools = useMemo(
-    () => new ToolRegistry(config, managers.project, managers.permissions, activeSession.mode as AgentMode),
+    () => new ToolRegistry(config, managers.project, managers.permissions, activeSession.mode as AgentMode, managers.memory),
     [config, managers, activeSession.mode],
   );
 

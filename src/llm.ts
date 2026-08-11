@@ -2,12 +2,26 @@ import { Config } from "./config.js";
 import { createProvider, type ILLMProvider } from "./providers.js";
 import type { ChatMessage, LLMResponse, ToolDefinition } from "./types.js";
 
+const PROVIDER_BASE_URLS: Record<string, string> = {
+  ollama: "http://localhost:11434",
+  anthropic: "https://api.anthropic.com",
+  openai: "https://api.openai.com",
+  gemini: "https://generativelanguage.googleapis.com/v1beta",
+  xai: "https://api.x.ai/v1",
+  mistral: "https://api.mistral.ai/v1",
+  groq: "https://api.groq.com/openai/v1",
+  openrouter: "https://openrouter.ai/api/v1",
+  deepseek: "https://api.deepseek.com/v1",
+  together: "https://api.together.xyz/v1",
+};
+
 export class LLMClient {
   private provider: ILLMProvider;
 
   constructor(config: Config) {
+    const baseUrl = PROVIDER_BASE_URLS[config.llmProvider] ?? config.ollamaBaseUrl;
     this.provider = createProvider(config.llmProvider, {
-      baseUrl: config.ollamaBaseUrl,
+      baseUrl,
       apiKey: config.ollamaApiKey,
       model: config.model,
     });

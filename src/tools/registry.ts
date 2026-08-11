@@ -71,6 +71,8 @@ export class ToolRegistry {
     this.tools.set("apply_patch", (a) => this.applyPatch(a));
     this.tools.set("memory_recall", (a) => this.memoryRecall(a));
     this.tools.set("memory_retain", (a) => this.memoryRetain(a));
+    this.tools.set("memory_reflect", (a) => this.memoryReflect(a));
+    this.tools.set("memory_edit", (a) => this.memoryEdit(a));
     this.tools.set("code_review", (a) => this.codeReview(a));
     this.tools.set("find_skills", (a) => this.findSkills(a));
   }
@@ -246,6 +248,28 @@ export class ToolRegistry {
           value: { type: "string", description: "Fact value" },
         },
         ["key", "value"],
+      ),
+      def(
+        "memory_reflect",
+        "Synthesize an answer from project memory facts and failures",
+        {
+          query: { type: "string", description: "What to reflect on" },
+        },
+        ["query"],
+      ),
+      def(
+        "memory_edit",
+        "Update or forget a fact in project memory",
+        {
+          action: {
+            type: "string",
+            enum: ["update", "forget"],
+            description: "Whether to update or forget the fact",
+          },
+          key: { type: "string", description: "Fact key" },
+          value: { type: "string", description: "New value (required for update)" },
+        },
+        ["action", "key"],
       ),
       def(
         "code_review",
@@ -742,6 +766,58 @@ export class ToolRegistry {
     const value = String(a.value);
     await this.memory.project.addFact(key, value);
     return `Stored fact: ${key} = ${value}`;
+  }
+
+  // ── memory_reflect ───────────────────────────────────────
+
+  private async memoryReflect(a: Record<string, unknown>): Promise<string> {
+    if (!this.memory) return "Error: memory manager not available";
+    const query = String(a.query).toLowerCase();
+    const facts = await this.memory.project.getFacts();
+    const failures = await this.memory.project.getFailures();
+    const relevantFacts: string[] = [];
+    for (const [key, value] of Object.entries(facts)) {
+      const valStr = JSON.stringify(value).toLowerCase();
+      if (key.toLowerCase().includes(query) || valStr.includes(query)) {
+        relevantFacts.push(`${key}: ${JSON.stringify(value)}`);
+      }
+    }
+    const relevantFailures: string[] = [];
+    for (const f of failures) {
+      const fStr = JSON.stringify(f).toLowerCase();
+      if (fStr.includes(query)) {
+        relevantFailures.push(JSON.stringify(f).slice(0, 300));
+      }
+    }
+    if (relevantFacts.length === 0 && relevantFailures.length === 0) {
+      return "No relevant memories found";
+    }
+    const parts: string[] = [];
+    if (relevantFacts.length > 0) {
+      parts.push("Relevant facts:\n" + relevantFacts.join("\n"));
+    }
+    if (relevantFailures.length > 0) {
+      parts.push("Relevant failures:\n" + relevantFailures.join("\n"));
+    }
+    return parts.join("\n\n");
+  }
+
+  // ── memory_edit ──────────────────────────────────────────
+
+  private async memoryEdit(a: Record<string, unknown>): Promise<string> {
+    if (!this.memory) return "Error: memory manager not available";
+    const action = String(a.action);
+    const key = String(a.key);
+    if (action === "update") {
+      const value = a.value !== undefined ? String(a.value) : "";
+      await this.memory.project.addFact(key, value);
+      return `Updated fact: ${key} = ${value}`;
+    }
+    if (action === "forget") {
+      await this.memory.project.addFact(key, null);
+      return `Forgot fact: ${key}`;
+    }
+    return `Error: unknown memory_edit action '${action}'. Use 'update' or 'forget'.`;
   }
 
   // ── code_review ──────────────────────────────────────────

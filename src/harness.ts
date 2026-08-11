@@ -42,6 +42,7 @@ export class Harness {
       this.managers.project,
       this.managers.permissions,
       this.agentMode,
+      this.managers.memory,
     );
     this.agent = new AgentLoop(config, this.managers, this.llm, this.tools, this.agentMode);
     this.verifier = new VerificationLoop(config, this.managers, this.llm, this.tools);

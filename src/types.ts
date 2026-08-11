@@ -1,5 +1,7 @@
 export type AgentMode = "normal" | "plan" | "bypass" | "safe" | "interactive";
 
+export type { MCPServerConfig } from "./managers/mcp.js";
+
 export type TraceEventType =
   | "agent_step"
   | "tool_call"
@@ -14,7 +16,17 @@ export type TraceEventType =
 
 export type VerificationStatus = "pass" | "fail" | "error";
 
-export type LLMProvider = "ollama" | "anthropic" | "openai";
+export type LLMProvider =
+  | "ollama"
+  | "anthropic"
+  | "openai"
+  | "gemini"
+  | "xai"
+  | "mistral"
+  | "groq"
+  | "openrouter"
+  | "deepseek"
+  | "together";
 
 export type PermissionLevel = "auto" | "approve" | "deny";
 
