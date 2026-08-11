@@ -19,16 +19,20 @@ export function Sidebar({
   void onSearchChange;
 
   return (
-    <Box flexDirection="column" width={width} flexShrink={0} borderStyle="single" borderColor="gray">
+    <Box
+      flexDirection="column"
+      width={width}
+      flexShrink={0}
+      borderStyle="single"
+      borderColor="gray"
+    >
       {/* Header + Search */}
       <Box paddingX={1} paddingTop={1} paddingBottom={1} flexDirection="column">
         <Box marginBottom={1}>
           <Text color="white">Sessions</Text>
         </Box>
         <Box borderStyle="single" borderColor="gray" paddingX={1}>
-          <Text color={searchQuery ? "white" : "gray"}>
-            {searchQuery || "search…"}
-          </Text>
+          <Text color={searchQuery ? "white" : "gray"}>{searchQuery || "search…"}</Text>
         </Box>
       </Box>
 
@@ -67,12 +71,8 @@ function SessionRow({ session }: { session: SessionView }): React.ReactElement {
       <Box alignItems="center" gap={1} marginTop={1}>
         <Text color={session.statusColor as any}>{session.statusIcon}</Text>
         <Text color="gray">{session.statusLabel}</Text>
-        {session.groupDot && (
-          <Text color={session.groupDot as any}>●</Text>
-        )}
-        {session.canLink && (
-          <Text color={session.linkColor as any}>⇄</Text>
-        )}
+        {session.groupDot && <Text color={session.groupDot as any}>●</Text>}
+        {session.canLink && <Text color={session.linkColor as any}>⇄</Text>}
       </Box>
     </Box>
   );

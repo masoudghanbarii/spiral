@@ -7,7 +7,10 @@ import { Config } from "../src/config.js";
 let tmpDir: string;
 
 async function setup(): Promise<string> {
-  tmpDir = path.join(os.tmpdir(), `spiral-cfg-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  tmpDir = path.join(
+    os.tmpdir(),
+    `spiral-cfg-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   await mkdir(tmpDir, { recursive: true });
   return tmpDir;
 }
@@ -53,7 +56,12 @@ describe("Config (expanded)", () => {
     const cfg = path.join(tmpDir, "config.json");
     await writeFile(
       cfg,
-      JSON.stringify({ model: "gpt-4o", autoApprove: true, llmProvider: "openai", agentMode: "bypass" }),
+      JSON.stringify({
+        model: "gpt-4o",
+        autoApprove: true,
+        llmProvider: "openai",
+        agentMode: "bypass",
+      }),
       "utf-8",
     );
     const c = new Config({});
@@ -87,9 +95,7 @@ describe("Config (expanded)", () => {
 
   it("validate small context window", () => {
     const c = new Config({ contextWindowTokens: 100 });
-    expect(c.validate()).toEqual(
-      expect.arrayContaining([expect.stringContaining("very small")]),
-    );
+    expect(c.validate()).toEqual(expect.arrayContaining([expect.stringContaining("very small")]));
   });
 
   it("validate bad permission level", () => {
@@ -108,9 +114,7 @@ describe("Config (expanded)", () => {
 
   it("validate max iterations", () => {
     const c = new Config({ maxAgentIterations: 0 });
-    expect(c.validate()).toEqual(
-      expect.arrayContaining([expect.stringContaining("must be >= 1")]),
-    );
+    expect(c.validate()).toEqual(expect.arrayContaining([expect.stringContaining("must be >= 1")]));
   });
 
   it("validate autoApprove + ask conflict", () => {

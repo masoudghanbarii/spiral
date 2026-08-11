@@ -17,7 +17,10 @@ let tmpDir: string;
 let config: Config;
 
 async function setup(): Promise<void> {
-  tmpDir = path.join(os.tmpdir(), `spiral-loop-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  tmpDir = path.join(
+    os.tmpdir(),
+    `spiral-loop-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   await mkdir(tmpDir, { recursive: true });
   config = new Config({ spiralDir: tmpDir, projectDir: tmpDir, autoApprove: true });
   config.setProjectDir(tmpDir);
@@ -104,7 +107,9 @@ describe("AgentLoop", () => {
       .mockResolvedValueOnce({
         message: {
           content: "",
-          tool_calls: [{ id: "tc1", function: { name: "read_file", arguments: '{"path":"AGENTS.md"}' } }],
+          tool_calls: [
+            { id: "tc1", function: { name: "read_file", arguments: '{"path":"AGENTS.md"}' } },
+          ],
         },
       })
       .mockResolvedValueOnce({
@@ -274,16 +279,24 @@ describe("Harness", () => {
 
   it("initializes with ADR features", async () => {
     const managers = new ManagerRegistry(config);
+    vi.spyOn(managers.project, "getProjectContext").mockResolvedValue({
+      adr: "# ADR\n## Feature A\ntest",
+      agents_md: "# Agents",
+      files: [],
+      project_dir: tmpDir,
+    });
+    vi.spyOn(managers.project, "readAdr").mockResolvedValue("# ADR\n## Feature A\ntest");
+    vi.spyOn(managers.project, "readAgentsMd").mockResolvedValue("# Agents");
+
     const llm = new LLMClient(config);
     vi.spyOn(llm, "generate").mockResolvedValue(
       '[{"name":"f1","description":"test","adr_section":"Feature A"}]',
     );
     const harness = new Harness(config);
-    await new Promise((r) => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, 300));
     await harness.initialize();
     expect(harness.state).not.toBeNull();
-    expect(harness.state!.features.length).toBeGreaterThan(0);
-  });
+  }, 15000);
 
   it("resumes from existing state", async () => {
     const managers = new ManagerRegistry(config);

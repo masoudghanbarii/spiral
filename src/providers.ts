@@ -38,18 +38,44 @@ export function stripCodeFences(text: string): string {
 export function extractJsonFromText(text: string): unknown | null {
   const cleaned = stripCodeFences(text);
   try {
-    const start = cleaned.indexOf("[");
-    const end = cleaned.lastIndexOf("]") + 1;
-    if (start >= 0 && end > start) return JSON.parse(cleaned.slice(start, end));
+    return JSON.parse(cleaned);
   } catch {
-    // try object
+    // fall through to outer-value scan
   }
-  try {
-    const start = cleaned.indexOf("{");
-    const end = cleaned.lastIndexOf("}") + 1;
-    if (start >= 0 && end > start) return JSON.parse(cleaned.slice(start, end));
-  } catch {
-    return null;
+  // Locate the outermost JSON value (object or array) while tracking nesting
+  // so inner brackets inside a wrapper object are not mistaken for the value.
+  let start = -1;
+  let depth = 0;
+  const openStack: string[] = [];
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < cleaned.length; i++) {
+    const c = cleaned[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (c === "\\") escaped = true;
+      else if (c === '"') inString = false;
+      continue;
+    }
+    if (c === '"') {
+      inString = true;
+      continue;
+    }
+    if (c === "{" || c === "[") {
+      if (start < 0) start = i;
+      openStack.push(c);
+      depth++;
+    } else if (c === "}" || c === "]") {
+      openStack.pop();
+      depth--;
+      if (depth === 0) {
+        try {
+          return JSON.parse(cleaned.slice(start, i + 1));
+        } catch {
+          start = -1;
+        }
+      }
+    }
   }
   return null;
 }
@@ -315,7 +341,10 @@ export class OpenAIProvider implements ILLMProvider {
       }
     }
     return {
-      message: { content: fullContent, tool_calls: toolCalls.length ? toolCalls as ToolCall[] : undefined },
+      message: {
+        content: fullContent,
+        tool_calls: toolCalls.length ? (toolCalls as ToolCall[]) : undefined,
+      },
     };
   }
 
@@ -378,7 +407,10 @@ export class GeminiProvider implements ILLMProvider {
 
   async generate(prompt: string, system = ""): Promise<string> {
     const messages: ChatMessage[] = system
-      ? [{ role: "system", content: system }, { role: "user", content: prompt }]
+      ? [
+          { role: "system", content: system },
+          { role: "user", content: prompt },
+        ]
       : [{ role: "user", content: prompt }];
     const result = await this.chat(messages);
     return result.message.content;

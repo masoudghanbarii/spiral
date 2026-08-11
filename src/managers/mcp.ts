@@ -192,9 +192,7 @@ export class MCPManager {
     // Extract text from result
     if (typeof result === "string") return result;
     if (result?.content && Array.isArray(result.content)) {
-      return result.content
-        .map((c: { type: string; text?: string }) => c.text ?? "")
-        .join("\n");
+      return result.content.map((c: { type: string; text?: string }) => c.text ?? "").join("\n");
     }
     return JSON.stringify(result);
   }
@@ -216,11 +214,7 @@ export class MCPManager {
     });
   }
 
-  private sendNotification(
-    server: string,
-    method: string,
-    params: Record<string, unknown>,
-  ): void {
+  private sendNotification(server: string, method: string, params: Record<string, unknown>): void {
     const conn = this.connections.get(server);
     if (!conn) return;
     const msg = JSON.stringify({ jsonrpc: "2.0", method, params });

@@ -80,11 +80,11 @@ describe("Provider extractJson", () => {
 
 describe("stripCodeFences", () => {
   it("strips json fences", () => {
-    expect(stripCodeFences("```json\n{\"a\":1}\n```")).toBe('{"a":1}');
+    expect(stripCodeFences('```json\n{"a":1}\n```')).toBe('{"a":1}');
   });
 
   it("strips plain fences", () => {
-    expect(stripCodeFences("```\n{\"a\":1}\n```")).toBe('{"a":1}');
+    expect(stripCodeFences('```\n{"a":1}\n```')).toBe('{"a":1}');
   });
 
   it("no fences returns trimmed", () => {

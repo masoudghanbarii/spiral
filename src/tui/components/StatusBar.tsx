@@ -30,23 +30,25 @@ export function StatusBar({
   roleModelsLabel,
 }: StatusBarProps): React.ReactElement {
   return (
-    <Box
-      borderTop
-      borderColor="gray"
-      flexShrink={0}
-      flexDirection="column"
-      paddingX={1}
-    >
+    <Box borderTop borderColor="gray" flexShrink={0} flexDirection="column" paddingX={1}>
       {/* Line 1: status · mode · agent · tokens */}
       <Box>
         <Text color={statusColor as any}>{statusIcon}</Text>
-        <Text color="gray"> {statusLabel} · {elapsed} | {modeLabel} | {agentLabel} | {provider} | {tokensLabel}</Text>
+        <Text color="gray">
+          {" "}
+          {statusLabel} · {elapsed} | {modeLabel} | {agentLabel} | {provider} | {tokensLabel}
+        </Text>
       </Box>
 
       {/* Line 2: session · plugins · roles */}
       <Box>
         <Text color="gray">session: {sessionName}</Text>
-        {pluginsLabel && <Text color="gray"> · plugins: <Text color="white">{pluginsLabel}</Text></Text>}
+        {pluginsLabel && (
+          <Text color="gray">
+            {" "}
+            · plugins: <Text color="white">{pluginsLabel}</Text>
+          </Text>
+        )}
         <Text color="gray"> · roles (</Text>
         <Text color="blue">/agentplan</Text>
         <Text color="gray">): {roleModelsLabel}</Text>

@@ -1,19 +1,9 @@
 // Shared types for TUI components
 
 export type SessionStatus =
-  | "idle"
-  | "running"
-  | "waiting_approval"
-  | "error"
-  | "compacting"
-  | "tool_call";
+  "idle" | "running" | "waiting_approval" | "error" | "compacting" | "tool_call";
 
-export type SessionMode =
-  | "normal"
-  | "plan"
-  | "bypass"
-  | "safe"
-  | "interactive";
+export type SessionMode = "normal" | "plan" | "bypass" | "safe" | "interactive";
 
 export type SessionAgent = "agent" | "verifier" | "shipper" | "engine";
 
@@ -106,7 +96,11 @@ export interface SessionView {
 // Constants from mockup
 
 export const MODE_META: Record<SessionMode, { color: string; label: string; desc: string }> = {
-  normal: { color: "#3ecf6a", label: "normal", desc: "Default — ask approval for destructive tools" },
+  normal: {
+    color: "#3ecf6a",
+    label: "normal",
+    desc: "Default — ask approval for destructive tools",
+  },
   plan: { color: "#f2c94c", label: "plan", desc: "Read-only — outputs implementation plan" },
   bypass: { color: "#ef5350", label: "bypass", desc: "Skip all permission checks" },
   safe: { color: "#56c8d8", label: "safe", desc: "Read-only, no command execution" },
@@ -117,9 +111,21 @@ export const MODE_ORDER: SessionMode[] = ["normal", "plan", "bypass", "safe", "i
 
 export const AGENT_META: Record<SessionAgent, { color: string; label: string; desc: string }> = {
   agent: { color: "#3ecf6a", label: "agent", desc: "Agent loop — ReAct: model → tools → observe" },
-  verifier: { color: "#56c8d8", label: "verifier", desc: "Verification loop — grade, pass/fail, retry w/ feedback" },
-  shipper: { color: "#4f8cff", label: "shipper", desc: "Event loop — ADR → features → queue → ship" },
-  engine: { color: "#c678dd", label: "engine", desc: "Engine analysis loop — traces → harness tweaks (meta)" },
+  verifier: {
+    color: "#56c8d8",
+    label: "verifier",
+    desc: "Verification loop — grade, pass/fail, retry w/ feedback",
+  },
+  shipper: {
+    color: "#4f8cff",
+    label: "shipper",
+    desc: "Event loop — ADR → features → queue → ship",
+  },
+  engine: {
+    color: "#c678dd",
+    label: "engine",
+    desc: "Engine analysis loop — traces → harness tweaks (meta)",
+  },
 };
 
 export const AGENT_ORDER: SessionAgent[] = ["agent", "verifier", "shipper", "engine"];
@@ -153,13 +159,7 @@ export const GROUP_META: Record<string, { color: string; label: string }> = {
 
 export const GROUP_LETTERS = ["A", "B", "C", "D"];
 
-export const MODEL_LIST = [
-  "Kimi-k2.6",
-  "Claude-3.7",
-  "GPT-5",
-  "Deepseek-v4-flash",
-  "GLM-5.2",
-];
+export const MODEL_LIST = ["Kimi-k2.6", "Claude-3.7", "GPT-5", "Deepseek-v4-flash", "GLM-5.2"];
 
 export const ROLE_META: Record<string, { label: string; desc: string }> = {
   plan: { label: "Plan", desc: "Chooses approach, writes the ADR" },
@@ -244,11 +244,7 @@ export interface GridRow {
   cells: GridCell[];
 }
 
-export function buildGridRows(
-  frame: number,
-  spiralPath: [number, number][],
-  n: number,
-): GridRow[] {
+export function buildGridRows(frame: number, spiralPath: [number, number][], n: number): GridRow[] {
   const mid = (n - 1) / 2;
   const posIndex = new Map<string, number>();
   spiralPath.forEach(([r, c], i) => posIndex.set(r + "_" + c, i));
@@ -284,9 +280,8 @@ export function buildCoilGrid(size: number, frame: number): GridRow[] {
   const maxR = (size - 1) / 2 - 0.5;
   const turns = 3.2;
   const steps = 520;
-  const grid: ({ ch: string; op: number } | null)[][] = Array.from(
-    { length: size },
-    () => Array.from({ length: size }, () => null),
+  const grid: ({ ch: string; op: number } | null)[][] = Array.from({ length: size }, () =>
+    Array.from({ length: size }, () => null),
   );
   const rot = frame * 0.045;
   const ax = 1.85;

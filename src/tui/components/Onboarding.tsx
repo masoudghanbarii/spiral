@@ -70,25 +70,33 @@ export function Onboarding({
         {/* Model/Mode/agent info */}
         <Box justifyContent="space-between" marginTop={1}>
           <Box>
-            <Text color="gray">Model:<Text color="white"> {model}</Text> Mode:</Text>
+            <Text color="gray">
+              Model:<Text color="white"> {model}</Text> Mode:
+            </Text>
             <Text color={modeColor as any}> {mode}</Text>
             <Text color="gray"> (shift+tab to switch)</Text>
           </Box>
           <Box>
-            <Text color="gray">agent:<Text color="green"> {agent}</Text> (tab to switch)</Text>
+            <Text color="gray">
+              agent:<Text color="green"> {agent}</Text> (tab to switch)
+            </Text>
           </Box>
         </Box>
 
         {/* Plugins */}
         {plugins.length > 0 && (
           <Box marginTop={1}>
-            <Text color="gray">Activated plugins: <Text color="white">{plugins.join(", ")}</Text></Text>
+            <Text color="gray">
+              Activated plugins: <Text color="white">{plugins.join(", ")}</Text>
+            </Text>
           </Box>
         )}
 
         {/* Hint */}
         <Box justifyContent="center" marginTop={2}>
-          <Text color="gray">press <Text color="white">enter</Text> to launch a session</Text>
+          <Text color="gray">
+            press <Text color="white">enter</Text> to launch a session
+          </Text>
         </Box>
       </Box>
     </Box>

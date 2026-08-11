@@ -10,7 +10,10 @@ let tmpDir: string;
 let config: Config;
 
 async function setup(): Promise<void> {
-  tmpDir = path.join(os.tmpdir(), `spiral-int-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  tmpDir = path.join(
+    os.tmpdir(),
+    `spiral-int-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   await mkdir(tmpDir, { recursive: true });
   config = new Config({ spiralDir: tmpDir });
   config.tracesDir = path.join(tmpDir, "traces");

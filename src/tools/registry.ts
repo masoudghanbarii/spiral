@@ -280,13 +280,9 @@ export class ToolRegistry {
         },
         ["path"],
       ),
-      def(
-        "find_skills",
-        "Search for available skills",
-        {
-          query: { type: "string", description: "Search query (optional)" },
-        },
-      ),
+      def("find_skills", "Search for available skills", {
+        query: { type: "string", description: "Search query (optional)" },
+      }),
     ];
   }
 
@@ -494,12 +490,9 @@ export class ToolRegistry {
   }
 
   private async ddgSearch(query: string, maxResults: number): Promise<string> {
-    const resp = await fetch(
-      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`,
-      {
-        headers: { "User-Agent": "SpiralAgent/1.0" },
-      },
-    );
+    const resp = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`, {
+      headers: { "User-Agent": "SpiralAgent/1.0" },
+    });
     if (!resp.ok) return `DuckDuckGo error: ${resp.status}`;
     const html = await resp.text();
     const results: string[] = [];
@@ -534,9 +527,7 @@ export class ToolRegistry {
       );
     }
     for (let i = 0; i < links.length; i++) {
-      results.push(
-        `${i + 1}. ${links[i]!.title}\n   ${links[i]!.url}\n   ${snippets[i] ?? ""}`,
-      );
+      results.push(`${i + 1}. ${links[i]!.title}\n   ${links[i]!.url}\n   ${snippets[i] ?? ""}`);
     }
     return results.length > 0 ? results.join("\n\n") : "No results found";
   }
@@ -557,12 +548,8 @@ export class ToolRegistry {
       }
       case "list": {
         if (this.todos.size === 0) return "No todos.";
-        const items = Array.from(this.todos.entries()).sort(
-          ([idA], [idB]) => idA - idB,
-        );
-        return items
-          .map(([id, t]) => `#${id} [${t.status}] (${t.priority}) ${t.task}`)
-          .join("\n");
+        const items = Array.from(this.todos.entries()).sort(([idA], [idB]) => idA - idB);
+        return items.map(([id, t]) => `#${id} [${t.status}] (${t.priority}) ${t.task}`).join("\n");
       }
       case "update": {
         const id = Number(a.task);
@@ -575,8 +562,7 @@ export class ToolRegistry {
       }
       case "remove": {
         const id = Number(a.task);
-        if (isNaN(id) || !this.todos.has(id))
-          return `Error: todo #${a.task} not found`;
+        if (isNaN(id) || !this.todos.has(id)) return `Error: todo #${a.task} not found`;
         this.todos.delete(id);
         return `Removed todo #${id}`;
       }
@@ -606,11 +592,7 @@ export class ToolRegistry {
     let i = 0;
     while (i < lines.length) {
       const line = lines[i]!;
-      if (
-        line.startsWith("diff --git") ||
-        line.startsWith("--- ") ||
-        line.startsWith("+++ ")
-      ) {
+      if (line.startsWith("diff --git") || line.startsWith("--- ") || line.startsWith("+++ ")) {
         let oldPath = "";
         let newPath = "";
         if (line.startsWith("--- ")) {
@@ -649,9 +631,7 @@ export class ToolRegistry {
             lines[i]!.startsWith("+"))
         ) {
           if (lines[i]!.startsWith("@@")) {
-            const hunkMatch = lines[i]!.match(
-              /@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/,
-            );
+            const hunkMatch = lines[i]!.match(/@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
             const oldStart = hunkMatch ? parseInt(hunkMatch[1]!, 10) : 1;
             i++;
             const oldLines: string[] = [];
@@ -697,12 +677,7 @@ export class ToolRegistry {
           }
           let fileLines = content.split("\n");
           for (const hunk of hunks) {
-            fileLines = this.applyHunk(
-              fileLines,
-              hunk.oldStart,
-              hunk.oldLines,
-              hunk.newLines,
-            );
+            fileLines = this.applyHunk(fileLines, hunk.oldStart, hunk.oldLines, hunk.newLines);
           }
           await this.project.writeFile(oldPath, fileLines.join("\n"));
           results.push(`Patched ${oldPath}`);
@@ -751,10 +726,8 @@ export class ToolRegistry {
       }
     }
     const parts: string[] = [];
-    if (matchedFacts.length > 0)
-      parts.push("Matching facts:\n" + matchedFacts.join("\n"));
-    if (matchedFailures.length > 0)
-      parts.push("Matching failures:\n" + matchedFailures.join("\n"));
+    if (matchedFacts.length > 0) parts.push("Matching facts:\n" + matchedFacts.join("\n"));
+    if (matchedFailures.length > 0) parts.push("Matching failures:\n" + matchedFailures.join("\n"));
     return parts.length > 0 ? parts.join("\n\n") : "No matching memories found";
   }
 
@@ -863,9 +836,7 @@ export class ToolRegistry {
         findings.push(`P0:${relPath}:${lineNum}: eval() usage - security risk`);
       }
       if (/\bexec\b.*\bnew RegExp\(/.test(line)) {
-        findings.push(
-          `P1:${relPath}:${lineNum}: dynamic RegExp with exec - possible ReDoS`,
-        );
+        findings.push(`P1:${relPath}:${lineNum}: dynamic RegExp with exec - possible ReDoS`);
       }
     }
     const header = `Code review: ${relPath}${focus ? ` (focus: ${focus})` : ""}`;
@@ -875,14 +846,10 @@ export class ToolRegistry {
     const p2 = findings.filter((f) => f.startsWith("P2:"));
     const p3 = findings.filter((f) => f.startsWith("P3:"));
     const sections: string[] = [header];
-    if (p0.length)
-      sections.push("P0 (Critical):\n" + p0.map((f) => f.slice(3)).join("\n"));
-    if (p1.length)
-      sections.push("P1 (High):\n" + p1.map((f) => f.slice(3)).join("\n"));
-    if (p2.length)
-      sections.push("P2 (Medium):\n" + p2.map((f) => f.slice(3)).join("\n"));
-    if (p3.length)
-      sections.push("P3 (Low):\n" + p3.map((f) => f.slice(3)).join("\n"));
+    if (p0.length) sections.push("P0 (Critical):\n" + p0.map((f) => f.slice(3)).join("\n"));
+    if (p1.length) sections.push("P1 (High):\n" + p1.map((f) => f.slice(3)).join("\n"));
+    if (p2.length) sections.push("P2 (Medium):\n" + p2.map((f) => f.slice(3)).join("\n"));
+    if (p3.length) sections.push("P3 (Low):\n" + p3.map((f) => f.slice(3)).join("\n"));
     return sections.join("\n\n");
   }
 
@@ -901,10 +868,7 @@ export class ToolRegistry {
       if (!existsSync(skillMd)) continue;
       if (query) {
         const content = await fsReadFile(skillMd, "utf-8");
-        if (
-          !entry.name.toLowerCase().includes(query) &&
-          !content.toLowerCase().includes(query)
-        ) {
+        if (!entry.name.toLowerCase().includes(query) && !content.toLowerCase().includes(query)) {
           continue;
         }
         const descMatch = content.match(/^#\s+(.+)$/m);

@@ -26,33 +26,23 @@ describe("TraceManager", () => {
 
   it("records entries", async () => {
     const tm = new TraceManager(config);
-    await tm.record(
-      new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f1" }),
-    );
+    await tm.record(new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f1" }));
     expect(tm.getSessionTraces()).toHaveLength(1);
     expect(tm.getSessionTraces()[0]!.feature).toBe("f1");
   });
 
   it("filters by feature", async () => {
     const tm = new TraceManager(config);
-    await tm.record(
-      new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f1" }),
-    );
-    await tm.record(
-      new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f2" }),
-    );
+    await tm.record(new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f1" }));
+    await tm.record(new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f2" }));
     expect(tm.getTracesByFeature("f1")).toHaveLength(1);
     expect(tm.getTracesByFeature("f2")).toHaveLength(1);
   });
 
   it("filters by type", async () => {
     const tm = new TraceManager(config);
-    await tm.record(
-      new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f1" }),
-    );
-    await tm.record(
-      new TraceEntry({ event_type: "tool_call", loop_name: "test", feature: "f1" }),
-    );
+    await tm.record(new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f1" }));
+    await tm.record(new TraceEntry({ event_type: "tool_call", loop_name: "test", feature: "f1" }));
     expect(tm.getTracesByType("agent_step")).toHaveLength(1);
     expect(tm.getTracesByType("tool_call")).toHaveLength(1);
   });
@@ -80,9 +70,7 @@ describe("TraceManager", () => {
 
   it("loadSession reads from file", async () => {
     const tm = new TraceManager(config);
-    await tm.record(
-      new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f1" }),
-    );
+    await tm.record(new TraceEntry({ event_type: "agent_step", loop_name: "test", feature: "f1" }));
     const entries = await tm.loadSession(tm.sessionFile);
     expect(entries.length).toBeGreaterThanOrEqual(1);
   });

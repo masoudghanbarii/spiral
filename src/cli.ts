@@ -155,15 +155,40 @@ const PROVIDER_INFO: Array<{
   label: string;
 }> = [
   { name: "ollama", envKey: "", defaultModel: "deepseek-v4-flash:cloud", label: "Ollama" },
-  { name: "anthropic", envKey: "ANTHROPIC_API_KEY", defaultModel: "claude-sonnet-4-20250514", label: "Anthropic" },
+  {
+    name: "anthropic",
+    envKey: "ANTHROPIC_API_KEY",
+    defaultModel: "claude-sonnet-4-20250514",
+    label: "Anthropic",
+  },
   { name: "openai", envKey: "OPENAI_API_KEY", defaultModel: "gpt-4o", label: "OpenAI" },
-  { name: "gemini", envKey: "GEMINI_API_KEY", defaultModel: "gemini-2.0-flash", label: "Google Gemini" },
+  {
+    name: "gemini",
+    envKey: "GEMINI_API_KEY",
+    defaultModel: "gemini-2.0-flash",
+    label: "Google Gemini",
+  },
   { name: "xai", envKey: "XAI_API_KEY", defaultModel: "grok-3", label: "xAI" },
-  { name: "mistral", envKey: "MISTRAL_API_KEY", defaultModel: "mistral-large-latest", label: "Mistral" },
+  {
+    name: "mistral",
+    envKey: "MISTRAL_API_KEY",
+    defaultModel: "mistral-large-latest",
+    label: "Mistral",
+  },
   { name: "groq", envKey: "GROQ_API_KEY", defaultModel: "llama-3.3-70b-versatile", label: "Groq" },
   { name: "openrouter", envKey: "OPENROUTER_API_KEY", defaultModel: "auto", label: "OpenRouter" },
-  { name: "deepseek", envKey: "DEEPSEEK_API_KEY", defaultModel: "deepseek-chat", label: "DeepSeek" },
-  { name: "together", envKey: "TOGETHER_API_KEY", defaultModel: "meta-llama/Llama-3-70b-chat-hf", label: "Together" },
+  {
+    name: "deepseek",
+    envKey: "DEEPSEEK_API_KEY",
+    defaultModel: "deepseek-chat",
+    label: "DeepSeek",
+  },
+  {
+    name: "together",
+    envKey: "TOGETHER_API_KEY",
+    defaultModel: "meta-llama/Llama-3-70b-chat-hf",
+    label: "Together",
+  },
 ];
 
 program
@@ -173,7 +198,11 @@ program
     console.log("Provider".padEnd(14) + "Default Model".padEnd(36) + "API Key");
     console.log("-".repeat(66));
     for (const p of PROVIDER_INFO) {
-      const hasKey = p.envKey ? (process.env[p.envKey] ? "✓ configured" : "✗ not set") : "n/a (local)";
+      const hasKey = p.envKey
+        ? process.env[p.envKey]
+          ? "✓ configured"
+          : "✗ not set"
+        : "n/a (local)";
       console.log(p.label.padEnd(14) + p.defaultModel.padEnd(36) + hasKey);
     }
     console.log("\nSet API keys with: spiral providers login <provider>");
@@ -281,12 +310,24 @@ program
     try {
       const resp = await fetch(config.ollamaBaseUrl, { signal: AbortSignal.timeout(5000) });
       if (resp.ok) {
-        issues.push({ check: "Ollama connectivity", status: "ok", detail: `Connected to ${config.ollamaBaseUrl}` });
+        issues.push({
+          check: "Ollama connectivity",
+          status: "ok",
+          detail: `Connected to ${config.ollamaBaseUrl}`,
+        });
       } else {
-        issues.push({ check: "Ollama connectivity", status: "fail", detail: `HTTP ${resp.status} from ${config.ollamaBaseUrl}` });
+        issues.push({
+          check: "Ollama connectivity",
+          status: "fail",
+          detail: `HTTP ${resp.status} from ${config.ollamaBaseUrl}`,
+        });
       }
     } catch (e) {
-      issues.push({ check: "Ollama connectivity", status: "fail", detail: `Cannot reach ${config.ollamaBaseUrl}: ${(e as Error).message}` });
+      issues.push({
+        check: "Ollama connectivity",
+        status: "fail",
+        detail: `Cannot reach ${config.ollamaBaseUrl}: ${(e as Error).message}`,
+      });
     }
 
     // Check file permissions
@@ -296,9 +337,17 @@ program
       await writeFile(testFile, "test", "utf-8");
       const { rm } = await import("node:fs/promises");
       await rm(testFile);
-      issues.push({ check: "File permissions", status: "ok", detail: "Read/write access to spiral dir" });
+      issues.push({
+        check: "File permissions",
+        status: "ok",
+        detail: "Read/write access to spiral dir",
+      });
     } catch (e) {
-      issues.push({ check: "File permissions", status: "fail", detail: `Cannot write to ${config.spiralDir}: ${(e as Error).message}` });
+      issues.push({
+        check: "File permissions",
+        status: "fail",
+        detail: `Cannot write to ${config.spiralDir}: ${(e as Error).message}`,
+      });
     }
 
     // Check disk space
@@ -312,9 +361,17 @@ program
       const usePct = parts[4] ?? "unknown";
       const useNum = parseInt(usePct);
       if (useNum > 90) {
-        issues.push({ check: "Disk space", status: "fail", detail: `Disk ${usePct} full, only ${avail} available` });
+        issues.push({
+          check: "Disk space",
+          status: "fail",
+          detail: `Disk ${usePct} full, only ${avail} available`,
+        });
       } else {
-        issues.push({ check: "Disk space", status: "ok", detail: `${avail} available (${usePct} used)` });
+        issues.push({
+          check: "Disk space",
+          status: "ok",
+          detail: `${avail} available (${usePct} used)`,
+        });
       }
     } catch {
       issues.push({ check: "Disk space", status: "ok", detail: "Unable to check (skipping)" });
@@ -332,16 +389,32 @@ program
     if (existsSync(config.skillsDir)) {
       const entries = await readdir(config.skillsDir, { withFileTypes: true });
       const skillCount = entries.filter((e) => e.isDirectory()).length;
-      issues.push({ check: "Skills directory", status: "ok", detail: `${skillCount} skills found` });
+      issues.push({
+        check: "Skills directory",
+        status: "ok",
+        detail: `${skillCount} skills found`,
+      });
     } else {
-      issues.push({ check: "Skills directory", status: "fail", detail: `${config.skillsDir} does not exist` });
+      issues.push({
+        check: "Skills directory",
+        status: "fail",
+        detail: `${config.skillsDir} does not exist`,
+      });
     }
 
     // Check memory dir
     if (existsSync(config.memoryDir)) {
-      issues.push({ check: "Memory directory", status: "ok", detail: `${config.memoryDir} exists` });
+      issues.push({
+        check: "Memory directory",
+        status: "ok",
+        detail: `${config.memoryDir} exists`,
+      });
     } else {
-      issues.push({ check: "Memory directory", status: "fail", detail: `${config.memoryDir} does not exist` });
+      issues.push({
+        check: "Memory directory",
+        status: "fail",
+        detail: `${config.memoryDir} does not exist`,
+      });
     }
 
     // Print results
@@ -603,45 +676,50 @@ mcpCmd
   .option("--args <args...>", "Arguments for the command")
   .option("--url <url>", "Server URL (http transport)")
   .option("--transport <type>", "Transport type: stdio|http", "stdio")
-  .action(async (name: string, opts: {
-    command?: string;
-    args?: string[];
-    url?: string;
-    transport?: string;
-  }) => {
-    const transport = opts.transport as "stdio" | "http";
-    if (transport !== "stdio" && transport !== "http") {
-      console.error("Transport must be 'stdio' or 'http'");
-      process.exit(1);
-    }
-    if (transport === "stdio" && !opts.command) {
-      console.error("stdio transport requires --command");
-      process.exit(1);
-    }
-    if (transport === "http" && !opts.url) {
-      console.error("http transport requires --url");
-      process.exit(1);
-    }
-    const config = new Config();
-    const mcpFile = path.join(config.spiralDir, "mcp.json");
-    let servers: Record<string, McpServer> = {};
-    if (existsSync(mcpFile)) {
-      try {
-        servers = JSON.parse(await readFile(mcpFile, "utf-8"));
-      } catch {
-        // start fresh
+  .action(
+    async (
+      name: string,
+      opts: {
+        command?: string;
+        args?: string[];
+        url?: string;
+        transport?: string;
+      },
+    ) => {
+      const transport = opts.transport as "stdio" | "http";
+      if (transport !== "stdio" && transport !== "http") {
+        console.error("Transport must be 'stdio' or 'http'");
+        process.exit(1);
       }
-    }
-    servers[name] = {
-      command: opts.command,
-      args: opts.args,
-      url: opts.url,
-      transport,
-    };
-    await mkdir(path.dirname(mcpFile), { recursive: true });
-    await writeFile(mcpFile, JSON.stringify(servers, null, 2), "utf-8");
-    console.log(`MCP server '${name}' added`);
-  });
+      if (transport === "stdio" && !opts.command) {
+        console.error("stdio transport requires --command");
+        process.exit(1);
+      }
+      if (transport === "http" && !opts.url) {
+        console.error("http transport requires --url");
+        process.exit(1);
+      }
+      const config = new Config();
+      const mcpFile = path.join(config.spiralDir, "mcp.json");
+      let servers: Record<string, McpServer> = {};
+      if (existsSync(mcpFile)) {
+        try {
+          servers = JSON.parse(await readFile(mcpFile, "utf-8"));
+        } catch {
+          // start fresh
+        }
+      }
+      servers[name] = {
+        command: opts.command,
+        args: opts.args,
+        url: opts.url,
+        transport,
+      };
+      await mkdir(path.dirname(mcpFile), { recursive: true });
+      await writeFile(mcpFile, JSON.stringify(servers, null, 2), "utf-8");
+      console.log(`MCP server '${name}' added`);
+    },
+  );
 
 mcpCmd
   .command("list")

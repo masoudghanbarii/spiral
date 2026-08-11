@@ -75,7 +75,10 @@ export function ChatLog({
           flexDirection="column"
         >
           <Box marginBottom={1}>
-            <Text color="magenta">{"‼ permission required — "}{pendingTool}</Text>
+            <Text color="magenta">
+              {"‼ permission required — "}
+              {pendingTool}
+            </Text>
           </Box>
           <Box gap={1}>
             <Box borderStyle="single" borderColor="green" paddingX={1}>
@@ -91,7 +94,10 @@ export function ChatLog({
       {/* Error */}
       {isError && (
         <Box marginTop={1}>
-          <Text color="red">{"✕ "}{lastError}</Text>
+          <Text color="red">
+            {"✕ "}
+            {lastError}
+          </Text>
         </Box>
       )}
 
@@ -118,7 +124,9 @@ function EntryView({ entry }: { entry: LogEntry }): React.ReactElement {
   if (entry.kind === "user") {
     return (
       <Box>
-        <Text bold color="cyan">{"> "}</Text>
+        <Text bold color="cyan">
+          {"> "}
+        </Text>
         <Text>{entry.text}</Text>
       </Box>
     );
@@ -126,7 +134,9 @@ function EntryView({ entry }: { entry: LogEntry }): React.ReactElement {
   if (entry.kind === "assistant") {
     return (
       <Box>
-        <Text bold color="green">{"✦ "}</Text>
+        <Text bold color="green">
+          {"✦ "}
+        </Text>
         <Text>{entry.text}</Text>
       </Box>
     );
@@ -134,7 +144,10 @@ function EntryView({ entry }: { entry: LogEntry }): React.ReactElement {
   if (entry.kind === "tool") {
     return (
       <Box marginLeft={2}>
-        <Text color="yellow">{"⚡ "}{entry.tool}</Text>
+        <Text color="yellow">
+          {"⚡ "}
+          {entry.tool}
+        </Text>
         <Text color="gray"> {entry.detail}</Text>
       </Box>
     );

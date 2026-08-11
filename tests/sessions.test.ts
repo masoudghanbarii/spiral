@@ -11,7 +11,10 @@ let config: Config;
 let mm: MemoryManager;
 
 async function setup(): Promise<void> {
-  tmpDir = path.join(os.tmpdir(), `spiral-sess-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  tmpDir = path.join(
+    os.tmpdir(),
+    `spiral-sess-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   await mkdir(tmpDir, { recursive: true });
   config = new Config({ spiralDir: tmpDir });
   config.memoryDir = path.join(tmpDir, "memory");
@@ -100,7 +103,15 @@ describe("SessionManager", () => {
   it("importSession throws for invalid data", async () => {
     const sm = new SessionManager(mm);
     await expect(
-      sm.importSession({ sessionId: "", messages: [], state: null, context: {}, summary: "", exportedAt: "", version: "" }),
+      sm.importSession({
+        sessionId: "",
+        messages: [],
+        state: null,
+        context: {},
+        summary: "",
+        exportedAt: "",
+        version: "",
+      }),
     ).rejects.toThrow("Invalid session export");
   });
 

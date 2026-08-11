@@ -119,10 +119,7 @@ export class PermissionManager {
    * Subagents are more restrictive: "allow" becomes "ask", "ask" stays "ask", "deny" stays "deny".
    */
   deriveSubagentPermissions(): PermissionManager {
-    const sub = new PermissionManager(
-      new Config({ autoApprove: false }),
-      this.traces,
-    );
+    const sub = new PermissionManager(new Config({ autoApprove: false }), this.traces);
     // Copy rules but make them more restrictive
     for (const [tool, level] of Object.entries(this.rules)) {
       sub.rules[tool] = level === "allow" ? "ask" : level;
@@ -194,10 +191,7 @@ export class PermissionManager {
     }
     // Also check file paths against approved patterns
     const pathValue =
-      (args.path as string) ??
-      (args.file as string) ??
-      (args.filePath as string) ??
-      "";
+      (args.path as string) ?? (args.file as string) ?? (args.filePath as string) ?? "";
     if (pathValue) {
       for (const approved of this.approved) {
         try {
@@ -248,10 +242,7 @@ export class PermissionManager {
     return false;
   }
 
-  async shouldExecute(
-    toolName: string,
-    args: Record<string, unknown>,
-  ): Promise<[boolean, string]> {
+  async shouldExecute(toolName: string, args: Record<string, unknown>): Promise<[boolean, string]> {
     this.runBeforeHooks(toolName, args);
 
     const level = this.check(toolName, args);

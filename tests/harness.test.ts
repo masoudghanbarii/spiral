@@ -10,7 +10,10 @@ let tmpDir: string;
 let config: Config;
 
 async function setup(): Promise<void> {
-  tmpDir = path.join(os.tmpdir(), `spiral-harness-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  tmpDir = path.join(
+    os.tmpdir(),
+    `spiral-harness-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   await mkdir(tmpDir, { recursive: true });
   config = new Config({ spiralDir: tmpDir, projectDir: tmpDir, autoApprove: true });
   config.setProjectDir(tmpDir);
@@ -97,5 +100,4 @@ describe("Harness", () => {
     await harness.run();
     expect(harness.state!.failedFeatures).toContain("f1");
   });
-
 });

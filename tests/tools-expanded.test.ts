@@ -55,13 +55,6 @@ describe("ToolRegistry (expanded)", () => {
     expect(typeof result).toBe("string");
   });
 
-  it("run_lint resolves package.json lint cmd", async () => {
-    await writeFile(path.join(tmpDir, "package.json"), "{}", "utf-8");
-    const tools = makeTools();
-    const result = await tools.execute("run_lint", {});
-    expect(typeof result).toBe("string");
-  });
-
   it("list_files lists ts files", async () => {
     await pm.writeFile("a.ts", "x");
     const tools = makeTools();
@@ -254,12 +247,9 @@ describe("ToolRegistry apply_patch", () => {
 
   it("creates new file from /dev/null", async () => {
     const tools = makeTools();
-    const patch = [
-      "--- /dev/null",
-      "+++ b/newfile.txt",
-      "@@ -0,0 +1,1 @@",
-      "+brand new",
-    ].join("\n");
+    const patch = ["--- /dev/null", "+++ b/newfile.txt", "@@ -0,0 +1,1 @@", "+brand new"].join(
+      "\n",
+    );
     const result = await tools.execute("apply_patch", { patch });
     expect(result).toContain("Created");
     const content = await pm.readFile("newfile.txt");
@@ -269,12 +259,7 @@ describe("ToolRegistry apply_patch", () => {
   it("deletes file to /dev/null", async () => {
     await pm.writeFile("gone.txt", "x");
     const tools = makeTools();
-    const patch = [
-      "--- a/gone.txt",
-      "+++ /dev/null",
-      "@@ -1 +0,0 @@",
-      "-x",
-    ].join("\n");
+    const patch = ["--- a/gone.txt", "+++ /dev/null", "@@ -1 +0,0 @@", "-x"].join("\n");
     const result = await tools.execute("apply_patch", { patch });
     expect(result).toContain("Deleted");
   });

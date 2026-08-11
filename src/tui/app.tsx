@@ -93,7 +93,12 @@ function createSession(
   };
 }
 
-export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiProps): React.ReactElement {
+export function TuiApp({
+  config,
+  sessionId,
+  initialMessage,
+  initialView,
+}: TuiProps): React.ReactElement {
   const { exit } = useApp();
   const { stdin, setRawMode } = useStdin();
 
@@ -142,7 +147,14 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
   const activeSession = sessions.find((s) => s.id === activeSessionId) ?? sessions[0]!;
 
   const tools = useMemo(
-    () => new ToolRegistry(config, managers.project, managers.permissions, activeSession.mode as AgentMode, managers.memory),
+    () =>
+      new ToolRegistry(
+        config,
+        managers.project,
+        managers.permissions,
+        activeSession.mode as AgentMode,
+        managers.memory,
+      ),
     [config, managers, activeSession.mode],
   );
 
@@ -165,12 +177,14 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
     const onData = (data: Buffer) => {
       const str = data.toString();
       // Shift+Enter in some terminals: \x1b[13;2~
-      if (str === '\x1b[13;2~') {
-        setInput((prev) => prev + '\n');
+      if (str === "\x1b[13;2~") {
+        setInput((prev) => prev + "\n");
       }
     };
-    stdin.on('data', onData);
-    return () => { stdin.off('data', onData); };
+    stdin.on("data", onData);
+    return () => {
+      stdin.off("data", onData);
+    };
   }, [stdin]);
 
   // ── Frame animation loop (only when animating, slower to prevent flicker) ──
@@ -210,52 +224,60 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
   }, [activeSessionId]);
 
   const addLogEntry = useCallback((id: string, entry: LogEntry) => {
-    setSessions((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, log: [...s.log, entry] } : s)),
-    );
+    setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, log: [...s.log, entry] } : s)));
   }, []);
 
-  const approve = useCallback((id: string) => {
-    updateSession(id, { status: "running", pendingTool: undefined });
-  }, [updateSession]);
+  const approve = useCallback(
+    (id: string) => {
+      updateSession(id, { status: "running", pendingTool: undefined });
+    },
+    [updateSession],
+  );
 
-  const deny = useCallback((id: string) => {
-    updateSession(id, { status: "error", pendingTool: undefined });
-  }, [updateSession]);
+  const deny = useCallback(
+    (id: string) => {
+      updateSession(id, { status: "error", pendingTool: undefined });
+    },
+    [updateSession],
+  );
 
-  const toggleShare = useCallback((id: string) => {
-    setSessions((prev) => {
-      const active = prev.find((s) => s.id === activeSessionId);
-      const target = prev.find((s) => s.id === id);
-      if (!active || !target || active.id === target.id) return prev;
+  const toggleShare = useCallback(
+    (id: string) => {
+      setSessions((prev) => {
+        const active = prev.find((s) => s.id === activeSessionId);
+        const target = prev.find((s) => s.id === id);
+        if (!active || !target || active.id === target.id) return prev;
 
-      if (target.groupId && target.groupId === active.groupId) {
-        // Unlink
-        return prev.map((s) => (s.id === id ? { ...s, groupId: null } : s));
-      }
+        if (target.groupId && target.groupId === active.groupId) {
+          // Unlink
+          return prev.map((s) => (s.id === id ? { ...s, groupId: null } : s));
+        }
 
-      // Link
-      let gid = active.groupId;
-      if (!gid) {
-        const used = new Set(prev.map((s) => s.groupId).filter(Boolean));
-        gid = GROUP_LETTERS.find((l) => !used.has(l)) ?? GROUP_LETTERS[0]!;
-        const updated = prev.map((s) =>
-          s.id === active.id ? { ...s, groupId: gid } : s,
-        );
-        return updated.map((s) => (s.id === id ? { ...s, groupId: gid } : s));
-      }
+        // Link
+        let gid = active.groupId;
+        if (!gid) {
+          const used = new Set(prev.map((s) => s.groupId).filter(Boolean));
+          gid = GROUP_LETTERS.find((l) => !used.has(l)) ?? GROUP_LETTERS[0]!;
+          const updated = prev.map((s) => (s.id === active.id ? { ...s, groupId: gid } : s));
+          return updated.map((s) => (s.id === id ? { ...s, groupId: gid } : s));
+        }
 
-      return prev.map((s) => (s.id === id ? { ...s, groupId: gid } : s));
-    });
-  }, [activeSessionId]);
+        return prev.map((s) => (s.id === id ? { ...s, groupId: gid } : s));
+      });
+    },
+    [activeSessionId],
+  );
 
-  const setRoleModel = useCallback((sid: string, role: "plan" | "build" | "judge", model: string) => {
-    setSessions((prev) =>
-      prev.map((s) =>
-        s.id === sid ? { ...s, roleModels: { ...s.roleModels, [role]: model } } : s,
-      ),
-    );
-  }, []);
+  const setRoleModel = useCallback(
+    (sid: string, role: "plan" | "build" | "judge", model: string) => {
+      setSessions((prev) =>
+        prev.map((s) =>
+          s.id === sid ? { ...s, roleModels: { ...s.roleModels, [role]: model } } : s,
+        ),
+      );
+    },
+    [],
+  );
 
   // ── Slash command execution (from slash menu) ──
   const runCommand = useCallback(
@@ -436,7 +458,10 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
           Promise.race([
             p,
             new Promise<T>((_, reject) =>
-              setTimeout(() => reject(new Error("Request timed out after " + Math.floor(ms / 1000) + "s")), ms),
+              setTimeout(
+                () => reject(new Error("Request timed out after " + Math.floor(ms / 1000) + "s")),
+                ms,
+              ),
             ),
           ]);
 
@@ -531,7 +556,11 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
             s.id === sid
               ? {
                   ...s,
-                  messages: [...s.messages, ...userMessages.slice(-1)!, { role: "assistant", content }],
+                  messages: [
+                    ...s.messages,
+                    ...userMessages.slice(-1)!,
+                    { role: "assistant", content },
+                  ],
                   tokenCount,
                   tokensUsed: tokenCount,
                 }
@@ -705,9 +734,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
       }
       // If input starts with /, try to run as slash command
       if (input.startsWith("/")) {
-        const slashFiltered = SLASH_COMMANDS.filter((c) =>
-          c.cmd.startsWith(input.toLowerCase()),
-        );
+        const slashFiltered = SLASH_COMMANDS.filter((c) => c.cmd.startsWith(input.toLowerCase()));
         if (slashFiltered.length > 0) {
           runCommand(slashFiltered[slashIndex]!.cmd, activeSessionId);
           return;
@@ -766,9 +793,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
     // ── Arrow up/down for slash menu or history ──
     if (key.upArrow) {
       if (input.startsWith("/")) {
-        const slashFiltered = SLASH_COMMANDS.filter((c) =>
-          c.cmd.startsWith(input.toLowerCase()),
-        );
+        const slashFiltered = SLASH_COMMANDS.filter((c) => c.cmd.startsWith(input.toLowerCase()));
         if (slashFiltered.length > 0) {
           setSlashIndex((i) => (i - 1 + slashFiltered.length) % slashFiltered.length);
           return;
@@ -784,9 +809,7 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
 
     if (key.downArrow) {
       if (input.startsWith("/")) {
-        const slashFiltered = SLASH_COMMANDS.filter((c) =>
-          c.cmd.startsWith(input.toLowerCase()),
-        );
+        const slashFiltered = SLASH_COMMANDS.filter((c) => c.cmd.startsWith(input.toLowerCase()));
         if (slashFiltered.length > 0) {
           setSlashIndex((i) => (i + 1) % slashFiltered.length);
           return;
@@ -834,7 +857,9 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
     ? Math.floor((Date.now() - activeSession.runStartedAt) / 1000)
     : 0;
   const elapsedLabel = activeSession.runStartedAt
-    ? (elapsedSec < 60 ? `${elapsedSec}s` : `${Math.floor(elapsedSec / 60)}m${elapsedSec % 60}s`)
+    ? elapsedSec < 60
+      ? `${elapsedSec}s`
+      : `${Math.floor(elapsedSec / 60)}m${elapsedSec % 60}s`
     : "0s";
   const pct = Math.round((activeSession.tokensUsed / activeSession.tokensMax) * 100);
   const tokensLabel = `${fmtTok(activeSession.tokensUsed)}/${fmtTok(activeSession.tokensMax)} (${pct}%)`;
@@ -887,7 +912,11 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
         modeColor: sModeMeta.color,
         agentLabel: s.agent,
         nameColor: isActive ? "#e6e9ef" : "#a8afbc",
-        rowBg: isActive ? "rgba(79,140,255,0.10)" : (group ? `rgba(${group.color},0.07)` : "transparent"),
+        rowBg: isActive
+          ? "rgba(79,140,255,0.10)"
+          : group
+            ? `rgba(${group.color},0.07)`
+            : "transparent",
         isActive,
         canLink: !isActive,
         linkActive,
@@ -963,12 +992,22 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
   return (
     <Box flexDirection="column" height="100%">
       {/* Top bar */}
-      <Box justifyContent="space-between" paddingX={1} borderStyle="single" borderColor="gray" flexShrink={0}>
+      <Box
+        justifyContent="space-between"
+        paddingX={1}
+        borderStyle="single"
+        borderColor="gray"
+        flexShrink={0}
+      >
         <Box>
-          <Text bold color="blue">spiral</Text>
+          <Text bold color="blue">
+            spiral
+          </Text>
           <Text color="gray"> v1.0</Text>
         </Box>
-        <Text color="gray">{sessions.length} sessions · {groupCount} groups sharing context</Text>
+        <Text color="gray">
+          {sessions.length} sessions · {groupCount} groups sharing context
+        </Text>
       </Box>
 
       <Box flexDirection="row" flexGrow={1}>
@@ -997,7 +1036,9 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
                 {sessions
                   .filter((s) => s.groupId === activeSession.groupId && s.id !== activeSession.id)
                   .map((s) => (
-                    <Text key={s.id} color="white">{s.shortName}</Text>
+                    <Text key={s.id} color="white">
+                      {s.shortName}
+                    </Text>
                   ))}
               </Box>
             )}
@@ -1067,7 +1108,9 @@ export function TuiApp({ config, sessionId, initialMessage, initialView }: TuiPr
             sessionName={activeSession.name}
             provider={activeSession.provider}
             tokensLabel={tokensLabel}
-            pluginsLabel={activeSession.plugins.length > 0 ? activeSession.plugins.join(", ") : null}
+            pluginsLabel={
+              activeSession.plugins.length > 0 ? activeSession.plugins.join(", ") : null
+            }
             roleModelsLabel={roleModelsLabel}
             onOpenAgentPlan={() => setOverlay("agentplan")}
           />

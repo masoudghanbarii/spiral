@@ -24,7 +24,7 @@ export type ConfigInit = {
   agentMode?: string;
   permissions?: Record<string, string>;
   profile?: string;
- configFile?: string;
+  configFile?: string;
 };
 
 // Provider name constants
@@ -164,8 +164,7 @@ export class Config {
       this.streamEnabled = data.streamEnabled as boolean;
     if (data.llmProvider && !process.env.SPIRAL_LLM_PROVIDER)
       this.llmProvider = data.llmProvider as string;
-    if (data.agentMode && !process.env.SPIRAL_AGENT_MODE)
-      this.agentMode = data.agentMode as string;
+    if (data.agentMode && !process.env.SPIRAL_AGENT_MODE) this.agentMode = data.agentMode as string;
     if (data.permissions) this.permissions = data.permissions as Record<string, string>;
     if (data.profile) this.profile = data.profile as string;
   }
@@ -204,7 +203,11 @@ export class Config {
       for (const [tool, level] of Object.entries(this.permissions)) {
         if (!validLevels.has(level)) {
           errors.push(
-            'Invalid permission level "' + level + '" for tool "' + tool + '" (expected: allow, ask, deny)',
+            'Invalid permission level "' +
+              level +
+              '" for tool "' +
+              tool +
+              '" (expected: allow, ask, deny)',
           );
         }
       }

@@ -26,13 +26,7 @@ export function ModeOverlay({
   if (!open) return null;
 
   return (
-    <Box
-      position="absolute"
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-      height="100%"
-    >
+    <Box position="absolute" alignItems="center" justifyContent="center" width="100%" height="100%">
       <Box
         flexDirection="column"
         borderStyle="single"
@@ -85,13 +79,7 @@ export function SessionOverlay({
   if (!open) return null;
 
   return (
-    <Box
-      position="absolute"
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-      height="100%"
-    >
+    <Box position="absolute" alignItems="center" justifyContent="center" width="100%" height="100%">
       <Box
         flexDirection="column"
         borderStyle="single"
@@ -142,13 +130,7 @@ export function AgentPlanOverlay({
   if (!open) return null;
 
   return (
-    <Box
-      position="absolute"
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-      height="100%"
-    >
+    <Box position="absolute" alignItems="center" justifyContent="center" width="100%" height="100%">
       <Box
         flexDirection="column"
         borderStyle="single"

@@ -64,10 +64,7 @@ interface CoilLoaderProps {
 }
 
 export function CoilLoader({ frame, size = 9 }: CoilLoaderProps): React.ReactElement {
-  const rows: GridRow[] = useMemo(
-    () => buildCoilGrid(size, frame),
-    [frame, size],
-  );
+  const rows: GridRow[] = useMemo(() => buildCoilGrid(size, frame), [frame, size]);
 
   return (
     <Box flexDirection="column">
@@ -97,10 +94,7 @@ export function StripLoader({
   width = 48,
   color = "yellow",
 }: StripLoaderProps): React.ReactElement {
-  const cells: StripCell[] = useMemo(
-    () => buildStrip(width, color, frame),
-    [frame, width, color],
-  );
+  const cells: StripCell[] = useMemo(() => buildStrip(width, color, frame), [frame, width, color]);
 
   return (
     <Box>

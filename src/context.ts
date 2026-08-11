@@ -102,11 +102,7 @@ export class ContextManager {
   /**
    * Register a summary for a branch of conversation.
    */
-  registerBranchSummary(
-    branchId: string,
-    summary: string,
-    messageRange: [number, number],
-  ): void {
+  registerBranchSummary(branchId: string, summary: string, messageRange: [number, number]): void {
     this.branchSummaries.set(branchId, { branchId, summary, messageRange });
   }
 
@@ -143,7 +139,11 @@ export class ContextManager {
     for (let i = system.length; i < midEnd; i++) {
       const msg = messages[i];
       if (!msg) continue;
-      if (msg.role === "tool" && msg.tool_call_id && this.protectedToolOutputs.has(msg.tool_call_id)) {
+      if (
+        msg.role === "tool" &&
+        msg.tool_call_id &&
+        this.protectedToolOutputs.has(msg.tool_call_id)
+      ) {
         protectedMsgs.push(msg);
       }
     }
@@ -152,9 +152,7 @@ export class ContextManager {
     const branchSummaryMsgs: ChatMessage[] = [];
     if (this.branchSummaries.size > 0) {
       const summaries = [...this.branchSummaries.values()];
-      const summaryText = summaries
-        .map((s) => `[Branch: ${s.branchId}] ${s.summary}`)
-        .join("\n\n");
+      const summaryText = summaries.map((s) => `[Branch: ${s.branchId}] ${s.summary}`).join("\n\n");
       branchSummaryMsgs.push({
         role: "system",
         content: `Branch summaries:\n${summaryText}`,
