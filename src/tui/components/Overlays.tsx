@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Text, useInput } from "ink";
+import { Box, Text } from "ink";
 import type { ModeOption, SessionOption, RoleRow } from "./types.js";
 
 // === Mode Overlay (Shift+Tab) ===
@@ -15,25 +15,21 @@ export function ModeOverlay({
   open,
   options,
   overlayIndex: _overlayIndex,
-  onClose,
+  onClose: _onClose,
 }: ModeOverlayProps): React.ReactElement | null {
-  useInput((_inputChar: string, key: any) => {
-    if (key.escape && open) {
-      onClose();
-    }
-  });
-
   if (!open) return null;
 
   return (
-    <Box position="absolute" alignItems="center" justifyContent="center" width="100%" height="100%">
+    <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
       <Box
         flexDirection="column"
         borderStyle="single"
         borderColor="#3a6bd8"
         paddingX={2}
         paddingY={1}
-        width={50}
+        width="100%"
+        flexGrow={1}
+        overflow="hidden"
       >
         <Box marginBottom={1}>
           <Text color="#7a8494">shift+tab — switch mode</Text>
@@ -68,25 +64,21 @@ export function SessionOverlay({
   open,
   options,
   overlayIndex: _overlayIndex,
-  onClose,
+  onClose: _onClose,
 }: SessionOverlayProps): React.ReactElement | null {
-  useInput((_inputChar: string, key: any) => {
-    if (key.escape && open) {
-      onClose();
-    }
-  });
-
   if (!open) return null;
 
   return (
-    <Box position="absolute" alignItems="center" justifyContent="center" width="100%" height="100%">
+    <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
       <Box
         flexDirection="column"
         borderStyle="single"
         borderColor="#3a6bd8"
         paddingX={2}
         paddingY={1}
-        width={55}
+        width="100%"
+        flexGrow={1}
+        overflow="hidden"
       >
         <Box marginBottom={1}>
           <Text color="#7a8494">tab — switch session</Text>
@@ -119,25 +111,21 @@ interface AgentPlanOverlayProps {
 export function AgentPlanOverlay({
   open,
   roleRows,
-  onClose,
+  onClose: _onClose,
 }: AgentPlanOverlayProps): React.ReactElement | null {
-  useInput((_inputChar: string, key: any) => {
-    if (key.escape && open) {
-      onClose();
-    }
-  });
-
   if (!open) return null;
 
   return (
-    <Box position="absolute" alignItems="center" justifyContent="center" width="100%" height="100%">
+    <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
       <Box
         flexDirection="column"
         borderStyle="single"
         borderColor="#3a6bd8"
         paddingX={2}
         paddingY={1}
-        width={60}
+        width="100%"
+        flexGrow={1}
+        overflow="hidden"
       >
         <Box marginBottom={1}>
           <Text color="#7a8494">/agentplan — model per role</Text>
@@ -152,17 +140,15 @@ export function AgentPlanOverlay({
             <Box marginBottom={1}>
               <Text color="#6b7383">{r.desc}</Text>
             </Box>
-            <Box gap={1} flexWrap="wrap">
+            <Box flexDirection="row" gap={1} flexWrap="wrap">
               {r.models.map((mo) => (
-                <Box
+                <Text
                   key={mo.name}
-                  borderStyle="single"
-                  borderColor={mo.borderColor as any}
-                  paddingX={1}
-                  paddingY={0}
+                  color={mo.borderColor === "#4f8cff" ? "#4f8cff" : "#6b7383"}
+                  bold={mo.borderColor === "#4f8cff"}
                 >
-                  <Text color="#e6e9ef">{mo.name}</Text>
-                </Box>
+                  {mo.name}
+                </Text>
               ))}
             </Box>
           </Box>

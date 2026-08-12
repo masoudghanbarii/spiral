@@ -1067,7 +1067,7 @@ export function TuiApp({
 
   // ── Main view ──
   return (
-    <Box flexDirection="column" height="100%" position="relative">
+    <Box flexDirection="column" height="100%">
       {/* Top bar */}
       <Box
         justifyContent="space-between"
@@ -1121,22 +1121,29 @@ export function TuiApp({
             )}
           </Box>
 
-          {/* Chat log with banners */}
-          <ChatLog
-            entries={activeSession.log}
-            scrollOffset={scrollOffset}
-            isWaitingApproval={activeSession.status === "waiting_approval"}
-            pendingTool={activeSession.pendingTool ?? ""}
-            onApprove={() => approve(activeSessionId)}
-            onDeny={() => deny(activeSessionId)}
-            isError={activeSession.status === "error"}
-            lastError={activeSession.lastError ?? ""}
-            isCompacting={activeSession.status === "compacting"}
-            isRunning={animate && activeSession.status === "running"}
-            statusIcon={spinnerIcon}
-            loadingWord={loadingWord}
-            elapsed={elapsedLabel}
-          />
+          {overlay === "mode" ? (
+            <ModeOverlay open={true} options={modeOptions} overlayIndex={overlayIndex} onClose={() => setOverlay(null)} />
+          ) : overlay === "session" ? (
+            <SessionOverlay open={true} options={sessionOptions} overlayIndex={overlayIndex} onClose={() => setOverlay(null)} />
+          ) : overlay === "agentplan" ? (
+            <AgentPlanOverlay open={true} roleRows={roleRows} onClose={() => setOverlay(null)} />
+          ) : (
+            <ChatLog
+              entries={activeSession.log}
+              scrollOffset={scrollOffset}
+              isWaitingApproval={activeSession.status === "waiting_approval"}
+              pendingTool={activeSession.pendingTool ?? ""}
+              onApprove={() => approve(activeSessionId)}
+              onDeny={() => deny(activeSessionId)}
+              isError={activeSession.status === "error"}
+              lastError={activeSession.lastError ?? ""}
+              isCompacting={activeSession.status === "compacting"}
+              isRunning={animate && activeSession.status === "running"}
+              statusIcon={spinnerIcon}
+              loadingWord={loadingWord}
+              elapsed={elapsedLabel}
+            />
+          )}
 
           {/* Input bar */}
           <InputBar
@@ -1149,9 +1156,9 @@ export function TuiApp({
                 setHistoryIdx(-1);
               }
             }}
-            disabled={animate}
-            placeholder={animate ? "agent is busy…" : "send a message"}
-            borderColor={animate ? "yellow" : "blue"}
+            disabled={animate || overlay !== null}
+            placeholder={animate ? "agent is busy…" : overlay ? "esc to close overlay" : "send a message"}
+            borderColor={animate ? "yellow" : overlay ? "magenta" : "blue"}
             model={activeSession.model}
             modeLabel={modeMeta.label}
             modeColor={modeMeta.color}
@@ -1194,26 +1201,6 @@ export function TuiApp({
         </Box>
       </Box>
 
-      {/* Overlays */}
-      <ModeOverlay
-        open={overlay === "mode"}
-        options={modeOptions}
-        overlayIndex={overlayIndex}
-        onClose={() => setOverlay(null)}
-      />
-
-      <SessionOverlay
-        open={overlay === "session"}
-        options={sessionOptions}
-        overlayIndex={overlayIndex}
-        onClose={() => setOverlay(null)}
-      />
-
-      <AgentPlanOverlay
-        open={overlay === "agentplan"}
-        roleRows={roleRows}
-        onClose={() => setOverlay(null)}
-      />
     </Box>
   );
 }
