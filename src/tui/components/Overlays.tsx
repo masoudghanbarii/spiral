@@ -31,15 +31,15 @@ export function ModeOverlay({
         flexDirection="column"
         borderStyle="single"
         borderColor="#3a6bd8"
-        paddingX={14}
-        paddingY={14}
-        width={340}
+        paddingX={2}
+        paddingY={1}
+        width={50}
       >
-        <Box marginBottom={10}>
+        <Box marginBottom={1}>
           <Text color="#7a8494">shift+tab — switch mode</Text>
         </Box>
         {options.map((m) => (
-          <Box key={m.key} paddingX={8} paddingY={6} marginBottom={2}>
+          <Box key={m.key} paddingX={1} paddingY={0} marginBottom={1}>
             <Box>
               <Text bold color={m.color as any}>
                 {m.label}
@@ -84,15 +84,15 @@ export function SessionOverlay({
         flexDirection="column"
         borderStyle="single"
         borderColor="#3a6bd8"
-        paddingX={14}
-        paddingY={14}
-        width={380}
+        paddingX={2}
+        paddingY={1}
+        width={55}
       >
-        <Box marginBottom={10}>
+        <Box marginBottom={1}>
           <Text color="#7a8494">tab — switch session</Text>
         </Box>
         {options.map((a) => (
-          <Box key={a.key} paddingX={8} paddingY={6} marginBottom={2}>
+          <Box key={a.key} paddingX={1} paddingY={0} marginBottom={1}>
             <Box>
               <Text bold color={a.color as any}>
                 {a.label}
@@ -135,31 +135,31 @@ export function AgentPlanOverlay({
         flexDirection="column"
         borderStyle="single"
         borderColor="#3a6bd8"
-        paddingX={16}
-        paddingY={16}
-        width={460}
+        paddingX={2}
+        paddingY={1}
+        width={60}
       >
-        <Box marginBottom={12}>
+        <Box marginBottom={1}>
           <Text color="#7a8494">/agentplan — model per role</Text>
         </Box>
         {roleRows.map((r) => (
-          <Box key={r.role} flexDirection="column" marginBottom={12}>
+          <Box key={r.role} flexDirection="column" marginBottom={0}>
             <Box>
               <Text bold color="#e6e9ef">
                 {r.label}
               </Text>
             </Box>
-            <Box marginBottom={6}>
+            <Box marginBottom={1}>
               <Text color="#6b7383">{r.desc}</Text>
             </Box>
-            <Box gap={6} flexWrap="wrap">
+            <Box gap={1} flexWrap="wrap">
               {r.models.map((mo) => (
                 <Box
                   key={mo.name}
                   borderStyle="single"
                   borderColor={mo.borderColor as any}
-                  paddingX={9}
-                  paddingY={4}
+                  paddingX={1}
+                  paddingY={0}
                 >
                   <Text color="#e6e9ef">{mo.name}</Text>
                 </Box>

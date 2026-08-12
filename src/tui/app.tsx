@@ -1043,7 +1043,7 @@ export function TuiApp({
 
   // ── Main view ──
   return (
-    <Box flexDirection="column" height="100%">
+    <Box flexDirection="column" height="100%" position="relative">
       {/* Top bar */}
       <Box
         justifyContent="space-between"

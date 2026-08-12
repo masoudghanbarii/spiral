@@ -35,8 +35,8 @@ export function ChatLog({
 }: ChatLogProps): React.ReactElement {
   const { stdout } = useStdout();
   const termHeight = stdout?.rows ?? 24;
-  // Reserve rows for: top bar (3) + session header (3) + input bar (5) + status bar (2) = 13
-  const availableHeight = Math.max(termHeight - 13, 8);
+  const reservedRows = 3 + 5 + 7 + 3; // topBar + sessionHeader(max) + inputBar(min+smallBuffer) + statusBar
+  const availableHeight = Math.max(termHeight - reservedRows, 6);
   const [internalOffset, setInternalOffset] = useState(0);
 
   // Auto-scroll to bottom when new entries arrive
@@ -127,7 +127,7 @@ function EntryView({ entry }: { entry: LogEntry }): React.ReactElement {
         <Text bold color="cyan">
           {"> "}
         </Text>
-        <Text>{entry.text}</Text>
+        <Text wrap="truncate-end">{entry.text?.replace(/\n/g, " ") ?? ""}</Text>
       </Box>
     );
   }
@@ -137,7 +137,7 @@ function EntryView({ entry }: { entry: LogEntry }): React.ReactElement {
         <Text bold color="green">
           {"✦ "}
         </Text>
-        <Text>{entry.text}</Text>
+        <Text wrap="truncate-end">{entry.text?.replace(/\n/g, " ") ?? ""}</Text>
       </Box>
     );
   }
@@ -155,7 +155,7 @@ function EntryView({ entry }: { entry: LogEntry }): React.ReactElement {
   // system
   return (
     <Box>
-      <Text color="gray">{entry.text}</Text>
+      <Text wrap="truncate-end">{entry.text?.replace(/\n/g, " ") ?? ""}</Text>
     </Box>
   );
 }
