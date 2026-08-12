@@ -385,13 +385,25 @@ export function TuiApp({
             }
           })();
           return true;
-        case "new":
-          addLogEntry(sid, {
+        case "new": {
+          const newId = `s${sessions.length + 1}`;
+          const newSession = createSession(
+            newId,
+            "default",
+            activeSession.model,
+            activeSession.provider,
+            activeSession.mode,
+            activeSession.agent,
+            activeSession.tokensMax,
+          );
+          setSessions((prev) => [...prev, newSession]);
+          setActiveSessionId(newId);
+          addLogEntry(newId, {
             kind: "system",
-            text: "Starting fresh session. Previous conversation kept in history.",
+            text: "New session started. Previous session kept in sidebar.",
           });
-          updateSession(sid, { messages: [] });
           return true;
+        }
         case "reset":
           updateSession(sid, { messages: [], log: [], tokenCount: 0 });
           addLogEntry(sid, { kind: "system", text: "Session reset." });
