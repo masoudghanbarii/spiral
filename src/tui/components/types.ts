@@ -172,9 +172,22 @@ export const ROLE_ORDER = ["plan", "build", "judge"];
 export const SLASH_COMMANDS = [
   { cmd: "/agentplan", desc: "Set model per role — plan / build / judge" },
   { cmd: "/mode", desc: "Switch agent mode" },
+  { cmd: "/model", desc: "Switch LLM model" },
+  { cmd: "/new", desc: "Start a fresh session" },
+  { cmd: "/newsession", desc: "Start a fresh session (alias for /new)" },
+  { cmd: "/sessions", desc: "List all sessions" },
   { cmd: "/status", desc: "Print session status" },
   { cmd: "/clear", desc: "Clear this session's log" },
+  { cmd: "/reset", desc: "Reset current session state" },
+  { cmd: "/abort", desc: "Abort the active run" },
+  { cmd: "/stop", desc: "Stop the active run" },
+  { cmd: "/usage", desc: "Show token usage" },
+  { cmd: "/verbose", desc: "Toggle verbose tool output" },
+  { cmd: "/tools", desc: "List available tools" },
+  { cmd: "/history", desc: "Show conversation history length" },
   { cmd: "/help", desc: "List all commands" },
+  { cmd: "/exit", desc: "Exit Spiral TUI" },
+  { cmd: "/quit", desc: "Exit Spiral TUI" },
 ];
 
 export const BRAILLE = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
