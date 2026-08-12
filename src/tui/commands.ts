@@ -39,6 +39,7 @@ const COMMAND_MAP: Record<string, SlashCommandName> = {
   "/abort": "abort",
   "/stop": "stop",
   "/new": "new",
+  "/newsession": "new",
   "/status": "status",
   "/usage": "usage",
   "/verbose": "verbose",
@@ -72,6 +73,7 @@ Core:
   /sessions          List all sessions
   /session <id>      Switch to a specific session
   /new               Start a fresh session
+  /newsession        Start a fresh session (alias for /new)
   /reset             Reset current session state
   /abort             Abort the active run (Esc also works)
   /stop              Stop the active run

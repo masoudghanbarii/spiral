@@ -108,7 +108,7 @@ export function TuiApp({
   // ── Sessions ──
   const initialSession = useMemo(() => {
     const id = sessionId ?? "s1";
-    const name = sessionId ?? "default";
+    const name = "#1";
     return createSession(
       id,
       name,
@@ -386,10 +386,11 @@ export function TuiApp({
           })();
           return true;
         case "new": {
-          const newId = `s${sessions.length + 1}`;
+          const sessionNum = sessions.length + 1;
+          const newId = `s${sessionNum}`;
           const newSession = createSession(
             newId,
-            "default",
+            `#${sessionNum}`,
             activeSession.model,
             activeSession.provider,
             activeSession.mode,
@@ -400,7 +401,7 @@ export function TuiApp({
           setActiveSessionId(newId);
           addLogEntry(newId, {
             kind: "system",
-            text: "New session started. Previous session kept in sidebar.",
+            text: `Session #${sessionNum} created.`,
           });
           return true;
         }
@@ -676,9 +677,9 @@ export function TuiApp({
       if (!sess) return;
 
       // Derive session name from first user message
-      if (sess.messages.length === 0 && sess.name === "default") {
+      if (sess.messages.length === 0 && /^#\d+$/.test(sess.name)) {
         const preview = trimmed.length > 40 ? trimmed.slice(0, 37) + "…" : trimmed;
-        const newName = `#1 - ${preview}`;
+        const newName = `${sess.name} - ${preview}`;
         updateSession(sid, { name: newName, shortName: newName.length > 20 ? newName.slice(0, 17) + "…" : newName });
       }
 

@@ -1,9 +1,9 @@
 # Agent Harness Master Feature Comparison
 
-**Harnesses compared:** OpenClaw · OpenCode · Oh My Pi (OMP) · Spiral
+**Harnesses compared:** jcode · OpenClaw · OpenCode · Oh My Pi (OMP) · Spiral
 
-Merged from source-level analysis of all four repositories + prior feature comparison.
-Last updated: 2026-08-11
+Merged from source-level analysis of all five repositories + prior feature comparison.
+Last updated: 2026-08-12
 
 Legend: ☑️ available · ➖ not available · 🔶 partial / experimental
 
@@ -11,686 +11,573 @@ Legend: ☑️ available · ➖ not available · 🔶 partial / experimental
 
 ## 1. CLI Commands
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Interactive TUI (default) | ☑️ | ☑️ | ☑️ | ☑️ |
-| One-shot run (`run [msg]`) | ☑️ | ☑️ (`agent exec`) | ☑️ (`--print`) | ☑️ (`spiral run`) |
-| Autonomous batch mode | ☑️ | ➖ | ➖ | ☑️ (`spiral run`) |
-| Forever/continuous loop | ➖ | ➖ | ➖ | ☑️ (`spiral forever`) |
-| Init from ADR | ➖ | ➖ | ➖ | ☑️ (`spiral init`) |
-| Reset state | ☑️ (`uninstall`) | ☑️ | ☑️ (`gc`) | ☑️ (`spiral reset`) |
-| Session list/delete | ☑️ | ☑️ | ☑️ | ☑️ (`spiral sessions`) |
-| Watch/live dashboard | ➖ | ☑️ (`dashboard`) | ☑️ (`stats`) | ☑️ (`spiral watch`) |
-| Serve/headless HTTP | ☑️ (`serve`) | ☑️ (`gateway run`) | ☑️ (`rpc`) | ➖ |
-| Web UI | ☑️ (`web`) | ☑️ (Control UI) | ☑️ (`rpc-ui`) | ➖ |
-| Attach to running server | ☑️ (`attach`) | ☑️ | ➖ | ➖ |
-| ACP server mode | ☑️ (`acp`) | ☑️ | ☑️ (`acp`) | ➖ |
-| Model listing | ☑️ (`models`) | ☑️ (`models list`) | ☑️ (`models`) | ➖ |
-| Provider auth/login | ☑️ (`providers login`) | ☑️ | ☑️ (`/login`) | ➖ |
-| Stats/cost report | ☑️ (`stats`) | ☑️ (`usage-cost`) | ☑️ (`stats`, `usage`) | ➖ |
-| Plugin install/manage | ☑️ (`plugin`) | ☑️ (`plugins`) | ☑️ (`plugin`) | ➖ |
-| MCP server manage | ☑️ (`mcp add/list/auth`) | ☑️ (`mcp serve/add`) | ☑️ (`/mcp`) | ➖ |
-| Agent create/manage | ☑️ (`agent create`) | ☑️ (`agents`) | ☑️ (`agents unpack`) | ➖ |
-| Session export/import | ☑️ (`export`, `import`) | ☑️ (`export-trajectory`) | ☑️ (`share`) | ➖ |
-| Self-upgrade | ☑️ (`upgrade`) | ☑️ (`update`) | ☑️ (`update`) | ➖ |
-| Shell completion | ☑️ | ☑️ (`completion`) | ☑️ (`completions`) | ➖ |
-| Debug/diagnostics | ☑️ (`debug`) | ☑️ (`doctor`) | ☑️ (`debug`) | ➖ |
-| Config inspect/edit | ☑️ | ☑️ (`config get/set`) | ☑️ (`config`) | ☑️ (env vars) |
-| Git PR checkout + run | ☑️ (`pr`) | ➖ | ☑️ (`gh-pr-checkout`) | ➖ |
-| GitHub bot mode | ☑️ (`github`) | ➖ | ➖ | ➖ |
-| Cron/automations | ➖ | ☑️ (`cron`) | ➖ | ➖ |
-| Backup/restore | ➖ | ☑️ (`backup`) | ☑️ (`gc`) | ➖ |
-| Fleet/multi-tenant | ➖ | ☑️ (`fleet`) | ➖ | ➖ |
-| Doctor/repair | ☑️ (`debug`) | ☑️ (`doctor --fix`) | ☑️ (`doctor`) | ➖ |
-| DB query shell | ☑️ (`db`) | ➖ | ➖ | ➖ |
-| DNS commands | ➖ | ☑️ (`dns`) | ➖ | ➖ |
-| Hooks management | ➖ | ☑️ (`hooks`) | ➖ | ➖ |
-| Worktree management | ☑️ (experimental) | ☑️ (`worktrees`) | ☑️ (`omp wt`) | ➖ |
-| Proxy capture CLI | ➖ | ☑️ (`proxy`) | ➖ | ➖ |
-| Users management | ➖ | ☑️ (`users`) | ➖ | ➖ |
-| Capability listing | ➖ | ☑️ (`capability`) | ➖ | ➖ |
-| Docs commands | ➖ | ☑️ (`docs`) | ➖ | ➖ |
-| System info | ➖ | ☑️ (`system`) | ➖ | ➖ |
-| Generate OpenAPI spec | ☑️ (`generate`) | ➖ | ➖ | ➖ |
-| Account/org management | ☑️ (`account`) | ➖ | ➖ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Interactive TUI (default) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| One-shot run (`run [msg]`) | ☑️ (`jcode run`) | ☑️ | ☑️ (`agent exec`) | ☑️ (`--print`) | ☑️ (`spiral run`) |
+| Autonomous batch mode | ☑️ (`jcode run`) | ☑️ | ➖ | ➖ | ☑️ (`spiral run`) |
+| Forever/continuous loop | ☑️ (`ambient`, `/overnight`) | ➖ | ➖ | ☑️ (`/loop`) | ☑️ (`spiral forever`) |
+| Init from ADR | ➖ | ➖ | ➖ | ➖ | ☑️ (`spiral init`) |
+| Reset state | ☑️ (`uninstall --purge`) | ☑️ (`uninstall`) | ☑️ | ☑️ (`gc`) | ☑️ (`spiral reset`) |
+| Session list/delete | ☑️ (`/resume`, `/active`) | ☑️ | ☑️ | ☑️ | ☑️ (`spiral sessions`) |
+| Watch/live dashboard | ☑️ (`/productivity`, menubar) | ➖ | ☑️ (`dashboard`) | ☑️ (`stats`) | ☑️ (`spiral watch`) |
+| Serve/headless HTTP | ☑️ (`serve`, `api-bridge`) | ☑️ (`serve`) | ☑️ (`gateway run`) | ☑️ (`rpc`) | ➖ |
+| Web UI | ➖ (desktop app in progress) | ☑️ (`web`) | ☑️ (Control UI) | ☑️ (`rpc-ui`) | ➖ |
+| Attach to running server | ☑️ (`connect`) | ☑️ (`attach`) | ☑️ | ➖ | ➖ |
+| ACP server mode | ☑️ (`acp`) | ☑️ (`acp`) | ☑️ | ☑️ (`acp`) | ➖ |
+| Model listing | ☑️ (`model list`) | ☑️ (`models`) | ☑️ (`models list`) | ☑️ (`models`) | ➖ |
+| Provider auth/login | ☑️ (`login`, `auth`, `provider`) | ☑️ (`providers login`) | ☑️ | ☑️ (`/login`) | ➖ |
+| Stats/cost report | ☑️ (`usage`, `provider-test-coverage`) | ☑️ (`stats`) | ☑️ (`usage-cost`) | ☑️ (`stats`, `usage`) | ➖ |
+| Plugin install/manage | ➖ (self-dev instead) | ☑️ (`plugin`) | ☑️ (`plugins`) | ☑️ (`plugin`) | ➖ |
+| MCP server manage | ☑️ (`mcp` tool, `mcp.json`) | ☑️ (`mcp add/list/auth`) | ☑️ (`mcp serve/add`) | ☑️ (`/mcp`) | ➖ |
+| Agent create/manage | ☑️ (`swarm`, `/agents`) | ☑️ (`agent create`) | ☑️ (`agents`) | ☑️ (`agents unpack`) | ➖ |
+| Session export/import | ☑️ (`memory export`, `replay`) | ☑️ (`export`, `import`) | ☑️ (`export-trajectory`) | ☑️ (`share`) | ➖ |
+| Self-upgrade | ☑️ (`update`, `server reload`) | ☑️ (`upgrade`) | ☑️ (`update`) | ☑️ (`update`) | ➖ |
+| Shell completion | ➖ | ☑️ | ☑️ (`completion`) | ☑️ (`completions`) | ➖ |
+| Debug/diagnostics | ☑️ (`debug`, `auth doctor`) | ☑️ (`debug`) | ☑️ (`doctor`) | ☑️ (`debug`) | ➖ |
+| Config inspect/edit | ☑️ (`/config`, `config.toml`) | ☑️ | ☑️ (`config get/set`) | ☑️ (`config`) | ☑️ (env vars) |
+| Git PR checkout + run | ➖ | ☑️ (`pr`) | ➖ | ☑️ (`gh-pr-checkout`) | ➖ |
+| GitHub bot mode | ➖ | ☑️ (`github`) | ➖ | ➖ | ➖ |
+| Cron/automations | ☑️ (`schedule` tool, `/overnight`) | ➖ | ☑️ (`cron`) | ☑️ (`/queue`) | ➖ |
+| Backup/restore | ☑️ (`memory export/import`) | ➖ | ☑️ (`backup`) | ☑️ (`gc`) | ➖ |
+| Fleet/multi-tenant | ☑️ (swarm multi-agent) | ➖ | ☑️ (`fleet`) | ➖ | ➖ |
+| Doctor/repair | ☑️ (`provider-doctor`, `auth doctor`) | ☑️ (`debug`) | ☑️ (`doctor --fix`) | ☑️ (`doctor`) | ➖ |
+| DB query shell | ➖ | ☑️ (`db`) | ➖ | ➖ | ➖ |
+| DNS commands | ➖ | ➖ | ☑️ (`dns`) | ➖ | ➖ |
+| Hooks management | ☑️ (`[hooks]` config) | ➖ | ☑️ (`hooks`) | ☑️ (hooks) | ➖ |
+| Worktree management | ☑️ (swarm worktrees) | ☑️ (experimental) | ☑️ (`worktrees`) | ☑️ (`omp wt`) | ➖ |
+| Proxy capture CLI | ➖ | ➖ | ☑️ (`proxy`) | ➖ | ➖ |
+| Users management | ➖ | ➖ | ☑️ (`users`) | ➖ | ➖ |
+| Capability listing | ➖ | ➖ | ☑️ (`capability`) | ➖ | ➖ |
+| Docs commands | ☑️ (`jcode_docs` tool) | ➖ | ☑️ (`docs`) | ➖ | ➖ |
+| System info | ☑️ (`version`) | ➖ | ☑️ (`system`) | ➖ | ➖ |
+| Generate OpenAPI spec | ➖ | ☑️ (`generate`) | ➖ | ➖ | ➖ |
+| Account/org management | ☑️ (`account`, multi-account) | ☑️ (`account`) | ➖ | ➖ | ➖ |
+| Voice dictation | ☑️ (`dictate`, `transcript`) | ➖ | ➖ | ➖ | ➖ |
+| Replay session/video | ☑️ (`replay`) | ➖ | ➖ | ➖ | ➖ |
+| Pairing code (remote client) | ☑️ (`pair`) | ➖ | ☑️ (pairing) | ➖ | ➖ |
+| Hotkey/setup | ☑️ (`setup-hotkey`, `setup-launcher`) | ➖ | ☑️ | ➖ | ➖ |
+| Cloud session sync | ☑️ (`cloud sessions`) | ➖ | ➖ | ➖ | ➖ |
 
 ## 2. Agent Modes
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Normal (ask approval) | ☑️ | ☑️ | ☑️ | ☑️ |
-| Plan mode (read-only) | ☑️ (experimental) | ➖ | ☑️ (`--plan`) | ☑️ (`--behavior plan`) |
-| Bypass permissions | ☑️ (`--yolo`) | ☑️ (`bypassPermissions`) | ☑️ (`--yolo`) | ☑️ (`--behavior bypass`) |
-| Safe mode (read-only) | ➖ | ➖ | ➖ | ☑️ (`--behavior safe`) |
-| Interactive mode | ☑️ (TUI) | ☑️ (TUI) | ☑️ (TUI) | ☑️ (`--behavior interactive`) |
-| Custom agents | ☑️ (`agent create`) | ☑️ (agent config) | ☑️ (agent plugins) | ➖ |
-| Subagent types | ☑️ (explore, general) | ☑️ (subagent spawn) | ☑️ (scout, designer, reviewer, etc.) | ➖ |
-| Goal mode | ➖ | ☑️ (`goal` tool) | ☑️ (`/goal`) | ➖ |
-| Prewalk mode | ➖ | ➖ | ☑️ (`--prewalk`) | ➖ |
-| Live/voice mode | ➖ | ➖ | ☑️ (Codex live) | ➖ |
-| Cleanse/diagnostic loop | ➖ | ➖ | ☑️ (`omp cleanse`) | ➖ |
-| Vibe mode (worker session) | ➖ | ➖ | ☑️ (`/vibe`) | ➖ |
-| Orchestrate keyword | ➖ | ➖ | ☑️ (typing "orchestrate") | ➖ |
-| Loop mode | ➖ | ➖ | ☑️ (`/loop`) | ☑️ (`spiral forever`) |
-| Queue mode | ➖ | ➖ | ☑️ (`/queue`) | ➖ |
-| Fast mode | ➖ | ➖ | ☑️ (`/fast`) | ➖ |
-| Computer use mode | ➖ | ➖ | ☑️ (`/computer`) | ➖ |
-| Vision mode | ➖ | ➖ | ☑️ (`/vision`) | ➖ |
-| Plan→Build transition | ☑️ (plan→build agent) | ➖ | ☑️ (plan handoff) | ➖ |
-| Magic keywords | ➖ | ➖ | ☑️ (orchestrate, ultrathink) | ➖ |
-| RPC mode | ➖ | ➖ | ☑️ (`rpc`) | ➖ |
-| Agent generation from description | ☑️ (LLM-generated) | ➖ | ➖ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Normal (ask approval) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| Plan mode (read-only) | ☑️ (`/plan` proposal) | ☑️ (experimental) | ➖ | ☑️ (`--plan`) | ☑️ (`--behavior plan`) |
+| Bypass permissions | ☑️ | ☑️ (`--yolo`) | ☑️ (`bypassPermissions`) | ☑️ (`--yolo`) | ☑️ (`--behavior bypass`) |
+| Safe mode (read-only) | 🔶 (safety tiers) | ➖ | ➖ | ➖ | ☑️ (`--behavior safe`) |
+| Interactive mode | ☑️ (TUI) | ☑️ (TUI) | ☑️ (TUI) | ☑️ (TUI) | ☑️ (`--behavior interactive`) |
+| Custom agents | ☑️ (`/agents` role models) | ☑️ (`agent create`) | ☑️ (agent config) | ☑️ (agent plugins) | ➖ |
+| Subagent types | ☑️ (`subagent`, swarm roles) | ☑️ (explore, general) | ☑️ (subagent spawn) | ☑️ (scout, designer, reviewer, etc.) | ➖ |
+| Goal mode | ☑️ (`goal`/`initiative`) | ➖ | ☑️ (`goal` tool) | ☑️ (`/goal`) | ➖ |
+| Swarm mode | ☑️ (`/swarm`) | ➖ | ➖ | ☑️ (`/vibe`) | ➖ |
+| Ambient (always-on) mode | ☑️ (`ambient`) | ➖ | ☑️ (channels) | ☑️ (autoresearch) | ➖ |
+| Self-dev mode | ☑️ (`self-dev`) | ➖ | ➖ | ➖ | ➖ |
+| Plan→Build transition | 🔶 (`/plan`) | ☑️ (plan→build agent) | ➖ | ☑️ (plan handoff) | ➖ |
+| Agent generation from description | ➖ | ☑️ (LLM-generated) | ➖ | ➖ | ➖ |
+| Fast mode | ☑️ (`/fast`) | ➖ | ➖ | ☑️ (`/fast`) | ➖ |
+| Overnight (supervised) mode | ☑️ (`/overnight`) | ➖ | ➖ | ➖ | ➖ |
+| Improve/refactor loops | ☑️ (`/improve`, `/refactor`) | ➖ | ➖ | ➖ | ➖ |
 
 ## 3. Built-in Tools
 
-| Tool | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|------|:--------:|:--------:|:-------:|:------:|
-| read_file (offset/limit) | ☑️ | ☑️ | ☑️ (ranges, binary, archives, notebooks) | ☑️ |
-| write_file | ☑️ (LSP diagnostics trigger) | ☑️ | ☑️ (hashline, LSP writethrough) | ☑️ |
-| edit_file (search/replace) | ☑️ (fuzzy match) | ☑️ (exact replace) | ☑️ (block-replace, streaming preview) | ☑️ |
-| apply_patch (unified diff) | ☑️ (GPT models) | ☑️ | ☑️ (apply_patch mode) | ➖ |
-| grep | ☑️ (ripgrep) | ☑️ | ☑️ (native Rust) | ☑️ |
-| glob | ☑️ (ripgrep) | ☑️ | ☑️ (native Rust) | ☑️ |
-| bash/shell | ☑️ (tree-sitter parsed) | ☑️ (brush shell) | ☑️ (embedded brush, sixel) | ☑️ (`run_command`) |
-| list_files | ☑️ (`ls`) | ☑️ (`ls`) | ☑️ | ☑️ |
-| run_tests | ➖ | ➖ | ➖ | ☑️ |
-| run_lint | ➖ | ➖ | ➖ | ☑️ |
-| read_adr | ➖ | ➖ | ➖ | ☑️ |
-| mark_adr_done | ➖ | ➖ | ➖ | ☑️ |
-| find_skills / skill | ☑️ (`skill`) | ☑️ (`skills search`) | ☑️ (`learn`) | ☑️ (find_skills stub) |
-| webfetch | ☑️ | ☑️ (`web_fetch`) | ☑️ (`fetch`) | ➖ |
-| websearch | ☑️ (Exa/Parallel) | ☑️ (Brave/Exa/Tavily/etc.) | ☑️ (20+ providers) | ➖ |
-| task (subagent spawn) | ☑️ | ☑️ (`subagents`) | ☑️ (`task`) | 🔶 (SubagentManager) |
-| todo | ☑️ | ➖ | ☑️ (phases, blocking) | ➖ |
-| question (ask user) | ☑️ (multiple choice) | ☑️ (`ask_user`) | ☑️ (multi-select, recommended) | ➖ |
-| lsp | ☑️ (experimental) | ➖ | ☑️ (mux/daemon, writethrough) | ➖ |
-| browser automation | ➖ | ☑️ (`browser`) | ☑️ (CMUX, ARIA, relay) | ➖ |
-| computer use (desktop) | ➖ | ☑️ (`computer`) | ☑️ (native Rust, macOS/Win/Linux) | ➖ |
-| image generation | ➖ | ☑️ | ☑️ (Gemini/OpenAI/xAI) | ➖ |
-| image inspection | ☑️ (read) | ☑️ | ☑️ (`inspect_image`) | ➖ |
-| eval (code execution) | ☑️ (`execute` codemode) | ➖ | ☑️ (Python/JS/Ruby/Julia kernels) | ➖ |
-| debug (DAP) | ➖ | ➖ | ☑️ (breakpoints, profiling) | ➖ |
-| memory recall | ➖ | ☑️ (memory search) | ☑️ (Hindsight/Mnemopi) | ➖ |
-| memory retain | ➖ | ☑️ (memory files) | ☑️ | ➖ |
-| memory reflect | ➖ | ➖ | ☑️ | ➖ |
-| memory edit | ➖ | ➖ | ☑️ (Mnemopi) | ➖ |
-| learn (autolearn skills) | ➖ | ➖ | ☑️ | ➖ |
-| manage_skill | ➖ | ➖ | ☑️ | ➖ |
-| git_status | ☑️ (git service) | ➖ (via bash) | ➖ (via bash) | ☑️ |
-| git_diff | ☑️ | ➖ | ➖ | ☑️ |
-| git_add | ☑️ | ➖ | ➖ | ☑️ |
-| git_commit | ☑️ | ➖ | ☑️ (`omp commit`) | ☑️ |
-| git_branch | ☑️ | ➖ | ➖ | ☑️ |
-| git_log | ☑️ | ➖ | ➖ | ☑️ |
-| ast_grep (structural search) | ➖ | ➖ | ☑️ (native Rust) | ➖ |
-| ast_edit (AST editing) | ➖ | ➖ | ☑️ | ➖ |
-| checkpoint/rewind | ➖ | ➖ | ☑️ | ➖ |
-| security_scan | ➖ | ➖ | ☑️ (SARIF, cloud import) | ➖ |
-| code review | ☑️ (`/review`) | ➖ | ☑️ (P0–P3 findings) | ➖ |
-| music generation | ➖ | ☑️ | ➖ | ➖ |
-| video generation | ➖ | ☑️ | ➖ | ➖ |
-| TTS (text-to-speech) | ➖ | ☑️ (provider-backed) | ☑️ (Kokoro local, xAI Grok) | ➖ |
-| STT (speech-to-text) | ➖ | ☑️ (Deepgram) | ☑️ (Sherpa runtime) | ➖ |
-| PDF extraction | ➖ | ☑️ (`pdf`) | ☑️ (read PDF + Markit) | ➖ |
-| hub (agent coordination) | ➖ | ➖ | ☑️ (IRC bus, process supervision) | ➖ |
-| vibe (multi-agent workers) | ➖ | ➖ | ☑️ (spawn/send/wait) | ➖ |
-| goal (persistent goals) | ➖ | ➖ | ☑️ (budgeted) | ➖ |
-| resolve/reject/propose | ➖ | ➖ | ☑️ (staged finalization) | ➖ |
-| yield (subagent result) | ➖ | ➖ | ☑️ (schema validation) | ➖ |
-| plan_exit | ☑️ | ➖ | ➖ | ➖ |
-| canvas widget | ➖ | ☑️ (inline HTML) | ➖ | ➖ |
+| Tool | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|------|:-----:|:--------:|:--------:|:-------:|:------:|
+| read_file (offset/limit) | ☑️ (`read`, text/image/PDF) | ☑️ | ☑️ | ☑️ (ranges, binary, archives, notebooks) | ☑️ |
+| write_file | ☑️ (`write`) | ☑️ (LSP diagnostics trigger) | ☑️ | ☑️ (hashline, LSP writethrough) | ☑️ |
+| edit_file (search/replace) | ☑️ (`edit`) | ☑️ (fuzzy match) | ☑️ (exact replace) | ☑️ (block-replace, streaming preview) | ☑️ |
+| multiedit (multi-edit one file) | ☑️ (`multiedit`) | ➖ | ➖ | ➖ | ➖ |
+| apply_patch (unified diff) | ☑️ (`patch`, `apply_patch`) | ☑️ (GPT models) | ☑️ | ☑️ (apply_patch mode) | ➖ |
+| grep | ☑️ (`agentgrep` w/ structure) | ☑️ (ripgrep) | ☑️ | ☑️ (native Rust) | ☑️ |
+| glob | ☑️ (`agentgrep` files) | ☑️ (ripgrep) | ☑️ | ☑️ (native Rust) | ☑️ |
+| bash/shell | ☑️ (`bash`, destructive gate) | ☑️ (tree-sitter parsed) | ☑️ (brush shell) | ☑️ (embedded brush, sixel) | ☑️ (`run_command`) |
+| list_files | ☑️ (`ls`) | ☑️ (`ls`) | ☑️ (`ls`) | ☑️ | ☑️ |
+| run_tests | ➖ (via bash) | ➖ | ➖ | ➖ | ☑️ |
+| run_lint | ➖ (via bash) | ➖ | ➖ | ➖ | ☑️ |
+| read_adr | ➖ | ➖ | ➖ | ➖ | ☑️ |
+| mark_adr_done | ➖ | ➖ | ➖ | ➖ | ☑️ |
+| find_skills / skill | ☑️ (`skill_manage`) | ☑️ (`skill`) | ☑️ (`skills search`) | ☑️ (`learn`) | 🔶 (find_skills stub) |
+| webfetch | ☑️ (`webfetch`) | ☑️ | ☑️ (`web_fetch`) | ☑️ (`fetch`) | ➖ |
+| websearch | ☑️ (`websearch`) | ☑️ (Exa/Parallel) | ☑️ (Brave/Exa/Tavily/etc.) | ☑️ (20+ providers) | ➖ |
+| task (subagent spawn) | ☑️ (`subagent`) | ☑️ | ☑️ (`subagents`) | ☑️ (`task`) | 🔶 (SubagentManager) |
+| todo | ☑️ (`todo`) | ☑️ | ➖ | ☑️ (phases, blocking) | ➖ |
+| question (ask user) | ☑️ (`request_permission`) | ☑️ (multiple choice) | ☑️ (`ask_user`) | ☑️ (multi-select, recommended) | ➖ |
+| lsp | ➖ | ☑️ (experimental) | ➖ | ☑️ (mux/daemon, writethrough) | ➖ |
+| browser automation | ☑️ (`browser`, Firefox bridge) | ➖ | ☑️ (`browser`) | ☑️ (CMUX, ARIA, relay) | ➖ |
+| computer use (desktop) | ☑️ (`macos_computer_use`) | ➖ | ☑️ (`computer`) | ☑️ (native Rust, macOS/Win/Linux) | ➖ |
+| image generation | ➖ | ➖ | ☑️ | ☑️ (Gemini/OpenAI/xAI) | ➖ |
+| image inspection | ☑️ (`read`) | ☑️ (read) | ☑️ | ☑️ (`inspect_image`) | ➖ |
+| eval (code execution) | 🔶 (`bash`) | ☑️ (`execute` codemode) | ➖ | ☑️ (Python/JS/Ruby/Julia kernels) | ➖ |
+| memory recall | ☑️ (`memory`, auto-embedding) | ➖ | ☑️ (memory search) | ☑️ (Hindsight/Mnemopi) | ➖ |
+| memory retain | ☑️ (`memory`) | ➖ | ☑️ (memory files) | ☑️ | ➖ |
+| memory reflect | ☑️ (sidecar/ambient) | ➖ | ➖ | ☑️ | ➖ |
+| memory edit | ☑️ (`memory`) | ➖ | ➖ | ☑️ (Mnemopi) | ➖ |
+| learn (autolearn skills) | ➖ | ➖ | ☑️ (workshop) | ☑️ | ➖ |
+| manage_skill | ☑️ (`skill_manage`) | ➖ | ☑️ (`skills`) | ☑️ | ➖ |
+| git tools | 🔶 (via bash + `/commit`) | ☑️ (git service) | ➖ (via bash) | ☑️ (`omp commit`) | ☑️ |
+| session_search (RAG) | ☑️ (`session_search`) | ➖ | ➖ | ➖ | ➖ |
+| conversation_search | ☑️ (`conversation_search`) | ➖ | ➖ | ➖ | ➖ |
+| batch (parallel tools) | ☑️ (`batch`) | ➖ | ➖ | ➖ | ➖ |
+| swarm coordination | ☑️ (`swarm`) | ➖ | ➖ | ☑️ (hub/vibe) | ➖ |
+| background tasks | ☑️ (`bg`) | ☑️ (experimental) | ☑️ (detached) | ☑️ | ➖ |
+| schedule (future tasks) | ☑️ (`schedule`, `schedule_ambient`) | ➖ | ☑️ (cron) | ☑️ | ➖ |
+| side panel (live file/widget) | ☑️ (`side_panel`) | ➖ | ☑️ (canvas) | ➖ | ➖ |
+| gmail | ☑️ (`gmail`) | ➖ | ☑️ (Gmail watcher) | ➖ | ➖ |
+| docs search | ☑️ (`jcode_docs`) | ➖ | ☑️ (`docs`) | ➖ | ➖ |
+| self-dev | ☑️ (`selfdev`) | ➖ | ➖ | ➖ | ➖ |
+| open/launch | ☑️ (`open`) | ➖ | ➖ | ➖ | ➖ |
+| MCP manage | ☑️ (`mcp`) | ☑️ | ☑️ | ☑️ (`/mcp`) | ☑️ (bridge) |
+| security_scan | ➖ | ➖ | ➖ | ☑️ (SARIF, cloud import) | ➖ |
+| checkpoint/rewind | ☑️ (`/rewind`) | ➖ | ➖ | ☑️ | ➖ |
+| code review | ➖ | ☑️ (`/review`) | ➖ | ☑️ (P0–P3 findings) | ➖ |
 
 ## 4. LLM Providers
 
-| Provider | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|----------|:--------:|:--------:|:-------:|:------:|
-| Anthropic | ☑️ | ☑️ | ☑️ | ☑️ |
-| OpenAI | ☑️ | ☑️ | ☑️ | ☑️ |
-| Ollama (local + cloud) | ☑️ | ☑️ | ☑️ | ☑️ |
-| Google Gemini / Vertex | ☑️ | ☑️ | ☑️ | ➖ |
-| Azure OpenAI | ☑️ | ☑️ | ☑️ | ➖ |
-| AWS Bedrock | ☑️ | ☑️ | ☑️ | ➖ |
-| xAI (Grok) | ☑️ | ☑️ | ☑️ | ➖ |
-| Mistral | ☑️ | ☑️ | ☑️ | ➖ |
-| Groq | ☑️ | ☑️ | ☑️ | ➖ |
-| Cohere | ☑️ | ☑️ | ➖ | ➖ |
-| Together | ☑️ | ☑️ | ☑️ | ➖ |
-| Perplexity | ☑️ | ☑️ | ☑️ | ➖ |
-| DeepSeek | ➖ | ☑️ | ☑️ | ➖ |
-| OpenRouter | ☑️ | ☑️ | ☑️ | ➖ |
-| HuggingFace | ➖ | ☑️ | ☑️ | ➖ |
-| GitHub Copilot | ☑️ | ☑️ | ☑️ | ➖ |
-| Cloudflare | ☑️ | ☑️ | ☑️ | ➖ |
-| Snowflake Cortex | ☑️ | ➖ | ➖ | ➖ |
-| Alibaba/Qwen | ☑️ | ☑️ | ☑️ | ➖ |
-| Moonshot/Kimi | ➖ | ➖ | ☑️ | ➖ |
-| MiniMax | ➖ | ➖ | ☑️ | ➖ |
-| Cerebras | ➖ | ➖ | ☑️ | ➖ |
-| Fireworks | ➖ | ➖ | ☑️ | ➖ |
-| Nanogpt | ➖ | ➖ | ☑️ | ➖ |
-| Novita | ➖ | ➖ | ☑️ | ➖ |
-| NVIDIA | ➖ | ➖ | ☑️ | ➖ |
-| SiliconFlow | ➖ | ➖ | ☑️ | ➖ |
-| vLLM | ➖ | ➖ | ☑️ | ➖ |
-| Zhipu/ZAI | ➖ | ➖ | ☑️ | ➖ |
-| Xiaomi | ➖ | ➖ | ☑️ | ➖ |
-| Sakana | ➖ | ➖ | ☑️ | ➖ |
-| Venice | ➖ | ➖ | ☑️ | ➖ |
-| Wafer | ➖ | ➖ | ☑️ | ➖ |
-| LiteLLM | ➖ | ➖ | ☑️ | ➖ |
-| LM Studio | ➖ | ➖ | ☑️ | ➖ |
-| llama.cpp | ➖ | ➖ | ☑️ | ➖ |
-| Vercel AI Gateway | ➖ | ➖ | ☑️ | ➖ |
-| CoreWeave | ➖ | ➖ | ☑️ | ➖ |
-| Baseten | ➖ | ➖ | ☑️ | ➖ |
-| GMI Cloud | ➖ | ➖ | ☑️ | ➖ |
-| Google Antigravity | ➖ | ➖ | ☑️ | ➖ |
-| Cursor | ➖ | ➖ | ☑️ | ➖ |
-| Devin | ➖ | ➖ | ☑️ | ➖ |
-| GitLab Duo | ➖ | ➖ | ☑️ | ➖ |
-| Opencode (as provider) | ➖ | ➖ | ☑️ | ➖ |
-| Zenmux | ➖ | ➖ | ☑️ | ➖ |
-| DigitalOcean | ☑️ | ➖ | ➖ | ➖ |
-| Modal | ☑️ | ➖ | ➖ | ➖ |
-| Poe | ☑️ | ➖ | ➖ | ➖ |
-| GitLab | ☑️ | ➖ | ☑️ | ➖ |
-| **Total providers** | ~25 | ~60+ | ~75+ | 3 |
+| Provider | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|----------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Anthropic | ☑️ (OAuth sub) | ☑️ | ☑️ | ☑️ | ☑️ |
+| OpenAI | ☑️ (OAuth sub) | ☑️ | ☑️ | ☑️ | ☑️ |
+| Ollama (local) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| Google Gemini / Vertex | ☑️ (OAuth) | ☑️ | ☑️ | ☑️ | ➖ |
+| Azure OpenAI | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| AWS Bedrock | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| xAI (Grok) | ☑️ (`grok-build` sub) | ☑️ | ☑️ | ☑️ | ➖ |
+| Mistral | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| Groq | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| Cohere | ➖ | ☑️ | ☑️ | ➖ | ➖ |
+| Together | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| Perplexity | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| DeepSeek | ☑️ | ➖ | ☑️ | ☑️ | ➖ |
+| OpenRouter | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| HuggingFace | ☑️ | ➖ | ☑️ | ☑️ | ➖ |
+| GitHub Copilot | ☑️ (device flow) | ☑️ | ☑️ | ☑️ | ➖ |
+| Cloudflare | ➖ | ☑️ | ☑️ | ☑️ | ➖ |
+| Alibaba/Qwen | ☑️ (coding plan) | ☑️ | ☑️ | ☑️ | ➖ |
+| Moonshot/Kimi | ☑️ | ➖ | ➖ | ☑️ | ➖ |
+| MiniMax | ☑️ | ➖ | ➖ | ☑️ | ➖ |
+| Cerebras | ☑️ | ➖ | ➖ | ☑️ | ➖ |
+| Fireworks | ☑️ | ➖ | ➖ | ☑️ | ➖ |
+| NVIDIA | ☑️ (`nvidia-nim`) | ➖ | ➖ | ☑️ | ➖ |
+| SiliconFlow | ➖ | ➖ | ➖ | ☑️ | ➖ |
+| Cursor | ☑️ | ➖ | ➖ | ☑️ | ➖ |
+| Antigravity | ☑️ (OAuth) | ➖ | ➖ | ☑️ | ➖ |
+| LM Studio | ☑️ (local) | ➖ | ➖ | ☑️ | ➖ |
+| DeepInfra | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| ZAI | ☑️ | ➖ | ➖ | ☑️ | ➖ |
+| Meta Muse | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Chutes | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| OpenAI-compatible (any) | ☑️ (custom endpoint) | ☑️ | ☑️ | ☑️ | ➖ |
+| **Total providers** | **~50** | ~25 | ~60+ | ~75+ | 3 |
 
 ### Provider Features
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| OAuth device flows | ☑️ (16+ providers) | ☑️ | ☑️ (17+ providers) | ➖ |
-| Auth broker/gateway | ➖ | ☑️ | ☑️ | ➖ |
-| Model dialects (format translation) | ➖ | ➖ | ☑️ (12+ dialects) | ➖ |
-| Model discovery from registry | ☑️ (models.dev) | ☑️ (remote store) | ☑️ (auto-discovery) | ➖ |
-| Model variants | ☑️ | ➖ | ☑️ | ➖ |
-| Provider failover with backoff | ☑️ | ☑️ | ☑️ | ☑️ (basic) |
-| Thinking level control | ➖ | ☑️ (thinking config) | ☑️ (none→ultrathink) | ➖ |
-| Custom provider definitions | ☑️ (config) | ☑️ (plugin) | ☑️ | ➖ |
-| Per-session model override | ☑️ | ☑️ | ☑️ | ➖ |
-| 1Password integration | ➖ | ➖ | ☑️ (extension) | ➖ |
-| Vault integration | ➖ | ➖ | ☑️ (extension) | ➖ |
-| Credential obfuscation | ➖ | ➖ | ☑️ | ➖ |
-| Usage/cost tracking per provider | ☑️ | ☑️ | ☑️ (per-provider) | 🔶 (estimate) |
-| Account pooling | ➖ | ➖ | ☑️ (auth gateway) | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| OAuth device flows | ☑️ (7 native subs) | ☑️ (16+ providers) | ☑️ | ☑️ (17+ providers) | ➖ |
+| Auth broker/gateway | ➖ | ➖ | ☑️ | ☑️ | ➖ |
+| Model dialects (format translation) | ☑️ (`schema-dialect`) | ➖ | ➖ | ☑️ (12+ dialects) | ➖ |
+| Model discovery from registry | ☑️ (live `/models`) | ☑️ (models.dev) | ☑️ (remote store) | ☑️ (auto-discovery) | ➖ |
+| Model variants | ☑️ | ☑️ | ➖ | ☑️ | ➖ |
+| Provider failover with backoff | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ (basic) |
+| Thinking level control | ☑️ (`/effort`) | ➖ | ☑️ (thinking config) | ☑️ (none→ultrathink) | ➖ |
+| Custom provider definitions | ☑️ (`provider add`, TOML) | ☑️ (config) | ☑️ (plugin) | ☑️ | ➖ |
+| Per-session model override | ☑️ (`/model`) | ☑️ | ☑️ | ☑️ | ➖ |
+| Multi-account switching | ☑️ (`/account`) | ☑️ (org) | ➖ | ☑️ (auth gateway) | ➖ |
+| Provider doctor (E2E) | ☑️ (`provider-doctor`) | ➖ | ➖ | ➖ | ➖ |
+| Live provider test coverage | ☑️ (`provider-test-coverage`) | ➖ | ➖ | ➖ | ➖ |
+| Cache warm/cold warnings | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Stream idle timeout tuning | ☑️ (env/config) | ➖ | ➖ | ➖ | ➖ |
+| Credential obfuscation | ☑️ | ➖ | ➖ | ☑️ | ➖ |
+| Usage/cost tracking per provider | ☑️ (`usage`) | ☑️ | ☑️ | ☑️ (per-provider) | 🔶 (estimate) |
 
 ## 5. Memory / Context Management
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Context window tracking | ☑️ | ☑️ | ☑️ (native tokens) | ☑️ (TokenCounter) |
-| Auto-compaction | ☑️ (summarize + prune) | ☑️ (checkpoints) | ☑️ (4 strategies) | ☑️ (ContextManager) |
-| Compaction: branch summarization | ➖ | ➖ | ☑️ | ➖ |
-| Compaction: pruning | ☑️ | ☑️ | ☑️ | ☑️ |
-| Compaction: shake (strip tool results/images) | ➖ | ➖ | ☑️ | ➖ |
-| Compaction: snapcompact (bitmap archival) | ➖ | ➖ | ☑️ (native Rust) | ➖ |
-| Compaction: tool protection | ➖ | ➖ | ☑️ | ➖ |
-| Session resume | ☑️ | ☑️ | ☑️ | 🔶 (state only) |
-| Conversation history persistence | ☑️ (SQLite) | ☑️ (SQLite) | ☑️ (SQLite/Redis) | ☑️ (session memory) |
-| Embedding-based recall | ➖ | ☑️ (LanceDB) | ☑️ (Mnemopi vectors) | ➖ |
-| Episodic/graph memory | ➖ | ☑️ (memory-core) | ☑️ (episodic-graph) | ➖ |
-| Dreaming/consolidation | ➖ | ☑️ | ➖ | ➖ |
-| Memory dreaming page | ➖ | ☑️ | ➖ | ➖ |
-| Hierarchical memory (project/session/feature) | ➖ | ➖ | ➖ | ☑️ |
-| Project-level facts | ➖ | ➖ | ➖ | ☑️ |
-| Failure pattern memory | ➖ | ➖ | ➖ | ☑️ |
-| Memory recall tool | ➖ | ☑️ (`memory_search`) | ☑️ (`memory_recall`) | ➖ |
-| Memory retain tool | ➖ | ☑️ (memory files) | ☑️ (`memory_retain`) | ➖ |
-| Memory reflect (synthesize) | ➖ | ➖ | ☑️ | ➖ |
-| Memory edit/forget | ➖ | ➖ | ☑️ | ➖ |
-| Memory import wizard | ➖ | ☑️ | ➖ | ➖ |
-| Memory citations | ➖ | ☑️ | ➖ | ➖ |
-| Memory backend resolution (pluggable) | ➖ | ➖ | ☑️ (local/hindsight/mnemopi/off) | ➖ |
-| Mental models | ➖ | ➖ | ☑️ (Hindsight) | ➖ |
-| Entity extraction / triples store | ➖ | ➖ | ☑️ (Mnemopi) | ➖ |
-| Weibull decay / forgetting curve | ➖ | ➖ | ☑️ (Mnemopi) | ➖ |
-| Polyphonic recall | ➖ | ➖ | ☑️ (Mnemopi) | ➖ |
-| Token counting | ☑️ | ☑️ | ☑️ (tiktoken-rs native) | ☑️ (word*1.3 estimate) |
-| Memory MCP server | ➖ | ➖ | ☑️ (Mnemopi 15 tools) | ➖ |
-| Append-only context mode | ➖ | ➖ | ☑️ | ➖ |
-| Replay policy | ➖ | ➖ | ☑️ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Context window tracking | ☑️ (per-model resolution) | ☑️ | ☑️ | ☑️ (native tokens) | ☑️ (TokenCounter) |
+| Auto-compaction | ☑️ (`/compact` 3 modes) | ☑️ (summarize + prune) | ☑️ (checkpoints) | ☑️ (4 strategies) | ☑️ (ContextManager) |
+| Compaction: branch summarization | ➖ | ➖ | ➖ | ☑️ | ➖ |
+| Compaction: pruning | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| Compaction: semantic mode | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Session resume | ☑️ (incl. foreign harnesses) | ☑️ | ☑️ | ☑️ | 🔶 (state only) |
+| Conversation history persistence | ☑️ (JSON) | ☑️ (SQLite) | ☑️ (SQLite) | ☑️ (SQLite/Redis) | ☑️ (session memory) |
+| Embedding-based recall | ☑️ (all-MiniLM local) | ➖ | ☑️ (LanceDB) | ☑️ (Mnemopi vectors) | ➖ |
+| Episodic/graph memory | ☑️ (graph nodes/edges) | ➖ | ☑️ (memory-core) | ☑️ (episodic-graph) | ➖ |
+| Cascade retrieval (BFS graph) | ☑️ | ➖ | ➖ | ☑️ (beam search) | ➖ |
+| Memory sidecar (relevance verify) | ☑️ | ➖ | ➖ | ☑️ (Hindsight) | ➖ |
+| Confidence decay / forgetting | ☑️ (per-type half-life) | ➖ | ➖ | ☑️ (Weibull) | ➖ |
+| Negative memories | 🔶 (planned) | ➖ | ➖ | ☑️ | ➖ |
+| Procedural memories | 🔶 (planned) | ➖ | ➖ | ☑️ | ➖ |
+| Provenance tracking | ☑️ | ➖ | ☑️ | ☑️ | ➖ |
+| Post-retrieval maintenance | ☑️ (link/cluster/decay) | ➖ | ➖ | ☑️ | ➖ |
+| Ambient memory consolidation | ☑️ | ➖ | ☑️ (dreaming) | ➖ | ➖ |
+| Memory import wizard | ➖ | ➖ | ☑️ | ➖ | ➖ |
+| Memory citations | ➖ | ➖ | ☑️ | ➖ | ➖ |
+| Hierarchical memory (project/session/feature) | ☑️ (global/project/session) | ➖ | ➖ | ➖ | ☑️ |
+| Project-level facts | ☑️ | ➖ | ➖ | ➖ | ☑️ |
+| Failure pattern memory | 🔶 (negative mems) | ➖ | ➖ | ➖ | ☑️ |
+| Session search (RAG) | ☑️ (`session_search`) | ➖ | ➖ | ➖ | ➖ |
+| Memory CLI | ☑️ (`memory list/search/export/import`) | ➖ | ☑️ | ☑️ (Mnemopi 15 tools) | ➖ |
 
 ## 6. Permissions & Security
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Ask before destructive ops | ☑️ | ☑️ | ☑️ | ☑️ |
-| Auto-deny patterns | ☑️ (deny rules) | ☑️ (deny list) | ☑️ (deny) | ☑️ |
-| Auto-approve all (`--yolo`) | ☑️ | ☑️ | ☑️ | ☑️ |
-| Protected paths | ☑️ (external_dir) | ☑️ (fs policy) | ☑️ (path sandboxing) | ☑️ |
-| Per-tool permission rules | ☑️ | ☑️ (tool policy) | ☑️ (approval.<tool>) | 🔶 (destructive set) |
-| Approval persistence (session) | ☑️ (saved) | ☑️ (allowlist) | ☑️ | ➖ |
-| Permission hooks | ☑️ (plugin) | ☑️ (before-tool-call) | ☑️ (hooks) | ➖ |
-| Subagent permission derivation | ☑️ | ☑️ | ☑️ | ➖ |
-| Security audit | ➖ | ☑️ (comprehensive) | ☑️ (vulnerability scanning) | ➖ |
-| Secret masking/redaction | ➖ | ☑️ | ☑️ (obfuscator, regex) | ➖ |
-| SSRF protection | ➖ | ☑️ | ➖ | ➖ |
-| TLS fingerprint pinning | ➖ | ☑️ | ➖ | ➖ |
-| Flood guard (unauthorized) | ➖ | ☑️ | ➖ | ➖ |
-| Operator approval system | ➖ | ☑️ | ➖ | ➖ |
-| Exec approval (iOS push) | ➖ | ☑️ | ➖ | ➖ |
-| Device pairing/auth | ➖ | ☑️ | ➖ | ➖ |
-| External content wrapping (prompt injection) | ➖ | ☑️ | ➖ | ➖ |
-| Dangerous config flags detection | ➖ | ☑️ | ➖ | ➖ |
-| Safe regex checking | ➖ | ☑️ | ➖ | ➖ |
-| Windows ACL permissions | ➖ | ☑️ | ➖ | ➖ |
-| Preauth connection budget | ➖ | ☑️ | ➖ | ➖ |
-| Handshake timeouts | ➖ | ☑️ | ➖ | ➖ |
-| Origin check | ➖ | ☑️ | ➖ | ➖ |
-| Arity checking (bash args) | ☑️ | ➖ | ➖ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Ask before destructive ops | ☑️ (bash destructive gate) | ☑️ | ☑️ | ☑️ | ☑️ |
+| Auto-deny patterns | ☑️ | ☑️ (deny rules) | ☑️ (deny list) | ☑️ (deny) | ☑️ |
+| Auto-approve all | ☑️ | ☑️ (`--yolo`) | ☑️ | ☑️ (`--yolo`) | ☑️ |
+| Protected paths | ☑️ | ☑️ (external_dir) | ☑️ (fs policy) | ☑️ (path sandboxing) | ☑️ |
+| Per-tool permission rules | ☑️ (`pre_tool` hook gate) | ☑️ | ☑️ (tool policy) | ☑️ (approval.<tool>) | 🔶 |
+| Approval persistence | ☑️ | ☑️ (saved) | ☑️ (allowlist) | ☑️ | ➖ |
+| Permission hooks | ☑️ (`pre_tool`/`post_tool`) | ☑️ (plugin) | ☑️ (before-tool-call) | ☑️ (hooks) | ➖ |
+| Subagent permission derivation | ☑️ (swarm) | ☑️ | ☑️ | ☑️ | ➖ |
+| Human-in-loop safety system (2-tier) | ☑️ (`request_permission`) | ➖ | ☑️ (operator approval) | ➖ | ➖ |
+| Safety notifications (email/sms/desktop/webhook) | ☑️ | ➖ | ☑️ | ➖ | ➖ |
+| Command-risk classification | ☑️ (`command-risk` crate) | ➖ | ➖ | ➖ | ➖ |
+| Secret masking/redaction | ☑️ (`discover_secrets`) | ➖ | ☑️ | ☑️ (obfuscator, regex) | ➖ |
+| Memory secret filtering | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| SSRF protection | ➖ | ➖ | ☑️ | ➖ | ➖ |
+| TLS fingerprint pinning | ➖ | ➖ | ☑️ | ➖ | ➖ |
+| Flood guard | ➖ | ➖ | ☑️ | ➖ | ➖ |
+| Prompt-injection external wrapping | ➖ | ➖ | ☑️ | ➖ | ➖ |
+| Fail-open hook policy | ☑️ | ➖ | ➖ | ➖ | ➖ |
 
 ## 7. Session Management
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Multi-session | ☑️ | ☑️ | ☑️ | ☑️ |
-| Session list | ☑️ | ☑️ | ☑️ | ☑️ |
-| Session resume | ☑️ | ☑️ | ☑️ | 🔶 (state only) |
-| Session fork | ☑️ (timeline fork) | ☑️ | ☑️ (`--fork`) | ➖ |
-| Session share | ☑️ (share URLs) | ☑️ (snapshots) | ☑️ (`omp share`) | ➖ |
-| Session export | ☑️ (redacted) | ☑️ (trajectory) | ☑️ (HTML export) | ➖ |
-| Session import | ☑️ | ➖ | ☑️ (Claude/Codex import) | ➖ |
-| Session branching | ☑️ (parentID) | ☑️ (child sessions) | ☑️ | ➖ |
-| Session compaction | ☑️ | ☑️ | ☑️ | ☑️ (ContextManager) |
-| Session revert/undo | ☑️ (git-based) | ➖ | ☑️ (checkpoint) | ➖ |
-| Custom session ID | ➖ | ➖ | ➖ | ☑️ (`--session-id`) |
-| Session metadata | ☑️ | ☑️ | ☑️ | ☑️ (context.json) |
-| Session groups | ➖ | ☑️ | ➖ | ➖ |
-| Session observer | ➖ | ☑️ | ➖ | ➖ |
-| Session companion | ➖ | ☑️ | ➖ | ➖ |
-| Session diff (baseline) | ➖ | ☑️ | ➖ | ➖ |
-| Session subscriptions | ➖ | ☑️ | ➖ | ➖ |
-| Session archive | ➖ | ☑️ | ➖ | ➖ |
-| Session upstream monitor | ➖ | ☑️ | ➖ | ➖ |
-| Session restart recovery | ➖ | ☑️ | ☑️ (turn recovery) | ➖ |
-| Session deletion with cleanup | ☑️ | ☑️ | ☑️ | ➖ |
-| Snapcompact inline compaction | ➖ | ➖ | ☑️ | ➖ |
-| Snapcompact savings journal | ➖ | ➖ | ☑️ | ➖ |
-| Foreign session import (Claude/Codex) | ➖ | ➖ | ☑️ | ➖ |
-| Session tree visualization | ➖ | ➖ | ☑️ (`/tree`) | ➖ |
-| Session handoff | ➖ | ➖ | ☑️ (`/handoff`) | ➖ |
-| Session move to directory | ➖ | ➖ | ☑️ (`/move`) | ➖ |
-| Working directory management | ☑️ (worktree) | ☑️ | ☑️ (`/add-dir`, `/remove-dir`) | ➖ |
-| Session cost tracking | ☑️ (per-message) | ☑️ (usage buckets) | ☑️ (per-session) | ➖ |
-| Session title auto-generation | ☑️ | ☑️ | ☑️ (small model) | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Multi-session | ☑️ (server multi-client) | ☑️ | ☑️ | ☑️ | ☑️ |
+| Session list | ☑️ (`/resume`, `/active`) | ☑️ | ☑️ | ☑️ | ☑️ |
+| Session resume | ☑️ (by memorable name) | ☑️ | ☑️ | ☑️ | 🔶 (state only) |
+| Session fork | ☑️ (`/fork`, `/split`) | ☑️ (timeline fork) | ☑️ | ☑️ (`--fork`) | ➖ |
+| Session share | ➖ | ☑️ (share URLs) | ☑️ (snapshots) | ☑️ (`omp share`) | ➖ |
+| Session export | ☑️ (`replay --export`) | ☑️ (redacted) | ☑️ (trajectory) | ☑️ (HTML export) | ➖ |
+| Session import | ☑️ (foreign harness resume) | ☑️ | ➖ | ☑️ (Claude/Codex import) | ➖ |
+| Foreign session resume | ☑️ (codex/claude/opencode/pi) | ➖ | ➖ | ☑️ | ➖ |
+| Session branching | ☑️ (fork/split) | ☑️ (parentID) | ☑️ (child sessions) | ☑️ | ➖ |
+| Session compaction | ☑️ (`/compact`) | ☑️ | ☑️ | ☑️ | ☑️ |
+| Session revert/undo | ☑️ (`/rewind`) | ☑️ (git-based) | ➖ | ☑️ (checkpoint) | ➖ |
+| Custom session ID | ➖ | ➖ | ➖ | ➖ | ☑️ (`--session-id`) |
+| Session metadata | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ (context.json) |
+| Session bookmarks | ☑️ (`/save`, `/unsave`) | ➖ | ☑️ | ➖ | ➖ |
+| Session catch-up | ☑️ (`/catchup`, `/back`) | ➖ | ☑️ | ➖ | ➖ |
+| Replay sessions/video | ☑️ (`replay`) | ➖ | ➖ | ☑️ (`/tree`) | ➖ |
+| Session cloud sync | ☑️ (`cloud sessions`) | ➖ | ➖ | ➖ | ➖ |
+| Session handoff | ☑️ (`/transfer`) | ➖ | ➖ | ☑️ (`/handoff`) | ➖ |
+| Session move to directory | ➖ | ➖ | ☑️ | ☑️ (`/move`) | ➖ |
+| Working directory management | ☑️ (`-C`, `--remote-working-dir`) | ☑️ (worktree) | ☑️ | ☑️ (`/add-dir`, `/remove-dir`) | ➖ |
+| Session cost tracking | ☑️ (`/usage`) | ☑️ (per-message) | ☑️ (usage buckets) | ☑️ (per-session) | ➖ |
 
 ## 8. Streaming
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| LLM response streaming | ☑️ | ☑️ | ☑️ | ☑️ |
-| Tool call streaming (partial args) | ☑️ | ☑️ | ☑️ | ➖ |
-| Streaming text completion hook | ☑️ (plugin) | ➖ | ➖ | ➖ |
-| SSE event bridge | ☑️ | ☑️ | ➖ | ➖ |
-| WebSocket events | ☑️ (experimental) | ☑️ | ➖ | ➖ |
-| Voice/audio streaming | ➖ | ☑️ (TTS streaming) | ☑️ (WebRTC live) | ➖ |
-| Block streaming (chunked output) | ➖ | ☑️ | ➖ | ➖ |
-| Draft preview streaming | ➖ | ☑️ | ➖ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| LLM response streaming | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| Tool call streaming (partial args) | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| Interleaved input (KV-cache aware) | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Queued input (Shift+Enter) | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| SSE event bridge | ☑️ | ☑️ | ☑️ | ➖ | ➖ |
+| WebSocket events | ➖ | ☑️ (experimental) | ☑️ | ➖ | ➖ |
+| Soft-interrupt notification injection | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Voice/audio streaming | ➖ | ➖ | ☑️ (TTS streaming) | ☑️ (WebRTC live) | ➖ |
 
 ## 9. Subagents / Tasks
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Spawn subagent | ☑️ (`task`) | ☑️ (`subagents`) | ☑️ (`task`) | 🔶 (SubagentManager) |
-| Background tasks | ☑️ (experimental) | ☑️ (detached) | ☑️ (vibe workers) | ➖ |
-| Parallel execution | 🔶 | ☑️ (swarm) | ☑️ (parallel) | 🔶 (asyncio stub) |
-| Subagent types | ☑️ (explore, general) | ☑️ | ☑️ (scout, designer, reviewer) | ➖ |
-| Task cancellation | ☑️ | ☑️ | ☑️ | ➖ |
-| Structured output schema | ➖ | ☑️ | ☑️ (`outputSchema`) | ➖ |
-| Task persistence/revive | ➖ | ➖ | ☑️ (persisted-revive) | ➖ |
-| Isolation worktrees | ➖ | ➖ | ☑️ (`task.isolation`) | ➖ |
-| Task flow registry | ➖ | ☑️ (taskflow) | ➖ | ➖ |
-| Detached task runtime | ➖ | ☑️ | ➖ | ➖ |
-| Subagent depth limits | ➖ | ☑️ | ➖ | ➖ |
-| Completion delivery/announce | ➖ | ☑️ | ➖ | ➖ |
-| Yield tool (schema validation) | ➖ | ➖ | ☑️ | ➖ |
-| Spawn policy / read-only policy | ➖ | ➖ | ☑️ | ➖ |
-| Provider concurrency for tasks | ➖ | ➖ | ☑️ | ➖ |
-| Output manager for subagents | ➖ | ➖ | ☑️ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Spawn subagent | ☑️ (`subagent`, `swarm`) | ☑️ (`task`) | ☑️ (`subagents`) | ☑️ (`task`) | 🔶 (SubagentManager) |
+| Background tasks | ☑️ (`bg`) | ☑️ (experimental) | ☑️ (detached) | ☑️ (vibe workers) | ➖ |
+| Parallel execution | ☑️ (swarm, `batch`) | 🔶 | ☑️ (swarm) | ☑️ (parallel) | 🔶 |
+| Subagent types | ☑️ (swarm roles) | ☑️ (explore, general) | ☑️ | ☑️ (scout, designer, reviewer) | ➖ |
+| Task cancellation | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| Structured output schema | 🔶 | ➖ | ☑️ | ☑️ (`outputSchema`) | ➖ |
+| Task persistence/revive | ☑️ (server snapshots) | ➖ | ➖ | ☑️ (persisted-revive) | ➖ |
+| Isolation worktrees | ☑️ (swarm worktrees) | ➖ | ➖ | ☑️ (`task.isolation`) | ➖ |
+| Swarm coordination (DAG plan) | ☑️ (`swarm`, `SWARM_TASK_GRAPH`) | ➖ | ☑️ (taskflow) | ☑️ (hub/vibe) | ➖ |
+| Coordinator + worktree manager roles | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Inter-agent messaging (DM/broadcast) | ☑️ | ➖ | ☑️ | ☑️ (vibe) | ➖ |
+| Conflict detection (file touch notify) | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Completion report policy | ☑️ | ➖ | ➖ | ☑️ (yield) | ➖ |
+| Recursive/deep swarm | ☑️ (`swarm-deep`) | ➖ | ➖ | ➖ | ➖ |
 
 ## 10. Diff / Editing
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Search/replace edit | ☑️ (cline/gemini-style) | ☑️ (exact replace) | ☑️ (hashline) | ☑️ |
-| Full file write | ☑️ | ☑️ | ☑️ | ☑️ |
-| Unified diff patch (V4A) | ☑️ (GPT-5) | ☑️ | ☑️ (apply_patch mode) | ➖ |
-| Line-anchored patches (hashline) | ➖ | ➖ | ☑️ | ➖ |
-| AST-based edit | ➖ | ➖ | ☑️ (ast_edit) | ➖ |
-| Diff preview | ☑️ | ☑️ | ☑️ | ➖ |
-| Unified diff generation | ☑️ | ☑️ | ☑️ (native Rust) | ➖ |
-| Multi-file edit | ☑️ | ☑️ | ☑️ | ☑️ (sequential) |
-| Edit clipboard (cut/paste) | ➖ | ➖ | ☑️ | ➖ |
-| Noop loop guard | ➖ | ➖ | ☑️ | ➖ |
-| Conflict detection | ➖ | ➖ | ☑️ | ➖ |
-| BOM handling | ☑️ | ➖ | ☑️ | ➖ |
-| Line-ending preservation | ☑️ | ➖ | ☑️ | ➖ |
-| Streaming edit preview | ➖ | ➖ | ☑️ | ➖ |
-| File snapshot store | ➖ | ➖ | ☑️ | ➖ |
-| Cross-device dispatch | ➖ | ➖ | ☑️ | ➖ |
-| Shebang chmod | ➖ | ➖ | ☑️ | ➖ |
-| Archive writing | ➖ | ➖ | ☑️ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Search/replace edit | ☑️ (`edit`) | ☑️ (cline/gemini-style) | ☑️ (exact replace) | ☑️ (hashline) | ☑️ |
+| Full file write | ☑️ (`write`) | ☑️ | ☑️ | ☑️ | ☑️ |
+| Multi-edit (one file) | ☑️ (`multiedit`) | ➖ | ➖ | ➖ | ➖ |
+| Unified diff patch (V4A) | ☑️ (`patch`, `apply_patch`) | ☑️ (GPT-5) | ☑️ | ☑️ (apply_patch mode) | ➖ |
+| Codex-style patch | ☑️ (`apply_patch`) | ➖ | ➖ | ➖ | ➖ |
+| Diff preview / modes | ☑️ (`/diff`) | ☑️ | ☑️ | ☑️ | ➖ |
+| Multi-file edit | ☑️ (via multiple) | ☑️ | ☑️ | ☑️ | ☑️ (sequential) |
+| Line-ending preservation | ☑️ | ☑️ | ➖ | ☑️ | ➖ |
+| Noop loop guard | 🔶 | ➖ | ➖ | ☑️ | ➖ |
+| Streaming edit preview | ➖ | ➖ | ➖ | ☑️ | ➖ |
 
 ## 11. Search
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| grep (content search) | ☑️ (ripgrep) | ☑️ | ☑️ (native Rust) | ☑️ |
-| glob (file pattern) | ☑️ (ripgrep) | ☑️ (`find`) | ☑️ (native Rust) | ☑️ |
-| AST grep (structural) | ➖ | ➖ | ☑️ (native ast-grep) | ➖ |
-| Fuzzy file find | ➖ | ➖ | ☑️ (native) | ➖ |
-| Semantic search (embeddings) | ➖ | ➖ | ☑️ | ➖ |
-| Web search | ☑️ (Exa/Parallel) | ☑️ (7+ providers) | ☑️ (20+ providers) | ➖ |
-| Web fetch | ☑️ | ☑️ | ☑️ | ➖ |
-| Code summary (tree-sitter) | ➖ | ➖ | ☑️ (native) | ➖ |
-| LSP symbol search | ☑️ (experimental) | ➖ | ☑️ | ➖ |
-| 55+ language grammars (tree-sitter) | ➖ | ➖ | ☑️ | ➖ |
-| 60+ domain scrapers | ➖ | ➖ | ☑️ | ➖ |
-| Multi-path search | ➖ | ➖ | ☑️ | ➖ |
-| Internal URL search | ➖ | ➖ | ☑️ (archive search) | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| grep (content search) | ☑️ (`agentgrep`) | ☑️ (ripgrep) | ☑️ | ☑️ (native Rust) | ☑️ |
+| glob (file pattern) | ☑️ | ☑️ (ripgrep) | ☑️ (`find`) | ☑️ (native Rust) | ☑️ |
+| Structural grep (function/type info) | ☑️ (`agentgrep` displacement) | ➖ | ➖ | ☑️ (AST grep) | ➖ |
+| AST grep (structural) | ➖ | ➖ | ➖ | ☑️ (native ast-grep) | ➖ |
+| Fuzzy file find | ☑️ (`fuzzy` crate) | ➖ | ➖ | ☑️ (native) | ➖ |
+| Semantic search (embeddings) | ☑️ (memory) | ➖ | ➖ | ☑️ | ➖ |
+| Session search (RAG) | ☑️ (`session_search`) | ➖ | ➖ | ➖ | ➖ |
+| Conversation search | ☑️ (`conversation_search`) | ➖ | ➖ | ➖ | ➖ |
+| Web search | ☑️ (`websearch`) | ☑️ (Exa/Parallel) | ☑️ (7+ providers) | ☑️ (20+ providers) | ➖ |
+| Web fetch | ☑️ (`webfetch`) | ☑️ | ☑️ | ☑️ | ➖ |
+| Adaptive truncation (context save) | ☑️ (agentgrep) | ➖ | ➖ | ☑️ (output minimizer) | ➖ |
 
 ## 12. Hooks / Events
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Plugin hooks | ☑️ (9 hook types) | ☑️ | ☑️ (hooks system) | ➖ |
-| Event bus | ☑️ | ☑️ | ☑️ | ➖ |
-| Lifecycle events | ☑️ | ☑️ | ☑️ | ➖ |
-| Before/after tool hooks | ☑️ | ☑️ | ☑️ | ➖ |
-| Session events | ☑️ | ☑️ | ☑️ | ☑️ (status.json) |
-| Audit events | ➖ | ☑️ | ➖ | ➖ |
-| Trace recording | ☑️ | ☑️ (trajectory) | ☑️ | ☑️ (JSONL traces) |
-| Gmail watcher hook | ➖ | ☑️ | ➖ | ➖ |
-| Hook package install | ➖ | ☑️ | ➖ | ➖ |
-| Hook fire-and-forget | ➖ | ☑️ | ➖ | ➖ |
-| Session auto-reset hook | ➖ | ☑️ | ➖ | ➖ |
-| File-trigger hooks | ➖ | ➖ | ☑️ | ➖ |
-| Git-checkpoint hooks | ➖ | ➖ | ☑️ | ➖ |
-| Permission-gate hooks | ➖ | ➖ | ☑️ | ➖ |
-| Dirty-repo-guard hooks | ➖ | ➖ | ☑️ | ➖ |
-| Auto-commit-on-exit hooks | ➖ | ➖ | ☑️ | ➖ |
-| Custom compaction hooks | ➖ | ➖ | ☑️ | ➖ |
-| Status-line hooks | ➖ | ➖ | ☑️ | ➖ |
-| Q&A hooks | ➖ | ➖ | ☑️ | ➖ |
-| Protected-paths hooks | ➖ | ➖ | ☑️ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Lifecycle hooks | ☑️ (turn_end/start/end) | ☑️ (9 hook types) | ☑️ | ☑️ (hooks system) | ➖ |
+| Before/after tool hooks | ☑️ (`pre_tool` gate, `post_tool`) | ☑️ | ☑️ | ☑️ | ➖ |
+| Spawn hook | ☑️ (`SPAWN_HOOK`) | ➖ | ➖ | ➖ | ➖ |
+| Event bus | ☑️ | ☑️ | ☑️ | ☑️ | ➖ |
+| Session events | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ (status.json) |
+| Trace recording | ☑️ | ☑️ | ☑️ (trajectory) | ☑️ | ☑️ (JSONL traces) |
+| Hook recursion guard | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Hook config hot-reload | ☑️ | ➖ | ☑️ | ☑️ | ➖ |
+| File-trigger hooks | ➖ | ➖ | ➖ | ☑️ | ➖ |
+| Git-checkpoint hooks | ➖ | ➖ | ➖ | ☑️ | ➖ |
+| Permission-gate hooks | ☑️ (`pre_tool`) | ➖ | ➖ | ☑️ | ➖ |
 
 ## 13. Skills / Plugins / Extensions
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Skill system | ☑️ (`skill` tool) | ☑️ (`skills`) | ☑️ (`skill://`) | 🔶 (find_skills stub) |
-| Skill discovery | ☑️ (remote + local) | ☑️ (ClawHub) | ☑️ | ➖ |
-| Skill loading (SKILL.md) | ☑️ | ☑️ | ☑️ | 🔶 (npx skills) |
-| Plugin system | ☑️ | ☑️ | ☑️ | ➖ |
-| Plugin marketplace | ➖ | ☑️ (ClawHub) | ☑️ (marketplace) | ➖ |
-| Plugin install | ☑️ (npm/git) | ☑️ (npm/git/archive) | ☑️ (git/local/marketplace) | ➖ |
-| Plugin security scanning | ➖ | ☑️ | ➖ | ➖ |
-| Custom agents via config | ☑️ | ☑️ | ☑️ (agent plugins) | ➖ |
-| Custom tools via config | ➖ | ➖ | ☑️ (`.omp/tools/`) | ➖ |
-| Custom commands | ➖ | ➖ | ☑️ | ➖ |
-| Autolearn skills (auto-create) | ➖ | ➖ | ☑️ | ➖ |
-| Skill workshop (proposals) | ➖ | ☑️ | ➖ | ➖ |
-| Skill curator (pin/archive) | ➖ | ☑️ | ➖ | ➖ |
-| Skill environment overrides | ➖ | ☑️ | ➖ | ➖ |
-| Extension API | ☑️ (plugin SDK) | ☑️ (plugin SDK) | ☑️ (ExtensionAPI) | ➖ |
-| Plugin state store | ➖ | ☑️ (SQLite per-plugin) | ➖ | ➖ |
-| Plugin HTTP routes | ➖ | ☑️ | ➖ | ➖ |
-| Plugin lifecycle trace | ➖ | ☑️ | ➖ | ➖ |
-| Tool proxy (intercept calls) | ➖ | ➖ | ☑️ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Skill system | ☑️ (`skill_manage`) | ☑️ (`skill` tool) | ☑️ (`skills`) | ☑️ (`skill://`) | 🔶 (find_skills stub) |
+| Skill embedding-triggered injection | ☑️ (semantic vector hit) | ➖ | ➖ | ➖ | ➖ |
+| Skill discovery | ☑️ (local files) | ☑️ (remote + local) | ☑️ (ClawHub) | ☑️ | ➖ |
+| Skill loading (SKILL.md) | ☑️ (`/<skillname>`) | ☑️ | ☑️ | ☑️ | 🔶 (npx skills) |
+| Plugin system | ➖ (self-dev instead) | ☑️ | ☑️ | ☑️ | ➖ |
+| Plugin marketplace | ➖ | ➖ | ☑️ (ClawHub) | ☑️ (marketplace) | ➖ |
+| Extension API | ☑️ (SDK) | ☑️ (plugin SDK) | ☑️ (plugin SDK) | ☑️ (ExtensionAPI) | ➖ |
+| Custom tools | ☑️ (`integration_tools`, MCP) | ➖ | ➖ | ☑️ (`.omp/tools/`) | ➖ |
+| Autolearn skills | ➖ | ➖ | ☑️ (workshop) | ☑️ | ➖ |
+| Self-dev (modify own source) | ☑️ | ➖ | ➖ | ➖ | ➖ |
 
 ## 14. MCP (Model Context Protocol)
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| MCP client | ☑️ | ☑️ | ☑️ | ☑️ |
-| stdio transport | ☑️ | ☑️ | ☑️ | ☑️ |
-| HTTP transport | ☑️ (Streamable) | ☑️ | ☑️ | ➖ |
-| SSE transport | ☑️ | ☑️ | ☑️ (deprecated) | ➖ |
-| OAuth for MCP | ☑️ | ☑️ | ☑️ | ➖ |
-| MCP tool auto-registration | ☑️ | ☑️ | ☑️ | ☑️ |
-| MCP CLI manage | ☑️ | ☑️ | ☑️ | ➖ |
-| Smithery integration | ➖ | ➖ | ☑️ | ➖ |
-| MCP server (expose tools) | ➖ | ☑️ (channels + tools) | ☑️ (Mnemopi) | ➖ |
-| MCP resource browsing | ☑️ (list, templates, read) | ➖ | ☑️ | ➖ |
-| MCP resource attachments (PDF, images) | ☑️ (10MB) | ➖ | ☑️ | ➖ |
-| MCP app channel | ➖ | ☑️ | ➖ | ➖ |
-| MCP grant store | ➖ | ☑️ | ➖ | ➖ |
-| MCP roots capability | ☑️ | ➖ | ☑️ | ➖ |
-| MCP logging notifications | ☑️ | ➖ | ☑️ | ➖ |
-| MCP tool bridge | ➖ | ➖ | ☑️ | ☑️ |
-| MCP tool cache | ➖ | ➖ | ☑️ | ➖ |
-| MCP reconnection | ➖ | ➖ | ☑️ | ➖ |
-| MCP subscription actions | ➖ | ➖ | ☑️ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| MCP client | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| stdio transport | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| HTTP transport | 🔶 (recognized, skipped) | ☑️ (Streamable) | ☑️ | ☑️ | ➖ |
+| SSE transport | 🔶 (recognized, skipped) | ☑️ | ☑️ | ☑️ (deprecated) | ➖ |
+| MCP tool auto-registration | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| MCP CLI manage | ☑️ (`mcp` tool, config) | ☑️ | ☑️ | ☑️ | ➖ |
+| Claude Code MCP compat | ☑️ (`~/.claude.json`, `.mcp.json`) | ➖ | ➖ | ➖ | ➖ |
+| Codex MCP import | ☑️ (one-time) | ➖ | ➖ | ➖ | ➖ |
+| MCP server (expose tools) | ➖ | ➖ | ☑️ (channels + tools) | ☑️ (Mnemopi) | ➖ |
+| Shared MCP pool (across sessions) | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Smithery integration | ➖ | ➖ | ➖ | ☑️ | ➖ |
 
 ## 15. Git Integration
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| git_status | ☑️ (service) | ➖ (via bash) | ➖ (via bash) | ☑️ |
-| git_diff | ☑️ | ➖ | ➖ | ☑️ |
-| git_add | ☑️ | ➖ | ➖ | ☑️ |
-| git_commit | ☑️ | ➖ | ☑️ (`omp commit`) | ☑️ |
-| git_branch | ☑️ | ➖ | ➖ | ☑️ |
-| git_log | ☑️ | ➖ | ➖ | ☑️ |
-| Snapshot/restore | ☑️ (git-based) | ☑️ (snapshot) | ☑️ (checkpoint) | ➖ |
-| Worktree management | ☑️ (experimental) | ☑️ (`worktrees`) | ☑️ (`omp wt`) | ➖ |
-| PR checkout + run | ☑️ (`pr`) | ➖ | ☑️ (`gh-pr-checkout`) | ➖ |
-| Agentic commit (AI message) | ➖ | ➖ | ☑️ (map-reduce pipeline) | ➖ |
-| Changelog generation | ➖ | ➖ | ☑️ | ➖ |
-| Split-commit support | ➖ | ➖ | ☑️ | ➖ |
-| Lock-file pairing | ➖ | ➖ | ☑️ | ➖ |
-| Topological sort (commits) | ➖ | ➖ | ☑️ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| git_status | 🔶 (via bash, `/git`) | ☑️ (service) | ➖ (via bash) | ➖ (via bash) | ☑️ |
+| git_diff | 🔶 (via bash) | ☑️ | ➖ | ➖ | ☑️ |
+| git_commit | ☑️ (`/commit`, logical) | ☑️ | ➖ | ☑️ (`omp commit`) | ☑️ |
+| git_branch | 🔶 (via bash) | ☑️ | ➖ | ➖ | ☑️ |
+| git_log | 🔶 (via bash) | ☑️ | ➖ | ➖ | ☑️ |
+| Swarm worktrees | ☑️ | ☑️ (experimental) | ☑️ (`worktrees`) | ☑️ (`omp wt`) | ➖ |
+| Agent-native VCS (lanes/draft patches) | 🔶 (planned design) | ➖ | ➖ | ➖ | ➖ |
+| Logical commit (grouped) | ☑️ (`/commit`) | ➖ | ➖ | ☑️ (map-reduce pipeline) | ➖ |
+| Commit-push + release | ☑️ (`/commit-push`, `/fast-release`) | ➖ | ➖ | ➖ | ➖ |
+| GitHub issue triage | ☑️ (`/triage`) | ☑️ (github bot) | ➖ | ➖ | ➖ |
+| Snapshot/restore | 🔶 | ☑️ (git-based) | ☑️ (snapshot) | ☑️ (checkpoint) | ➖ |
 
 ## 16. Configuration
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| JSON/JSONC config file | ☑️ (`opencode.json`) | ☑️ (`openclaw.json`) | ☑️ (settings) | ➖ |
-| Env vars | ☑️ (50+) | ☑️ | ☑️ (115+) | ☑️ (15+) |
-| Per-project config | ☑️ (`.opencode/`) | ☑️ | ☑️ (`.omp/`) | ➖ |
-| Global config | ☑️ (`~/.config/opencode/`) | ☑️ | ☑️ | ➖ |
-| AGENTS.md support | ☑️ | ☑️ | ☑️ | ☑️ |
-| CLAUDE.md support | ☑️ | ☑️ | ☑️ (import) | ➖ |
-| Variable substitution | ☑️ (`{env:}`, `{file:}`) | ➖ | ☑️ | ➖ |
-| Remote config | ☑️ (well-known) | ➖ | ➖ | ➖ |
-| Config validation | ☑️ | ☑️ (`config validate`) | ☑️ | ➖ |
-| Config migration | ☑️ (V1→V2) | ☑️ (doctor) | ☑️ | ➖ |
-| Profile support | ➖ | ☑️ (`--profile`) | ☑️ (`--profile`) | ➖ |
-| Config watching (hot reload) | ☑️ | ☑️ (reload plans) | ➖ | ➖ |
-| Managed preferences (MDM) | ☑️ | ➖ | ➖ | ➖ |
-| Markdown config (frontmatter) | ☑️ | ➖ | ☑️ | ➖ |
-| Config diff | ➖ | ☑️ | ➖ | ➖ |
-| Config redaction | ➖ | ☑️ | ➖ | ➖ |
-| Machine-level state | ➖ | ☑️ | ➖ | ➖ |
-| Config schema (Zod) | ☑️ | ☑️ | ☑️ | ➖ |
-| Config backup rotation | ➖ | ☑️ | ➖ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Config file | ☑️ (`config.toml`) | ☑️ (`opencode.json`) | ☑️ (`openclaw.json`) | ☑️ (settings) | ➖ |
+| Env vars | ☑️ | ☑️ (50+) | ☑️ | ☑️ (115+) | ☑️ (15+) |
+| Per-project config | ☑️ (`.jcode/`) | ☑️ (`.opencode/`) | ☑️ | ☑️ (`.omp/`) | ➖ |
+| Global config | ☑️ (`~/.jcode/`) | ☑️ (`~/.config/opencode/`) | ☑️ | ☑️ | ➖ |
+| AGENTS.md support | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| CLAUDE.md support | ☑️ | ☑️ | ☑️ | ☑️ (import) | ➖ |
+| Config hot-reload | ☑️ (hooks/config) | ☑️ | ☑️ (reload plans) | ➖ | ➖ |
+| Config validation | ☑️ | ☑️ | ☑️ (`config validate`) | ☑️ | ➖ |
+| Profile support | ☑️ (`--provider-profile`) | ➖ | ☑️ (`--profile`) | ☑️ (`--profile`) | ➖ |
+| Provider env file (secrets) | ☑️ (`~/.config/jcode/`) | ➖ | ➖ | ➖ | ➖ |
+| Markdown config (frontmatter) | ➖ | ☑️ | ➖ | ☑️ | ➖ |
+| Config schema (Zod/serde) | ☑️ (serde typed) | ☑️ | ☑️ | ☑️ | ➖ |
+| Extra body injection | ☑️ (`extra_body`) | ➖ | ➖ | ➖ | ➖ |
 
 ## 17. TUI / UI
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Interactive chat TUI | ☑️ (OpenTUI/SolidJS) | ☑️ (Ink-like) | ☑️ (custom diff-render) | ☑️ (Ink) |
-| Streaming display | ☑️ | ☑️ | ☑️ | ☑️ |
-| Tool call cards | ☑️ | ☑️ | ☑️ | ☑️ |
-| Diff viewer | ☑️ | ☑️ | ☑️ | ➖ |
-| Syntax highlighting | ☑️ | ☑️ | ☑️ (native Rust syntect) | ➖ |
-| Themes | ☑️ | ☑️ | ☑️ | ➖ |
-| Command palette | ☑️ | ➖ | ➖ | ➖ |
-| Model picker | ☑️ | ☑️ | ☑️ | ➖ |
-| Session picker | ☑️ | ☑️ | ☑️ | ➖ |
-| Agent picker | ☑️ | ☑️ | ➖ | ➖ |
-| Image rendering in terminal | ➖ | ➖ | ☑️ (sixel/kitty) | ➖ |
-| Input history navigation | ☑️ | ➖ | ☑️ | ☑️ |
-| Autocomplete | ☑️ | ☑️ | ☑️ | ➖ |
-| Multi-line input | ☑️ | ☑️ (Shift+Enter) | ☑️ | ☑️ (Shift+Enter) |
-| Web UI | ☑️ | ☑️ (Control UI, 24 langs) | ☑️ (rpc-ui) | ➖ |
-| Desktop app | ☑️ (Electron) | ➖ | ➖ | ➖ |
-| Mobile companion | ➖ | ☑️ (nodes) | ➖ | ➖ |
-| Watch dashboard | ➖ | ☑️ | ☑️ (stats dashboard) | ☑️ |
-| Mermaid rendering | ➖ | ➖ | ☑️ | ➖ |
-| LaTeX rendering | ➖ | ➖ | ☑️ (LaTeX-to-Unicode) | ➖ |
-| Mouse support | ☑️ | ➖ | ☑️ | ☑️ |
-| Kitty keyboard protocol | ➖ | ➖ | ☑️ | ➖ |
-| tmux integration | ➖ | ➖ | ☑️ | ➖ |
-| Setup wizard | ☑️ | ☑️ (wizard) | ☑️ (setup-wizard) | ➖ |
-| Status line (git, context, model) | ➖ | ➖ | ☑️ | ➖ |
-| Slash command autocomplete | ☑️ | ☑️ | ☑️ | ➖ |
-| Emoji autocomplete | ➖ | ➖ | ☑️ | ➖ |
-| GitHub ref autocomplete | ➖ | ➖ | ☑️ | ➖ |
-| Internal URL autocomplete | ➖ | ➖ | ☑️ | ➖ |
-| Plan review overlay | ➖ | ➖ | ☑️ | ➖ |
-| Pause screen | ➖ | ➖ | ☑️ | ➖ |
-| Stash dialog | ☑️ | ➖ | ➖ | ➖ |
-| Timeline/fork dialog | ☑️ | ➖ | ➖ | ➖ |
-| Permission prompt UI | ☑️ | ➖ | ☑️ | ☑️ |
-| Background pulse indicator | ☑️ | ➖ | ➖ | ➖ |
-| Lobster pet mascot | ➖ | ☑️ | ➖ | ➖ |
-| Confetti | ➖ | ☑️ | ➖ | ➖ |
-| Custom themes with transitions | ➖ | ☑️ | ☑️ | ➖ |
-| Web push notifications | ➖ | ☑️ | ➖ | ➖ |
-| Onboarding mode | ➖ | ☑️ | ➖ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Interactive chat TUI | ☑️ (custom Rust) | ☑️ (OpenTUI/SolidJS) | ☑️ (Ink-like) | ☑️ (custom diff-render) | ☑️ (Ink) |
+| Streaming display | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| Tool call cards | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| Diff viewer | ☑️ (`/diff`) | ☑️ | ☑️ | ☑️ | ➖ |
+| Syntax highlighting | ☑️ | ☑️ | ☑️ | ☑️ (native Rust syntect) | ➖ |
+| Themes | ☑️ (`/colors`) | ☑️ | ☑️ | ☑️ | ➖ |
+| Command palette | ➖ | ☑️ | ➖ | ➖ | ➖ |
+| Model picker | ☑️ (`/model`) | ☑️ | ☑️ | ☑️ | ➖ |
+| Session picker | ☑️ (`/resume`) | ☑️ | ☑️ | ☑️ | ➖ |
+| Agent picker | ☑️ (`/agents`) | ☑️ | ☑️ | ➖ | ➖ |
+| Mermaid inline rendering | ☑️ (custom 1800x faster) | ➖ | ☑️ (inline HTML) | ☑️ | ➖ |
+| Side panel (live widgets) | ☑️ | ➖ | ☑️ (canvas) | ➖ | ➖ |
+| Info widgets (negative space) | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| 1000+ fps rendering | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| High refresh / low flicker | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Text alignment (centered/left) | ☑️ (`/alignment`, Alt+C) | ➖ | ➖ | ➖ | ➖ |
+| Mouse support | ☑️ | ☑️ | ➖ | ☑️ | ☑️ |
+| Kitty keyboard protocol | ☑️ | ➖ | ➖ | ☑️ | ➖ |
+| Image rendering in terminal | 🔶 (sixel/kitty) | ➖ | ➖ | ☑️ (sixel/kitty) | ➖ |
+| Scrollback (custom) | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Multi-line input | ☑️ (Shift+Enter) | ☑️ | ☑️ (Shift+Enter) | ☑️ | ☑️ (Shift+Enter) |
+| Input interleaving (KV-aware) | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Menubar indicator (macOS) | ☑️ (`menubar`) | ➖ | ➖ | ➖ | ➖ |
+| Swarm/plan info widgets | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Thinking display toggle | ☑️ (`/thinking`) | ➖ | ☑️ | ➖ | ➖ |
+| Terminal capability matrix | ☑️ (documented) | ➖ | ➖ | ➖ | ➖ |
+| Onboarding wizard | ☑️ (`/onboarding-preview`) | ☑️ | ☑️ (wizard) | ☑️ (setup-wizard) | ➖ |
+| Desktop app (native) | ☑️ (desktop2, in progress) | ☑️ (Electron) | ➖ | ➖ | ➖ |
+| iOS app (Tailscale) | 🔶 (planned) | ➖ | ☑️ (nodes) | ➖ | ➖ |
 
 ## 18. Monitoring / Observability
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Structured logging | ☑️ (file logger) | ☑️ | ☑️ | ☑️ (traces JSONL) |
-| OpenTelemetry (OTLP) | ☑️ (experimental) | ☑️ (OTel extension) | ☑️ | ➖ |
-| Prometheus | ➖ | ☑️ (extension) | ➖ | ➖ |
-| Cost tracking | ☑️ (per-message) | ☑️ (usage buckets) | ☑️ (per-session) | ➖ |
-| Token usage stats | ☑️ | ☑️ | ☑️ (dashboard) | 🔶 (estimate) |
-| Heap snapshots | ☑️ | ☑️ | ➖ | ➖ |
-| Startup timing | ☑️ | ➖ | ☑️ (watchdog) | ➖ |
-| Process timing | ➖ | ➖ | ➖ | ☑️ (Timer) |
-| Trace recording | ☑️ | ☑️ (trajectory store) | ☑️ | ☑️ (JSONL traces) |
-| Loop phase tracking | ➖ | ➖ | ➖ | ☑️ (status.json) |
-| Live rate/ETA | ➖ | ➖ | ➖ | ☑️ (watch dashboard) |
-| Profiler | ➖ | ➖ | ☑️ (native circular) | ➖ |
-| Diagnostic support bundle | ➖ | ☑️ | ☑️ (report-bundle) | ➖ |
-| Advisor/watchdog | ➖ | ➖ | ☑️ | ➖ |
-| Emission guards | ➖ | ➖ | ☑️ | ➖ |
-| Transcript recorder | ➖ | ➖ | ☑️ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Structured logging | ☑️ | ☑️ (file logger) | ☑️ | ☑️ | ☑️ (traces JSONL) |
+| OpenTelemetry (OTLP) | ➖ | ☑️ (experimental) | ☑️ (OTel extension) | ☑️ | ➖ |
+| Telemetry (anonymous usage) | ☑️ (`/telemetry`) | ➖ | ➖ | ➖ | ➖ |
+| Cost tracking | ☑️ (`/usage`) | ☑️ (per-message) | ☑️ (usage buckets) | ☑️ (per-session) | ➖ |
+| Token usage stats | ☑️ | ☑️ | ☑️ | ☑️ (dashboard) | 🔶 (estimate) |
+| Trace recording | ☑️ (replay) | ☑️ | ☑️ (trajectory store) | ☑️ | ☑️ (JSONL traces) |
+| Cache warm/cold warnings | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Provider test coverage ledger | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Feedback (thumbs up/down) | ☑️ (`/feedback`) | ➖ | ➖ | ➖ | ➖ |
+| Productivity report | ☑️ (`/productivity`) | ➖ | ➖ | ☑️ | ➖ |
+| Loop phase tracking | ➖ | ➖ | ➖ | ➖ | ☑️ (status.json) |
+| Live rate/ETA | ➖ | ➖ | ➖ | ➖ | ☑️ (watch dashboard) |
+| Process timing per loop | ➖ | ➖ | ➖ | ➖ | ☑️ (Timer) |
 
 ## 19. Gateway / Remote / Infrastructure
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| WebSocket gateway | ➖ | ☑️ | ➖ | ➖ |
-| Remote agent connection | ☑️ (`attach`) | ☑️ | ➖ | ➖ |
-| Daemon service | ➖ | ☑️ (launchd/systemd/schtasks) | ➖ | ➖ |
-| Fleet management | ➖ | ☑️ (Docker/Podman) | ➖ | ➖ |
-| Node host (headless) | ➖ | ☑️ (Android/iOS/macOS) | ➖ | ➖ |
-| Worker runtime (remote inference) | ➖ | ☑️ (workspace rsync) | ➖ | ➖ |
-| mDNS/Bonjour discovery | ☑️ (experimental) | ☑️ | ➖ | ➖ |
-| DNS/Tailscale binding | ➖ | ☑️ | ➖ | ➖ |
-| Proxy capture (test fixtures) | ➖ | ☑️ | ➖ | ➖ |
-| Collab/live sessions | ➖ | ➖ | ☑️ (E2E encrypted) | ➖ |
-| Hot reload (config changes) | ☑️ (config watcher) | ☑️ (reload plans) | ➖ | ➖ |
-| Graceful shutdown | ➖ | ☑️ (session tracking) | ➖ | ➖ |
-| Startup trace | ☑️ | ☑️ | ➖ | ➖ |
-| Container orchestration | ➖ | ☑️ (fleet) | ☑️ (RoboMP sandbox) | ➖ |
-| Dockerfile included | ➖ | ☑️ | ☑️ (multi-stage, RoboMP) | ➖ |
-| Snapshot/backup system | ➖ | ☑️ | ➖ | ➖ |
-| Worker workspace sync | ➖ | ☑️ (rsync, reconcile) | ➖ | ➖ |
-| RFB/VNC view-only filter | ➖ | ☑️ | ➖ | ➖ |
-| Desktop observe/tunnel | ➖ | ☑️ | ➖ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Single-server multi-client | ☑️ (`serve` daemon) | ☑️ (`attach`) | ☑️ | ➖ | ➖ |
+| Remote agent connection | ☑️ (`connect`, `pair`) | ☑️ (`attach`) | ☑️ | ➖ | ➖ |
+| Daemon service | ☑️ (setsid daemon) | ➖ | ☑️ (launchd/systemd/schtasks) | ➖ | ➖ |
+| Hot reload (server exec new binary) | ☑️ (`server reload`) | ☑️ (config watcher) | ☑️ (reload plans) | ➖ | ➖ |
+| Client auto-reconnect | ☑️ | ☑️ | ☑️ | ➖ | ➖ |
+| Harness API / SDK | ☑️ (`api-bridge`, TS SDK) | ☑️ (SDK) | ➖ | ➖ | ➖ |
+| Self-dev canary sessions | ☑️ | ➖ | ➖ | ➖ | ➖ |
+| Remote working dir separation | ☑️ (`--remote-working-dir`) | ➖ | ☑️ (workspace rsync) | ➖ | ➖ |
+| Graceful shutdown / reload recovery | ☑️ | ➖ | ☑️ | ➖ | ➖ |
+| Reboot snapshot/restore | ☑️ (`restart save/restore`) | ➖ | ➖ | ➖ | ➖ |
+| Fleet management | 🔶 (swarm) | ➖ | ☑️ (Docker/Podman) | ➖ | ➖ |
+| mDNS/Bonjour discovery | ➖ | ☑️ (experimental) | ☑️ | ➖ | ➖ |
+| iOS/remote mobile (Tailscale) | 🔶 (planned) | ➖ | ☑️ | ➖ | ➖ |
 
 ## 20. Channels & Messaging
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Multi-channel messaging | ➖ (Slack only) | ☑️ (Discord, Telegram, WhatsApp, Slack, Nostr, Synology, Teams, IRC, 10+ more) | ➖ | ➖ |
-| Channel plugin system | ➖ | ☑️ | ➖ | ➖ |
-| Thread bindings | ➖ | ☑️ | ➖ | ➖ |
-| Typing indicators | ➖ | ☑️ | ➖ | ➖ |
-| Mention gating | ➖ | ☑️ | ➖ | ➖ |
-| Allowlist/denylist (wildcard, id, name, tag) | ➖ | ☑️ | ➖ | ➖ |
-| DM policy | ➖ | ☑️ | ➖ | ➖ |
-| Inbound debounce | ➖ | ☑️ | ➖ | ➖ |
-| Status reactions | ➖ | ☑️ | ➖ | ➖ |
-| Channel health monitor | ➖ | ☑️ | ➖ | ➖ |
-| Channel streaming (block/draft/progress) | ➖ | ☑️ | ➖ | ➖ |
-| Sender labels | ➖ | ☑️ | ➖ | ➖ |
-| Conversation resolution | ➖ | ☑️ | ➖ | ➖ |
-| Polls | ➖ | ☑️ | ➖ | ➖ |
-| Link understanding | ➖ | ☑️ | ➖ | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Multi-channel messaging | 🔶 (safety notifications only) | ➖ (Slack only) | ☑️ (Discord, Telegram, WhatsApp, Slack, Nostr, Synology, Teams, IRC, 10+ more) | ➖ | ➖ |
+| Inter-agent messaging (DM/broadcast) | ☑️ (swarm) | ➖ | ➖ | ☑️ (hub) | ➖ |
+| Gmail tool | ☑️ | ➖ | ☑️ (watcher) | ➖ | ➖ |
+| Safety notification channels | ☑️ (email/sms/desktop/webhook) | ➖ | ➖ | ➖ | ➖ |
+| Polls | ➖ | ➖ | ☑️ | ➖ | ➖ |
+| Meeting bot | ➖ | ➖ | ☑️ | ➖ | ➖ |
 
 ## 21. Voice / Audio / Media
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Realtime voice sessions | ➖ | ☑️ (provider-backed) | ☑️ (WebRTC) | ➖ |
-| TTS (text-to-speech) | ➖ | ☑️ (provider-backed, streaming) | ☑️ (Kokoro local, xAI Grok) | ➖ |
-| STT (speech-to-text) | ➖ | ☑️ (Deepgram, realtime) | ☑️ (Sherpa runtime) | ➖ |
-| Voice barge-in / marks | ➖ | ☑️ | ➖ | ➖ |
-| Meeting bot | ➖ | ☑️ (Google Meet/Zoom/Teams) | ➖ | ➖ |
-| Audio codec / energy detection | ➖ | ☑️ | ➖ | ➖ |
-| Audio transcoding (mulaw) | ➖ | ☑️ | ➖ | ➖ |
-| Microphone capture | ➖ | ➖ | ☑️ (native Rust) | ➖ |
-| Speaker playback | ➖ | ➖ | ☑️ (native Rust) | ➖ |
-| Opus codec | ➖ | ➖ | ☑️ (native Rust) | ➖ |
-| Speech enhancer | ➖ | ➖ | ☑️ | ➖ |
-| TTSR (TTS relay) | ➖ | ➖ | ☑️ | ➖ |
-| Image generation | ➖ | ☑️ (provider-backed) | ☑️ (Gemini/OpenAI/xAI) | ➖ |
-| Music generation | ➖ | ☑️ (provider-backed) | ➖ | ➖ |
-| Video generation | ➖ | ☑️ (provider-backed) | ➖ | ➖ |
-| Image understanding | ☑️ (attachment normalization) | ☑️ | ☑️ (`inspect_image`) | ➖ |
-| Audio transcription | ➖ | ☑️ | ➖ | ➖ |
-| Video understanding | ➖ | ☑️ | ➖ | ➖ |
-| PDF extraction | ➖ | ☑️ (`pdf`) | ☑️ (Markit: PDF/DOCX/EPUB/PPTX/XLSX) | ➖ |
-| QR code generation | ➖ | ☑️ | ➖ | ➖ |
-| FFmpeg execution | ➖ | ☑️ | ➖ | ➖ |
-| Structured extraction (files) | ➖ | ☑️ | ➖ | ➖ |
-| SIXEL terminal image rendering | ➖ | ➖ | ☑️ (native) | ➖ |
-| Kitty graphics terminal image | ➖ | ➖ | ☑️ (native) | ➖ |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Voice dictation (external STT) | ☑️ (`dictate`, `transcript`) | ➖ | ➖ | ➖ | ➖ |
+| Realtime voice sessions | ➖ | ➖ | ☑️ (provider-backed) | ☑️ (WebRTC) | ➖ |
+| TTS (text-to-speech) | ➖ | ➖ | ☑️ (provider-backed) | ☑️ (Kokoro local, xAI Grok) | ➖ |
+| STT (speech-to-text) | 🔶 (external command) | ➖ | ☑️ (Deepgram) | ☑️ (Sherpa runtime) | ➖ |
+| Image generation | ➖ | ➖ | ☑️ | ☑️ (Gemini/OpenAI/xAI) | ➖ |
+| Image understanding | ☑️ (`read` image) | ☑️ (attachment normalization) | ☑️ | ☑️ (`inspect_image`) | ➖ |
+| PDF extraction | ☑️ (`pdf` crate) | ➖ | ☑️ (`pdf`) | ☑️ (Markit) | ➖ |
+| Desktop computer use | ☑️ (`macos_computer_use`) | ➖ | ☑️ | ☑️ (native) | ➖ |
+| Browser automation | ☑️ (`browser` Firefox) | ➖ | ☑️ | ☑️ (CMUX) | ➖ |
 
 ## 22. Slash Commands
 
-| Feature | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|---------|:--------:|:--------:|:-------:|:------:|
-| Custom slash commands | ☑️ (config) | ☑️ (auto-reply) | ☑️ (file-based) | ☑️ (built-in only) |
-| Commands from MCP prompts | ☑️ | ➖ | ☑️ | ➖ |
-| Commands from skills | ☑️ | ☑️ | ☑️ | ➖ |
-| Template variables ($1, $ARGUMENTS) | ☑️ | ☑️ | ☑️ | ➖ |
-| Agent/model per command | ☑️ | ☑️ | ☑️ | ➖ |
-| Subtask/background mode | ☑️ | ➖ | ☑️ | ➖ |
-| Built-in `/init` | ☑️ | ➖ | ➖ | ☑️ (`spiral init`) |
-| Built-in `/review` | ☑️ | ➖ | ☑️ | ➖ |
-| Total slash commands | ~10 | ~20 | 80+ | 12 |
+| Feature | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|---------|:-----:|:--------:|:--------:|:-------:|:------:|
+| Custom slash commands | 🔶 (dynamic skills only) | ☑️ (config) | ☑️ (auto-reply) | ☑️ (file-based) | ☑️ (built-in only) |
+| Commands from MCP prompts | ➖ | ☑️ | ➖ | ☑️ | ➖ |
+| Commands from skills | ☑️ (`/<skillname>`) | ☑️ | ☑️ | ☑️ | ➖ |
+| Built-in `/init` | ➖ | ☑️ | ➖ | ➖ | ☑️ (`spiral init`) |
+| Built-in `/review` | ➖ | ☑️ | ➖ | ☑️ | ➖ |
+| Total slash commands | ~126 | ~10 | ~20 | 80+ | 12 |
 
-### Oh My Pi Slash Commands (unique)
+### jcode Slash Commands (unique)
 
 | Command | Purpose |
 |---------|---------|
-| `/plan`, `/plan-review` | Plan mode toggle + review |
-| `/vibe` | Multi-agent worker mode |
-| `/goal`, `/guided-goal` | Goal management |
-| `/loop`, `/queue` | Loop/queue modes |
-| `/model`, `/switch`, `/fast` | Model selection |
-| `/computer`, `/vision`, `/prewalk` | Mode toggles |
-| `/security` | Security scan management |
-| `/session`, `/new`, `/fresh`, `/clear`, `/drop` | Session lifecycle |
-| `/compact`, `/shake` | Compaction control |
-| `/handoff`, `/resume`, `/rename`, `/move` | Session operations |
-| `/branch`, `/fork`, `/tree` | Session tree |
-| `/jobs`, `/usage`, `/stats` | Job/usage stats |
-| `/todo` | Todo management |
-| `/login`, `/logout` | Provider auth |
-| `/mcp` | MCP management |
-| `/force`, `/live`, `/pause`, `/quit` | Control |
-| `/ssh`, `/btw`, `/tan`, `/omfg` | Misc utilities |
-| `/retry`, `/debug` | Debug/retry |
-| `/memory` | Memory management |
-| `/advisor` | Advisor config |
-| `/export`, `/dump`, `/share`, `/collab`, `/join` | Collaboration/export |
-| `/install` | Plugin marketplace |
-| `/tools`, `/context`, `/extensions`, `/agents` | Tool/agent info |
-| `/changelog`, `/hotkeys` | Info |
-| `/settings`, `/setup` | Configuration |
-| `/add-dir`, `/remove-dir`, `/dirs` | Working dirs |
+| `/swarm`, `/swarm-prompt` | Multi-agent swarm on/off + routing |
+| `/plan` | Plan-only proposal card |
+| `/improve`, `/refactor` | Autonomous repo improvement / safe refactor loops |
+| `/overnight` | Supervised coordinator (hours, review, log) |
+| `/selfdev`, `/rebuild`, `/reload` | Self-development + build/reload |
+| `/commit`, `/commit-push`, `/fast-release`, `/triage` | Git ops + releases |
+| `/memory` | Memory on/off/status |
+| `/compact mode <reactive\|proactive\|semantic>` | Compaction modes |
+| `/rewind`, `/poke`, `/fix` | Recovery/poking |
+| `/catchup`, `/back`, `/transfer` | Session catch-up + handoff |
+| `/save`, `/unsave`, `/rename`, `/fork` | Session bookmarks + branching |
+| `/diff` | Diff display modes |
+| `/effort`, `/fast`, `/transport` | Model/transport control |
+| `/agents`, `/subagent-model` | Agent role models |
+| `/thinking`, `/show-agentgrep-output` | Display toggles |
+| `/dictate`, `/terminal-setup` | Input setup |
+| `/productivity`, `/feedback`, `/telemetry` | Usage + feedback |
+| `/hotkeys`, `/keys`, `/colors` | TUI config |
+| `/overnight` | Ambient supervision |
+| `/mission`, `/goal` | Initiatives (disabled) |
+| `/z`, `/zz`, `/zzz` | Hidden premium mode |
 
 ## 23. Unique to Each Harness
+
+### Only in jcode
+
+| Feature | Description |
+|---------|-------------|
+| Blazing-fast Rust TUI | 27.8 MB RAM / 14 ms first frame / 1000+ fps, custom renderer, low flicker |
+| Mermaid inline rendering | Custom `mermaid-rs-renderer`, ~1800× faster, no browser/TS dep |
+| Single-server multi-client daemon | `jcode serve` + reconnect-on-reload clients over Unix socket |
+| Hot reload (server exec) | Server execs new binary, clients auto-reconnect; `server reload` |
+| Self-dev mode | Agent modifies/rebuilds/tests its own source, reloads binary live |
+| Agent-native VCS (planned) | Lane-first VCS with draft patches, maintenance packets, anchors |
+| Swarm (DAG task graph) | Coordinator + worktree managers, inter-agent DM/broadcast, conflict notify |
+| Memory graph + cascade retrieval | Embedding graph, sidecar relevance verify, post-retrieval maintenance |
+| Semantic skill injection | Skills auto-injected on embedding hit, no startup loading |
+| Agentgrep with structure | Grep returns function displacement + adaptive truncation |
+| Side panel + info widgets | Live files/widgets in negative space, mermaid, real-time updates |
+| Foreign session resume | Resume codex/claude/opencode/pi sessions where they broke |
+| Provider doctor + test coverage | Live E2E provider diagnosis + coverage ledger |
+| Multi-account subscription switching | `/account` switch between ChatGPT/Claude subs |
+| Cache warm/cold warnings | Warns on Anthropic 5-min cache expiry + unexpected miss |
+| Interleaved input (KV-aware) | Sends input without breaking KV cache; Shift+Enter queues |
+| Command-risk classification | `command-risk` crate gates destructive shell |
+| Lifecycle + spawn hooks | turn_end/start/end, pre_tool gate, post_tool, spawn hook |
+| Safety system (2-tier HITL) | Auto-allowed vs requires-permission, notification channels |
+| TS SDK / harness API | `@1jehuang/jcode-sdk` over Unix socket |
+| Replay sessions/video | Replay saved sessions, export as video |
+| Cloud session sync | `cloud sessions` upload/sync/view to cloud storage |
+| macOS menubar indicator | Live session count indicator |
+| Reboot snapshot | `restart save/restore` window state across reboot |
+| Extra-body injection | `extra_body` for backends needing non-standard fields |
+| OpenAPI-compatible custom providers | ~34 named profiles + any custom endpoint |
+| `extra_body`/stream-idle tuning | Provider edge-case workarounds |
 
 ### Only in OpenClaw
 
@@ -710,18 +597,14 @@ Legend: ☑️ available · ➖ not available · 🔶 partial / experimental
 | Polls | Poll creation and voting |
 | Node host (Android/iOS/macOS) | Mobile device pairing with camera, screen, location, notifications |
 | SSRF protection, TLS fingerprint, flood guard | Security infrastructure |
-| Hot reload with reload plans | Config changes trigger hot/restart plans |
 | Gateway server with WebSocket RPC | Full HTTP + WebSocket gateway |
 | Operator approval system | Authorization with iOS push delivery |
 | Exec approval system | Command approval with timeout and manager |
 | Device pairing | Bluetooth/QR pairing with auto-approve |
 | Audit system | Recorder, event store, identity resolution |
 | Task flow registry | Coordinated multi-step task orchestration |
-| Auto-reply command system | Trigger handling, templating, heartbeat |
-| Control UI (24+ pages) | Full web UI with chat, sessions, config, skills, plugins, channels, devices, cron, tasks, usage, workboard, apps, logs, dashboards, debug, browser panel, terminal panel, command palette, mascot, confetti |
 | Context engine | Delegate, init, registry, quarantine health, runtime settings |
 | Pairing system | Setup codes, LAN/Tailscale URL resolution, bootstrap tokens |
-| Package lifecycle (Claws) | Bootstrap, config removal, MCP removal, workspace update |
 | Routing system | Account ID, bindings, channel route targets, peer kind match |
 | Model catalog with remote store | Remote overlay, pricing, manifest planner |
 
@@ -740,23 +623,11 @@ Legend: ☑️ available · ➖ not available · 🔶 partial / experimental
 | Managed preferences (MDM) | macOS enterprise MDM plist support |
 | 9 code formatters | gofmt, mix, prettier, ruff, stylua, nixfmt, gleam, oxfmt, typstfmt |
 | Variable substitution in config | `{env:VAR}` and `{file:path}` |
-| Heap snapshots | V8 heap snapshot generation |
-| LSP as agent tool | Experimental LSP tool for agent to use |
 | models.dev registry integration | Fetch model metadata from models.dev |
-| Structured output (force JSON schema) | Force tool call for final response with schema validation |
 | Control plane / multi-workspace | Workspace creation, listing, session moving, adapter runtimes |
-| Account/Console integration | Device code auth, multi-account, org switching, remote config sync |
 | SDK & client libraries | Auto-generated TypeScript SDK from OpenAPI spec |
 | DB query shell | `opencode db` SQLite shell |
-| Config migration (V1→V2) | Automatic config version migration |
-| Nix flake | Nix package manager support |
-| Tool output truncation | Per-agent truncation limits with progressive strategies |
-| Ambient instructions & references | External context directories/repos as silent context |
-| Filesystem watching | `.gitignore`-aware file watching |
-| Worktree name generation | AI-assisted worktree naming |
-| Attachment normalization | Photon WASM image resizing, JPEG quality ladder |
 | Session sharing (opncd.ai) | Public share URLs with incremental sync |
-| System prompt engineering | Model-specific prompts for GPT, Claude, Gemini, Codex, Kimi, etc. |
 
 ### Only in Oh My Pi
 
@@ -766,10 +637,8 @@ Legend: ☑️ available · ➖ not available · 🔶 partial / experimental
 | 60+ site-specific web scrapers | GitHub, arXiv, Reddit, YouTube, npm, PyPI, MDN, etc. |
 | Multi-language eval (Python/JS/Ruby/Julia) | Persistent kernels with streaming output |
 | Browser automation | Headless, CMUX, ARIA snapshots, browser relay, screenshot |
-| Desktop automation | Screenshot, mouse, keyboard via native OS APIs |
 | Snapcompact (bitmap compaction) | Archive context as PNG frames vision models read back |
 | AST-level code editing | Structural code editing via Rust AST engine |
-| AST grep | AST pattern search and replace |
 | Vibe mode (multi-agent) | Spawn/send/wait/kill/list persistent worker sessions |
 | Goals system | Persistent, budgeted goal tracking |
 | Autoresearch | Automated experiments with git branch management |
@@ -777,16 +646,12 @@ Legend: ☑️ available · ➖ not available · 🔶 partial / experimental
 | Agentic commit | AI commit messages via map-reduce, split-commit, changelog |
 | Hub (agent coordination) | IRC bus, peer messaging, process supervision |
 | Internal URL protocols (15+) | omp://, agent://, artifact://, memory://, security://, etc. |
-| Output minimizer | Per-tool noise reduction with 70+ filters |
-| Cross-platform isolation (CoW) | APFS, OverlayFS, Btrfs, ZFS, FICLONE, ProjFS, Rcopy |
 | Mnemopi (full memory system) | Vector index, episodic graph, entities, triples, beam search, polyphonic recall, Weibull decay |
 | Hindsight memory backend | Bank, mental models, transcript, retention cache |
 | Autolearn (auto skill creation) | Learn from sessions, create/enhance managed skills |
 | 80+ shell builtins | bash-compatible shell with 80+ builtins + coreutils |
 | Security scanning with SARIF | SARIF import/export, seeded repo, finding validation |
-| Discovery (multi-harness import) | Import config from Claude, Codex, Cursor, Gemini, Windsurf, etc. |
 | Live collaboration (E2E encrypted) | AES-256-GCM, relay server, guest replication |
-| Stats dashboard (web UI) | Overview, costs, models, providers, tools, behavior, errors |
 | Metaharness (benchmarks) | Harbor benchmark runner with live dashboard |
 | RoboMP (GitHub automation) | Python webhook-driven issue/PR worker with sandbox |
 | DAP debugger | Breakpoints, variables, stack traces, disassembly, profiling |
@@ -794,33 +659,9 @@ Legend: ☑️ available · ➖ not available · 🔶 partial / experimental
 | Markit (document conversion) | PDF, DOCX, EPUB, PPTX, XLSX → markdown |
 | Hashline (line-anchored edits) | Hash-based line identification, block resolution, streaming |
 | Omptype (schema validation) | ArkType-compatible JIT runtime, JSON Schema emission |
-| Wire protocol | Shared JSON protocol for collab live sessions |
-| Advisor/watchdog | Watchdog, emission guards, transcript recorder |
-| 80+ slash commands | Modes, sessions, lifecycle, collaboration, marketplace |
-| Orchestrate keyword | Typing "orchestrate" triggers multi-agent mode |
-| Magic keywords | Special input keywords (orchestrate, ultrathink) |
-| RPC mode | Remote procedure call for programmatic control |
-| Custom tool loader | Dynamically load custom tools from extensions/files |
-| Custom commands (file-based) | Define slash commands from `.md` files |
-| Hook examples library | auto-commit, confirm-destructive, dirty-repo-guard, etc. |
-| Plugin marketplace | Git URL, local path, marketplace install |
-| Provider dialects (12+) | Anthropic, Gemini, GLM, Kimi, MiniMax, Qwen3, DeepSeek, etc. |
 | Auth gateway (account pooling) | HTTP gateway for routing AI provider requests |
-| Codex auto-reset | Automatic rate-limit reset for OpenAI Codex |
-| Credential pin | Credential pinning for provider auth |
-| Provider image budget | Per-provider image attachment budget management |
-| TTSR (TTS relay) | Streaming TTS to external clients |
-| Pause gate | Process-global pause control |
-| Replay policy | Controls which messages replayed on resume |
-| Foreign session import | Claude and Codex session import |
-| Codex security import | Import Codex Security cloud scan results |
-| Title generator (small model) | Auto-generate session titles using small models |
-| Model discovery (auto) | Discover from Antigravity, Codex, Cursor, Devin, Gemini, etc. |
-| Model identity (family classification) | Family, dialect, priority, markers |
-| pi-shell (bash-compatible) | 80+ builtins, coreutils, output minimizer |
-| pi-voice (native) | CoreAudio, WASAPI, ALSA/PulseAudio backends |
-| pi-iso (isolation PAL) | 8 copy-on-write backends |
-| pi-natives (N-API) | 30+ native modules |
+| Provider dialects (12+) | Anthropic, Gemini, GLM, Kimi, MiniMax, Qwen3, DeepSeek, etc. |
+| Cross-platform isolation (CoW) | APFS, OverlayFS, Btrfs, ZFS, FICLONE, ProjFS, Rcopy |
 
 ### Only in Spiral
 
@@ -837,13 +678,10 @@ Legend: ☑️ available · ➖ not available · 🔶 partial / experimental
 | run_tests tool | Built-in test runner tool |
 | run_lint tool | Built-in linter tool |
 | Hierarchical memory (project/session/feature) | Three-tier memory hierarchy |
-| Project-level facts | Store facts at project level |
 | Failure pattern memory | Remember failure patterns |
 | Live rate/ETA | Real-time rate and ETA in watch dashboard |
 | Loop phase tracking | Track loop phases via status.json |
 | Custom session IDs | `--session-id` for explicit session identification |
-| Built-in slash commands | `/help /exit /clear /mode /model /sessions /new /reset /abort /status /usage /verbose /tools` |
-| TUI with Ink (React for terminals) | Interactive chat interface built with Ink/React |
 | Process timing per loop | Per-feature, per-loop (agent/verifier/engine) timing breakdown |
 | 5 agent modes | normal, plan, bypass, safe, interactive |
 
@@ -851,39 +689,41 @@ Legend: ☑️ available · ➖ not available · 🔶 partial / experimental
 
 ## Grand Summary
 
-| Dimension | OpenCode | OpenClaw | Oh My Pi | Spiral |
-|-----------|:--------:|:--------:|:-------:|:------:|
-| **CLI Commands** | 28 | 45+ | 35 | 8 |
-| **Agent Modes** | 5 | 8 | 12+ | 5 |
-| **Built-in Tools** | 15 | 40+ | 30+ | 18 |
-| **LLM Providers** | ~25 | ~60+ | ~75+ | 3 |
-| **Memory Features** | 7 | 9 | 9+ | 6 |
-| **Permission/Security Features** | 8 | 17+ | 10+ | 5 |
-| **TUI Features** | 14 | 14 | 18+ | 8 |
-| **Config Features** | 10 | 10 | 10 | 3 |
-| **MCP Features** | 7 | 8 | 8+ | 4 |
-| **Git Features** | 7 | 4 | 5+ | 6 |
-| **Session Features** | 10 | 11 | 15+ | 5 |
-| **Streaming Features** | 5 | 6 | 6 | 1 |
-| **Subagent/Task Features** | 6 | 7 | 8+ | 1 |
-| **Diff/Edit Features** | 9 | 7 | 11+ | 4 |
-| **Search Features** | 7 | 7 | 10+ | 2 |
-| **Hook/Event Features** | 6 | 6 | 10+ | 1 |
-| **Skill/Plugin Features** | 8 | 8 | 10+ | 1 |
-| **Monitoring Features** | 8 | 9 | 10+ | 5 |
-| **Auth Features** | 7 | 8 | 10+ | 1 |
-| **Gateway/Remote** | 4 | 9 | 2 | 0 |
-| **Channel Features** | 1 | 15+ | 0 | 0 |
-| **Voice/Media Features** | 1 | 10+ | 12+ | 0 |
-| **Slash Commands** | ~10 | ~20 | 80+ | 12 |
-| **Unique Features** | 2 | 4 | 8+ | 9 |
+| Dimension | jcode | OpenCode | OpenClaw | Oh My Pi | Spiral |
+|-----------|:-----:|:--------:|:--------:|:-------:|:------:|
+| **CLI Commands** | 30+ | 28 | 45+ | 35 | 8 |
+| **Agent Modes** | 9 | 5 | 8 | 12+ | 5 |
+| **Built-in Tools** | 31 | 15 | 40+ | 30+ | 18 |
+| **LLM Providers** | ~50 | ~25 | ~60+ | ~75+ | 3 |
+| **Memory Features** | 12+ | 7 | 9 | 9+ | 6 |
+| **Permission/Security Features** | 10+ | 8 | 17+ | 10+ | 5 |
+| **TUI Features** | 20+ | 14 | 14 | 18+ | 8 |
+| **Config Features** | 10+ | 10 | 10 | 10 | 3 |
+| **MCP Features** | 6+ | 7 | 8 | 8+ | 4 |
+| **Git Features** | 5+ | 7 | 4 | 5+ | 6 |
+| **Session Features** | 14+ | 10 | 11 | 15+ | 5 |
+| **Streaming Features** | 5+ | 5 | 6 | 6 | 1 |
+| **Subagent/Task Features** | 9+ | 6 | 7 | 8+ | 1 |
+| **Diff/Edit Features** | 6+ | 9 | 7 | 11+ | 4 |
+| **Search Features** | 8+ | 7 | 7 | 10+ | 2 |
+| **Hook/Event Features** | 6+ | 6 | 6 | 10+ | 1 |
+| **Skill/Plugin Features** | 6+ | 8 | 8 | 10+ | 1 |
+| **Monitoring Features** | 8+ | 8 | 9 | 10+ | 5 |
+| **Auth Features** | 10+ | 7 | 8 | 10+ | 1 |
+| **Gateway/Remote** | 8+ | 4 | 9 | 2 | 0 |
+| **Channel Features** | 4+ | 1 | 15+ | 0 | 0 |
+| **Voice/Media Features** | 6+ | 1 | 10+ | 12+ | 0 |
+| **Slash Commands** | ~126 | ~10 | ~20 | 80+ | 12 |
+| **Unique Features** | 15+ | 4 | 2 | 8+ | 9 |
 
 ### Key Takeaways
 
-**OpenClaw** — The most feature-complete harness. Best for always-on personal assistant across many communication channels. Richest channel system (15+ platforms), meeting bot, voice sessions, fleet/daemon management, security infrastructure, 24-language UI, ClawHub marketplace.
+**jcode** — The new leader on performance and multi-agent coordination. Blazing-fast Rust TUI (27.8 MB / 14 ms first frame, ~1000 fps), single-server multi-client daemon with hot reload, self-dev mode (agent modifies its own source), graph-based memory with cascade retrieval, DAG-driven swarm coordination with inter-agent messaging, semantic skill injection, provider doctor with live coverage, multi-account subscription switching, and ~50 providers. Best-in-class resource efficiency for scaling multi-session workflows. Weakest areas: no plugin marketplace (self-dev substitutes), no multi-channel chat/voice, no web UI yet (desktop + iOS in progress).
+
+**OpenClaw** — The most feature-complete harness for always-on personal assistance. Richest channel system (15+ platforms), meeting bot, voice sessions, fleet/daemon management, security infrastructure, 24-language UI, ClawHub marketplace.
 
 **OpenCode** — Best for IDE-integrated coding. Cleanest config system, ACP/VS Code integration, git-based revert, plan/build workflow, GitHub App agent, 9 code formatters, models.dev registry, enterprise features, OpenAPI spec generation, control plane.
 
-**Oh My Pi** — Most technically advanced and broadest tool surface. Native Rust acceleration, 75+ providers, 60+ scrapers, 20+ search providers, multi-language eval, browser/desktop automation, snapcompact compaction, Mnemopi memory, vibe mode, goals, autoresearch, cleanse, agentic commit, hub, 80+ slash commands, live collab, DAP debugger, security scanning, cross-platform isolation.
+**Oh My Pi** — Most technically advanced and broadest tool surface. Native Rust acceleration, 75+ providers, 60+ scrapers, multi-language eval, snapcompact compaction, Mnemopi memory, vibe mode, goals, agentic commit, hub, 80+ slash commands, live collab, DAP debugger, cross-platform isolation.
 
 **Spiral** — Smallest feature surface but most autonomous. Unique 4-loop architecture (agent→verifier→event→engine), ADR-driven autonomy, self-improving meta-loop, hierarchical memory with failure patterns, forever mode, built-in test/lint tools. Focused on self-improving autonomous coding rather than interactive assistance.
