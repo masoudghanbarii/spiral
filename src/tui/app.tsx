@@ -663,6 +663,13 @@ export function TuiApp({
       const sess = sessions.find((s) => s.id === sid);
       if (!sess) return;
 
+      // Derive session name from first user message
+      if (sess.messages.length === 0 && sess.name === "default") {
+        const preview = trimmed.length > 40 ? trimmed.slice(0, 37) + "…" : trimmed;
+        const newName = `#1 - ${preview}`;
+        updateSession(sid, { name: newName, shortName: newName.length > 20 ? newName.slice(0, 17) + "…" : newName });
+      }
+
       const userMsg: ChatMessage = { role: "user", content: trimmed };
       const newMessages = [...sess.messages, userMsg];
       updateSession(sid, { messages: newMessages });
@@ -678,6 +685,10 @@ export function TuiApp({
       // Add the prompt as first user message
       const sid = sessions[0]!.id;
       addLogEntry(sid, { kind: "user", text: prompt });
+      // Derive session name from first user message
+      const preview = prompt.length > 40 ? prompt.slice(0, 37) + "…" : prompt;
+      const newName = `#1 - ${preview}`;
+      updateSession(sid, { name: newName, shortName: newName.length > 20 ? newName.slice(0, 17) + "…" : newName });
       const userMsg: ChatMessage = { role: "user", content: prompt };
       updateSession(sid, { messages: [userMsg] });
       void runAgentTurn(sid, [userMsg]);

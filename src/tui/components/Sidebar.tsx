@@ -68,7 +68,7 @@ function SessionRow({ session }: { session: SessionView }): React.ReactElement {
       </Box>
 
       {/* Status + group dot + link */}
-      <Box alignItems="center" gap={1} marginTop={1}>
+      <Box alignItems="center" gap={1}>
         <Text color={session.statusColor as any}>{session.statusIcon}</Text>
         <Text color="gray">{session.statusLabel}</Text>
         {session.groupDot && <Text color={session.groupDot as any}>●</Text>}
