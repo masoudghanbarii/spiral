@@ -108,7 +108,7 @@ export const MODE_META: Record<SessionMode, { color: string; label: string; desc
   loop: {
     color: "#ff6b35",
     label: "loop",
-    desc: "Continuous dev loop — implement, test, fix, repeat until goal met",
+    desc: "God mode — all tools enabled, continuous dev loop, no approval needed",
   },
 };
 

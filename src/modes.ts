@@ -43,7 +43,8 @@ export function getSystemPromptSuffix(mode: AgentMode): string {
       );
     case "loop":
       return (
-        "\n\nIMPORTANT: You are in LOOP MODE. This is a continuous development loop.\n" +
+        "\n\nIMPORTANT: You are in LOOP MODE — god mode. All tools are enabled without approval.\n" +
+        "This is a continuous development loop.\n" +
         "Follow this cycle:\n" +
         "1. Implement the requested feature or fix\n" +
         "2. Run tests (run_tests) and lint (run_lint)\n" +
@@ -52,8 +53,8 @@ export function getSystemPromptSuffix(mode: AgentMode): string {
         "5. When tests pass, summarize what was done and ask the user if the goal is achieved\n" +
         "6. If the user says it is not done, continue implementing based on their feedback\n" +
         "7. Do NOT stop until the user confirms the goal is achieved or tells you to stop\n" +
-        "\nDo not ask for approval before running tests or lint — just run them.\n" +
-        "Be thorough: test edge cases, check for regressions, verify the implementation works."
+        "\nDo not ask for approval — just run tools directly. Be thorough:\n" +
+        "test edge cases, check for regressions, verify the implementation works."
       );
     default:
       return "";

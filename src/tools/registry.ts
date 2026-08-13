@@ -322,7 +322,7 @@ export class ToolRegistry {
     const fn = this.tools.get(name);
     if (!fn) return `Error: unknown tool '${name}'`;
     if (this.disabled.has(name)) return `Error: tool '${name}' disabled in ${this.agentMode} mode`;
-    if (this.agentMode !== "bypass") {
+    if (this.agentMode !== "bypass" && this.agentMode !== "loop") {
       const [allowed, reason] = await this.permissions.shouldExecute(name, args);
       if (!allowed) return `Error: ${reason}`;
     }
