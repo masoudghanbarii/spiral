@@ -362,6 +362,8 @@ export function TuiApp({
           sess.agent,
           sess.tokensMax,
         );
+        // Clear screen to prevent ghosting of old frame
+        process.stdout.write("\x1b[2J\x1b[H");
         setSessions((prev) => [...prev, newSession]);
         setActiveSessionId(newId);
         addLogEntry(newId, {

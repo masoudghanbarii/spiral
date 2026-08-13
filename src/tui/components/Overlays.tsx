@@ -14,7 +14,7 @@ interface ModeOverlayProps {
 export function ModeOverlay({
   open,
   options,
-  overlayIndex: _overlayIndex,
+  overlayIndex,
   onClose: _onClose,
 }: ModeOverlayProps): React.ReactElement | null {
   if (!open) return null;
@@ -23,7 +23,7 @@ export function ModeOverlay({
     <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
       <Box
         flexDirection="column"
-        borderStyle="single"
+        borderStyle="round"
         borderColor="#3a6bd8"
         paddingX={2}
         paddingY={1}
@@ -32,13 +32,13 @@ export function ModeOverlay({
         overflow="hidden"
       >
         <Box marginBottom={1}>
-          <Text color="#7a8494">shift+tab — switch mode</Text>
+          <Text color="#7a8494">shift+tab — switch mode · ↑↓ navigate · enter select</Text>
         </Box>
-        {options.map((m) => (
+        {options.map((m, i) => (
           <Box key={m.key} paddingX={1} paddingY={0} marginBottom={1}>
             <Box>
-              <Text bold color={m.color as any}>
-                {m.label}
+              <Text bold color={m.color as any} inverse={i === overlayIndex}>
+                {i === overlayIndex ? " > " : "   "}{m.label}
               </Text>
             </Box>
             <Box>
@@ -63,7 +63,7 @@ interface SessionOverlayProps {
 export function SessionOverlay({
   open,
   options,
-  overlayIndex: _overlayIndex,
+  overlayIndex,
   onClose: _onClose,
 }: SessionOverlayProps): React.ReactElement | null {
   if (!open) return null;
@@ -72,7 +72,7 @@ export function SessionOverlay({
     <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
       <Box
         flexDirection="column"
-        borderStyle="single"
+        borderStyle="round"
         borderColor="#3a6bd8"
         paddingX={2}
         paddingY={1}
@@ -81,13 +81,13 @@ export function SessionOverlay({
         overflow="hidden"
       >
         <Box marginBottom={1}>
-          <Text color="#7a8494">tab — switch session</Text>
+          <Text color="#7a8494">tab — switch session · ↑↓ navigate · enter select</Text>
         </Box>
-        {options.map((a) => (
+        {options.map((a, i) => (
           <Box key={a.key} paddingX={1} paddingY={0} marginBottom={1}>
             <Box>
-              <Text bold color={a.color as any}>
-                {a.label}
+              <Text bold color={a.color as any} inverse={i === overlayIndex}>
+                {i === overlayIndex ? " > " : "   "}{a.label}
               </Text>
             </Box>
             <Box>

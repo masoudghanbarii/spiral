@@ -52,9 +52,9 @@ function SessionRow({ session }: { session: SessionView }): React.ReactElement {
       flexDirection="column"
       paddingLeft={1}
       paddingRight={1}
-      paddingTop={1}
-      paddingBottom={1}
-      marginBottom={1}
+      paddingTop={0}
+      paddingBottom={0}
+      marginBottom={0}
       borderStyle="single"
       borderRight={false}
       borderTop={false}
