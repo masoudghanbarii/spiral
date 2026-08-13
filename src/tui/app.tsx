@@ -702,8 +702,8 @@ export function TuiApp({
             });
           }
 
-          // Prepare for next iteration — clear the assistant placeholder for streaming
-          if (config.streamEnabled && iter < MAX_ITERATIONS - 1) {
+          // Prepare for next iteration — add assistant placeholder for next LLM response
+          if (iter < MAX_ITERATIONS - 1) {
             addLogEntry(sid, { kind: "assistant", text: "" });
           }
         }
