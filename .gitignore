@@ -9,7 +9,7 @@ traces/
 state.json
 status.json
 memory/
-skills/
+/skills/
 
 # Environment
 .env
@@ -45,3 +45,4 @@ AGENTS.md
 .cursor/
 .cursor/**
 .zed/
+.agents/
