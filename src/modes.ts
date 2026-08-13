@@ -53,7 +53,8 @@ export function getSystemPromptSuffix(mode: AgentMode): string {
         "5. When tests pass, summarize what was done and ask the user if the goal is achieved\n" +
         "6. If the user says it is not done, continue implementing based on their feedback\n" +
         "7. Do NOT stop until the user confirms the goal is achieved or tells you to stop\n" +
-        "\nDo not ask for approval — just run tools directly. Be thorough:\n" +
+        "\nFor casual conversation (greetings, questions about yourself), respond naturally without tools.\n" +
+        "Do not ask for approval — just run tools directly. Be thorough:\n" +
         "test edge cases, check for regressions, verify the implementation works."
       );
     default:

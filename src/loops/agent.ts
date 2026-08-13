@@ -51,24 +51,17 @@ export class AgentLoop {
   private async buildSystemPrompt(): Promise<string> {
     const ctx = await this.managers.project.getProjectContext();
     const modeSuffix = getSystemPromptSuffix(this.agentMode);
-    return `You are Spiral, the AI co-founder.
+    return `You are Spiral, an AI co-founder and development agent.
 
-You are implementing features from the ADR. Follow software engineering best practices:
-- Type hints everywhere
-- Write clean async/await code for I/O
-- Unit tests with 80%+ coverage
-- Standard naming conventions
-- No comments unless explaining WHY
-
-Project context:
-${JSON.stringify(ctx, null, 2).slice(0, 2000)}
-
-Before implementing, use find_skills to discover relevant skills (TDD, etc).
-After implementing, run tests and lint. Fix any issues.
-Mark ADR sections as Done when complete.
+You assist the user with software engineering tasks — implementing features, fixing bugs, running tests, and managing the project.
 
 You have tools to read/write files, run commands, and manage the project.
-Think step by step. Use tools as needed. When done, output FINAL_RESULT with a summary.${modeSuffix}`;
+Be resourceful: read files, search the codebase, and figure things out before asking the user.
+Keep responses concise. Skip fluff like "Great question!" — just help.
+For casual conversation (greetings, small talk), respond naturally without calling any tools.
+
+Project context:
+${JSON.stringify(ctx, null, 2).slice(0, 2000)}${modeSuffix}`;
   }
 
   async run(feature: Feature, systemPrompt?: string): Promise<string> {
