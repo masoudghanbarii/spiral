@@ -105,21 +105,37 @@ export function SessionOverlay({
 interface AgentPlanOverlayProps {
   open: boolean;
   roleRows: RoleRow[];
+  overlayIndex: number;
   onClose: () => void;
 }
 
 export function AgentPlanOverlay({
   open,
   roleRows,
+  overlayIndex,
   onClose: _onClose,
 }: AgentPlanOverlayProps): React.ReactElement | null {
   if (!open) return null;
+
+  // Flatten all role×model pairs for navigation
+  const flat: { role: string; modelName: string; selected: boolean }[] = [];
+  roleRows.forEach((r) => {
+    r.models.forEach((mo) => {
+      flat.push({
+        role: r.role,
+        modelName: mo.name,
+        selected: mo.borderColor === "#4f8cff",
+      });
+    });
+  });
+
+  let currentIdx = 0;
 
   return (
     <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
       <Box
         flexDirection="column"
-        borderStyle="single"
+        borderStyle="round"
         borderColor="#3a6bd8"
         paddingX={2}
         paddingY={1}
@@ -128,28 +144,33 @@ export function AgentPlanOverlay({
         overflow="hidden"
       >
         <Box marginBottom={1}>
-          <Text color="#7a8494">/agentplan — model per role</Text>
+          <Text color="#7a8494">/agentplan — model per role · ←→ navigate · enter select · esc close</Text>
         </Box>
         {roleRows.map((r) => (
-          <Box key={r.role} flexDirection="column" marginBottom={0}>
+          <Box key={r.role} flexDirection="column" marginBottom={1}>
             <Box>
-              <Text bold color="#e6e9ef">
-                {r.label}
-              </Text>
+              <Text bold color="#e6e9ef">{r.label}</Text>
             </Box>
             <Box marginBottom={1}>
               <Text color="#6b7383">{r.desc}</Text>
             </Box>
             <Box flexDirection="row" gap={1} flexWrap="wrap">
-              {r.models.map((mo) => (
-                <Text
-                  key={mo.name}
-                  color={mo.borderColor === "#4f8cff" ? "#4f8cff" : "#6b7383"}
-                  bold={mo.borderColor === "#4f8cff"}
-                >
-                  {mo.name}
-                </Text>
-              ))}
+              {r.models.map((mo) => {
+                const flatIdx = currentIdx;
+                currentIdx++;
+                const isCursor = flatIdx === overlayIndex;
+                const isSelected = mo.borderColor === "#4f8cff";
+                return (
+                  <Text
+                    key={mo.name}
+                    color={isSelected ? "#4f8cff" : isCursor ? "#e6e9ef" : "#6b7383"}
+                    bold={isSelected || isCursor}
+                    inverse={isCursor}
+                  >
+                    {isCursor ? " > " : "   "}{mo.name}
+                  </Text>
+                );
+              })}
             </Box>
           </Box>
         ))}

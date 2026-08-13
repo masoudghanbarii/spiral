@@ -380,6 +380,10 @@ export function TuiApp({
       if (!sess) return;
 
       if (cmd === "/agentplan") {
+        // Start cursor at the currently selected model for the first role (plan)
+        const currentModel = activeSession.roleModels.plan;
+        const modelIdx = MODEL_LIST.indexOf(currentModel);
+        setOverlayIndex(modelIdx >= 0 ? modelIdx : 0);
         setOverlay("agentplan");
         setInput("");
         setSlashIndex(0);
@@ -551,6 +555,7 @@ export function TuiApp({
           });
           return true;
         case "agentplan":
+          { const currentModel = activeSession.roleModels.plan; const modelIdx = MODEL_LIST.indexOf(currentModel); setOverlayIndex(modelIdx >= 0 ? modelIdx : 0); }
           setOverlay("agentplan");
           return true;
         case "unknown":
@@ -895,10 +900,38 @@ export function TuiApp({
       return;
     }
 
-    // AgentPlan overlay — Escape or Enter to close
+    // AgentPlan overlay — navigation + select + close
     if (overlay === "agentplan") {
-      if (key.escape || key.return) {
+      const totalModels = ROLE_ORDER.length * MODEL_LIST.length;
+      if (key.escape) {
         setOverlay(null);
+        return;
+      }
+      if (key.leftArrow) {
+        setOverlayIndex((i) => (i - 1 + totalModels) % totalModels);
+        return;
+      }
+      if (key.rightArrow) {
+        setOverlayIndex((i) => (i + 1) % totalModels);
+        return;
+      }
+      if (key.upArrow) {
+        setOverlayIndex((i) => (i - MODEL_LIST.length + totalModels) % totalModels);
+        return;
+      }
+      if (key.downArrow) {
+        setOverlayIndex((i) => (i + MODEL_LIST.length) % totalModels);
+        return;
+      }
+      if (key.return) {
+        // Select the model at the current index
+        const roleIdx = Math.floor(overlayIndex / MODEL_LIST.length);
+        const modelIdx = overlayIndex % MODEL_LIST.length;
+        const role = ROLE_ORDER[roleIdx];
+        const model = MODEL_LIST[modelIdx];
+        if (role && model) {
+          setRoleModel(activeSessionId, role as "plan" | "build" | "judge", model);
+        }
         return;
       }
       return;
@@ -1261,7 +1294,7 @@ export function TuiApp({
           ) : overlay === "session" ? (
             <SessionOverlay open={true} options={sessionOptions} overlayIndex={overlayIndex} onClose={() => setOverlay(null)} />
           ) : overlay === "agentplan" ? (
-            <AgentPlanOverlay open={true} roleRows={roleRows} onClose={() => setOverlay(null)} />
+            <AgentPlanOverlay open={true} roleRows={roleRows} overlayIndex={overlayIndex} onClose={() => setOverlay(null)} />
           ) : (
             <ChatLog
               entries={activeSession.log}
@@ -1331,7 +1364,7 @@ export function TuiApp({
               activeSession.plugins.length > 0 ? activeSession.plugins.join(", ") : null
             }
             roleModelsLabel={roleModelsLabel}
-            onOpenAgentPlan={() => setOverlay("agentplan")}
+            onOpenAgentPlan={() => { const currentModel = activeSession.roleModels.plan; const modelIdx = MODEL_LIST.indexOf(currentModel); setOverlayIndex(modelIdx >= 0 ? modelIdx : 0); setOverlay("agentplan"); }}
           />
         </Box>
       </Box>
