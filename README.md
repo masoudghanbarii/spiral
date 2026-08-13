@@ -1,196 +1,208 @@
-# Spiral — AI Co-founder
+# Spiral ◈ — AI co-founder built for agents and loops
 
-Spiral is an autonomous AI co-founder powered by **hill climbing loop architecture**. It reads an Architecture Decision Record (ADR), extracts implementable features, and works through them in a continuous 4-loop harness — implementing, verifying, shipping, and self-improving without stopping.
+<p align="center">
+  <img src="docs/assets/spiral-logo.png" alt="Spiral — thin coil logo" width="200">
+</p>
 
-Named for the spiral — looping upward, evolving with each cycle.
+<p align="center">
+  <a href="https://github.com/masoudghanbarii/spiral/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/masoudghanbarii/spiral/ci.yml?branch=master&style=flat-square&label=ci" alt="CI status"></a>
+  <a href="https://www.npmjs.com/package/spiral"><img src="https://img.shields.io/npm/v/spiral?style=flat-square&label=npm" alt="npm version"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/spiral?style=flat-square" alt="Node.js version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License: MIT"></a>
+  <a href="https://discord.gg/spiral"><img src="https://img.shields.io/discord/spiral?label=discord&logo=discord&logoColor=white&color=5865F2&style=flat-square" alt="Discord"></a>
+</p>
 
-## Architecture: 4 Nested Loops
+Spiral is an AI co-founder harness that runs autonomous development loops. It implements features from ADRs, tests them, fixes what breaks, and iterates until the goal is met — all inside a terminal-native TUI with multi-session support.
 
 ```
-                    ┌─────────────────────────────────────┐
-                    │         ENGINE ANALYSIS LOOP         │  (meta)
-                    │  Traces → analysis → harness tweaks  │
-                    └────────────┬────────────────────────┘
-                                 │ feeds back to
-                    ┌────────────▼────────────────────────┐
-                    │          EVENT LOOP                  │  (outer)
-                    │  ADR → features → queue → ship       │
-                    └────────────┬────────────────────────┘
-                                 │ triggers
-                    ┌────────────▼────────────────────────┐
-                    │       VERIFICATION LOOP              │  (middle)
-                    │  Grade → pass/fail → retry w/feedback│
-                    └────────────┬────────────────────────┘
-                                 │ wraps
-                    ┌────────────▼────────────────────────┐
-                    │          AGENT LOOP                 │  (innermost)
-                    │  ReAct: model → tools → observe     │
-                    └─────────────────────────────────────┘
+╭──────────────────────────────────────────────────────────────────╮
+│ ◈ spiral v1.0  2 sessions · 1 groups sharing context             │
+╰──────────────────────────────────────────────────────────────────╯
+╭──────────────╮ ╭──────────────────────────────────────────────╮
+│ Sessions     │ │ #1 - auth · running                          │
+│              │ │ > implement JWT auth from ADR §2             │
+│ ┌──────────┐ │ │ ✦ Implementing JWT middleware...             │
+│ │ search…  │ │ │ ⚡ run_tests  ✓ 12 passed, 0 failed          │
+│ └──────────┘ │ │ ✦ All tests pass. Goal achieved?             │
+│              │ │                                              │
+│ #1 auth      │ │ > looks good, ship it                        │
+│ ● running    │ │ ✦ Committed. Done! ✅                        │
+│              │ │                                              │
+│ #2 docs      │ │ 📨 Message from s1: auth implemented, JWT... │
+│ ○ connected  │ ╰──────────────────────────────────────────────╯
+╰──────────────╯
 ```
 
-## Quick Start
+## Install
 
 ```bash
-# Install globally
 npm install -g spiral
-
-# Start the TUI (interactive chat interface)
-spiral                    # enters TUI by default
-spiral tui                # explicit TUI
-spiral chat               # alias for tui
-
-# Autonomous modes
-spiral run                # Execute all features once
-spiral forever            # Continuous loop (Ctrl+C to stop)
-spiral init               # Parse ADR, show feature list
-spiral reset              # Clear state, start fresh
-spiral watch              # Live dashboard
-spiral sessions           # List all sessions
 ```
 
-## TUI — Terminal User Interface
+Requires Node.js 22 or later.
+
+## Quick start
 
 ```bash
-spiral                    # enters TUI (default)
-spiral tui --message "hello"
-spiral chat --session-id my-session
+# Launch the TUI
+spiral
+
+# Or start with a specific model
+SPIRAL_MODEL=deepseek-v4-flash:cloud spiral
+
+# Or use a different provider
+SPIRAL_LLM_PROVIDER=openai SPIRAL_MODEL=gpt-4o spiral
 ```
 
-The TUI provides an interactive chat interface with the AI agent:
+The onboarding screen lets you type your first prompt and hit Enter to launch a session.
 
-- **Header**: connection state, agent mode, model, session
-- **Chat log**: user messages, assistant replies, tool cards, system notices
-- **Status line**: running/idle/error, token counts, message count
-- **Input**: text editor with history navigation
+## How it works
 
-### Slash Commands
+Spiral runs an **agent loop** — the LLM receives your request, calls tools (read/write files, run commands, run tests), and iterates until the task is done.
 
-```
-/help              Show help
-/exit              Exit (Ctrl+D also works)
-/clear             Clear conversation
-/mode <mode>       Switch: normal|plan|bypass|safe|interactive
-/model <model>     Switch LLM model
-/sessions          List all sessions
-/new               Start fresh session
-/reset             Reset session state
-/abort             Abort active run (Esc also works)
-/status            Show session summary
-/usage             Show token usage
-/verbose <on|off>  Toggle verbose tool output
-/tools             List available tools
-/history           Show conversation stats
-```
+### Modes
 
-### Keyboard Shortcuts
+| Mode | Description |
+|---|---|
+| `normal` | Default — asks approval for destructive tools |
+| `loop` | Continuous dev loop — implement, test, fix, repeat until goal met |
+| `plan` | Read-only — outputs an implementation plan |
+| `bypass` | Skip all permission checks |
+| `safe` | Read-only, no command execution |
+| `interactive` | User can interject mid-run |
 
-```
-Enter              Send message
-Shift+Enter        Insert newline
-Ctrl+J             Insert newline
-Esc                Abort active run
-Ctrl+C             Clear input (press twice to exit)
-Ctrl+D             Exit
-Ctrl+L             Clear screen
-Up/Down            Navigate input history
-```
+### Multi-session
 
-### Local Shell
+Spiral's TUI supports multiple concurrent sessions. Each session has its own conversation context, model, and mode. Sessions can:
 
-Prefix with `!` to run a shell command:
-```
-!ls -la
-!git status
-!npm test
-```
+- **Share info** — use `send_to_session` to pass messages between sessions
+- **Link context** — use `link_sessions` to visually group sessions (colored borders, shared group label)
+- **Run in parallel** — switch between sessions with `Tab`
 
-## Agent Modes
+### Tools
 
-```bash
-spiral run --behavior plan         # Read-only, outputs implementation plan
-spiral run --behavior bypass       # Skip all permission checks
-spiral run --behavior safe         # Read-only, no command execution
-spiral run --behavior interactive  # User can interject mid-run
-spiral run --behavior normal       # Default: ask approval for destructive tools
-```
-
-## Multi-Session
-
-```bash
-spiral run --session-id auth-feature
-spiral run --session-id db-schema
-spiral sessions                    # List both
-```
-
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `spiral run` | Execute all features once |
-| `spiral forever` | Run continuously until interrupted |
-| `spiral init` | Parse ADR and initialize feature queue |
-| `spiral reset` | Clear persisted state |
-| `spiral watch` | Live dashboard (rate, ETA, loop phase, LLM latency) |
-| `spiral sessions` | List all sessions |
-| `spiral run --behavior plan` | Plan mode (read-only) |
-| `spiral run --behavior bypass` | Bypass permissions |
-| `spiral run --behavior safe` | Safe mode (read-only) |
-| `spiral run --behavior interactive` | Interactive mode |
+The agent has access to file operations, git, shell commands, tests, linting, web search, memory, code review, and inter-session communication.
 
 ## Configuration
 
-All via environment variables:
+Spiral reads configuration from environment variables, a JSON config file, or defaults.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `SPIRAL_OLLAMA_API_KEY` | — | Ollama API key |
-| `SPIRAL_OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama API base URL |
-| `SPIRAL_MODEL` | `deepseek-v4-flash:cloud` | LLM model |
-| `SPIRAL_PROJECT_DIR` | cwd | Path to target project |
-| `SPIRAL_LLM_PROVIDER` | `ollama` | Provider: ollama, anthropic, openai |
-| `SPIRAL_AGENT_MODE` | `normal` | Agent mode: normal, plan, bypass, safe, interactive |
-| `SPIRAL_AUTO_APPROVE` | `false` | Skip permission checks |
-| `SPIRAL_CONTEXT_WINDOW_TOKENS` | `32768` | Context window size for compaction |
-| `SPIRAL_MEMORY_DIR` | `<spiral>/memory` | Hierarchical memory root |
-| `SPIRAL_STREAM` | `false` | Enable streaming LLM responses |
+```bash
+# Core
+SPIRAL_MODEL=deepseek-v4-flash:cloud    # Model name
+SPIRAL_LLM_PROVIDER=ollama              # Provider: ollama|openai|anthropic|deepseek|...
+SPIRAL_OLLAMA_BASE_URL=http://localhost:11434
 
-## Project Structure
+# Behavior
+SPIRAL_STREAM=true                      # Enable streaming responses
+SPIRAL_AUTO_APPROVE=false               # Auto-approve all tools
+SPIRAL_AGENT_MODE=normal                # Default mode
+
+# Limits
+SPIRAL_MAX_AGENT_ITERATIONS=50          # Max iterations per agent run
+SPIRAL_CONTEXT_WINDOW_TOKENS=32768      # Context window size
+```
+
+## Providers
+
+Spiral supports any Ollama-compatible API and OpenAI-compatible APIs:
+
+| Provider | Env var | Default model |
+|---|---|---|
+| Ollama | `SPIRAL_LLM_PROVIDER=ollama` | `deepseek-v4-flash:cloud` |
+| OpenAI | `SPIRAL_LLM_PROVIDER=openai` | `gpt-4o` |
+| Anthropic | `SPIRAL_LLM_PROVIDER=anthropic` | `claude-3-5-sonnet` |
+| DeepSeek | `SPIRAL_LLM_PROVIDER=deepseek` | `deepseek-chat` |
+| OpenRouter | `SPIRAL_LLM_PROVIDER=openrouter` | `auto` |
+| Groq | `SPIRAL_LLM_PROVIDER=groq` | `llama-3.3-70b-versatile` |
+| Mistral | `SPIRAL_LLM_PROVIDER=mistral` | `mistral-large-latest` |
+| xAI | `SPIRAL_LLM_PROVIDER=xai` | `grok-3` |
+| Together | `SPIRAL_LLM_PROVIDER=together` | `meta-llama/Llama-3.3-70B-Instruct-Turbo` |
+
+## Keyboard shortcuts
+
+| Key | Action |
+|---|---|
+| `Enter` | Send message / approve tool |
+| `Shift+Enter` or `Ctrl+J` | Insert newline |
+| `Ctrl+Backspace` or `Ctrl+W` | Delete last word |
+| `Tab` | Switch session (overlay) |
+| `Shift+Tab` | Switch mode (overlay) |
+| `↑` / `↓` | Navigate overlays / input history |
+| `←` / `→` | Navigate models in `/agentplan` |
+| `Esc` | Close overlay / abort run |
+| `Ctrl+C` | Clear input (press twice to exit) |
+| `Ctrl+L` | Clear screen |
+| `Ctrl+D` | Exit |
+
+## Slash commands
+
+```
+/help              Show help
+/mode [mode]       Switch mode: normal|plan|bypass|safe|interactive|loop
+/model <model>     Switch LLM model
+/new               Start a fresh session
+/sessions          List all sessions
+/agentplan         Set model per role (plan / build / judge)
+/status            Show session status
+/usage             Show token usage
+/clear             Clear conversation
+/reset             Reset session state
+/abort             Abort active run
+/verbose           Toggle verbose tool output
+/tools             List available tools
+/history           Show conversation length
+/exit              Exit Spiral
+```
+
+## Architecture
 
 ```
 spiral/
 ├── src/
-│   ├── cli.ts              # CLI entry point (commander)
-│   ├── config.ts           # Configuration from env vars
-│   ├── harness.ts          # 4-loop orchestrator
-│   ├── llm.ts              # LLM client (provider factory)
-│   ├── models.ts           # Feature, TraceEntry, GradingResult, HarnessState
+│   ├── cli.ts              # CLI entry point
+│   ├── config.ts           # Configuration from env/file
+│   ├── llm.ts              # LLM client wrapper
+│   ├── providers.ts        # Provider implementations (Ollama, OpenAI, ...)
+│   ├── modes.ts            # Agent mode definitions
 │   ├── types.ts            # Shared types
-│   ├── modes.ts            # 5 agent behavior modes
-│   ├── context.ts          # Token counting + context compaction
-│   ├── interactive.ts      # Interactive mode (stdin listener)
-│   ├── watch.ts            # Live dashboard
-│   ├── providers.ts        # Ollama, Anthropic, OpenAI providers
 │   ├── loops/
-│   │   ├── agent.ts        # Loop 1: ReAct agent
-│   │   ├── verifier.ts     # Loop 2: LLM grader
-│   │   ├── event_driver.ts # Loop 3: Feature queue
-│   │   └── engine.ts       # Loop 4: Trace analysis
-│   ├── managers/
-│   │   ├── project.ts      # File/ADR/command operations
-│   │   ├── state.ts        # State persistence
-│   │   ├── status.ts       # Live status tracking
-│   │   ├── traces.ts       # JSONL trace recording
-│   │   ├── permissions.ts  # Tool permission system
-│   │   ├── git.ts          # Git operations
-│   │   └── memory.ts       # Hierarchical memory (project/session/feature)
-│   └── tools/
-│       └── registry.ts     # 18 tools for agent
-├── tests/                  # Vitest test suite
-├── package.json
-├── tsconfig.json
-└── vitest.config.ts
+│   │   ├── agent.ts        # Agent loop (ReAct: model → tools → observe)
+│   │   ├── verifier.ts     # Verification loop (grade, pass/fail, retry)
+│   │   ├── engine.ts       # Engine analysis loop (meta-improvement)
+│   │   └── event_driver.ts # Event-driven loop
+│   ├── tui/
+│   │   ├── app.tsx         # Main TUI (Ink + React)
+│   │   ├── commands.ts     # Slash command parsing
+│   │   └── components/     # UI components (sidebar, chat, overlays, ...)
+│   ├── tools/
+│   │   ├── registry.ts     # Tool registry (30+ tools)
+│   │   └── session-bridge.ts  # Inter-session communication bridge
+│   └── managers/
+│       ├── git.ts          # Git operations
+│       ├── memory.ts       # Project memory
+│       ├── permissions.ts  # Tool permission management
+│       ├── project.ts      # Project/file operations
+│       ├── sessions.ts     # Session persistence
+│       ├── traces.ts       # Execution traces
+│       └── state.ts        # Harness state
+├── tests/                  # 344 tests (vitest)
+└── docs/
+    └── assets/             # Logo and images
+```
+
+## Development
+
+```bash
+git clone https://github.com/masoudghanbarii/spiral.git
+cd spiral
+npm install
+npm run build       # TypeScript compile
+npm test            # Run test suite
+npm run typecheck   # Type-check without emitting
+npm run dev         # Run with tsx (no build needed)
 ```
 
 ## License
 
-MIT
+[MIT](LICENSE) © Lanius

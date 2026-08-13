@@ -32,8 +32,16 @@ coverage/.claude/
 .claude/
 coverage/
 .openclaw/
+.openclaw/**
 HEARTBEAT.md
 IDENTITY.md
 SOUL.md
 TOOLS.md
 USER.md
+AGENTS.md
+.claude/**
+.opencode/
+.opencode/**
+.cursor/
+.cursor/**
+.zed/
