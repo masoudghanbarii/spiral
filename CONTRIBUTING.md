@@ -5,6 +5,7 @@ Thanks for your interest in contributing! Spiral is an AI co-founder harness bui
 ## Quick Links
 
 - **GitHub:** https://github.com/masoudghanbarii/spiral
+- **Discussions:** https://github.com/masoudghanbarii/spiral/discussions
 - **Issues:** https://github.com/masoudghanbarii/spiral/issues
 
 ## How to Contribute
@@ -12,7 +13,7 @@ Thanks for your interest in contributing! Spiral is an AI co-founder harness bui
 1. **Bugs & small fixes** → Open a PR directly
 2. **New features** → Open an issue first to discuss the approach
 3. **Refactor-only PRs** → Don't open a PR unless a maintainer explicitly asks for it
-4. **Questions** → Open a GitHub discussion or issue
+4. **Questions** → Open a [GitHub Discussion](https://github.com/masoudghanbarii/spiral/discussions)
 
 ## Before You PR
 
@@ -53,6 +54,16 @@ Spiral has three main loops:
 - **Engine loop** (`src/loops/engine.ts`) — meta-analysis of traces, suggests improvements
 
 The TUI (`src/tui/`) is built with Ink (React for terminals) and supports multi-session workflows with inter-session communication.
+
+## Where to Post What
+
+| Situation | Where |
+|---|---|
+| Bug, crash, or regression | [GitHub Issue](https://github.com/masoudghanbarii/spiral/issues) |
+| Feature idea or proposal | [Discussions: Ideas & Feature Requests](https://github.com/masoudghanbarii/spiral/discussions) |
+| Question or help | [Discussions: Q&A](https://github.com/masoudghanbarii/spiral/discussions) |
+| Show off your work | [Discussions: Show & Tell](https://github.com/masoudghanbarii/spiral/discussions) |
+| Security vulnerability | See [SECURITY.md](SECURITY.md) or private message |
 
 ## Reporting Bugs
 

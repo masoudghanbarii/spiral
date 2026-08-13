@@ -9,6 +9,7 @@
   <a href="https://www.npmjs.com/package/spiral"><img src="https://img.shields.io/npm/v/spiral?style=flat-square&label=npm" alt="npm version"></a>
   <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/spiral?style=flat-square" alt="Node.js version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License: MIT"></a>
+  <a href="https://github.com/masoudghanbarii/spiral/discussions"><img src="https://img.shields.io/badge/discussions-open-blue?style=flat-square&logo=github&logoColor=white" alt="GitHub Discussions"></a>
 </p>
 
 Spiral is an AI co-founder harness that runs autonomous development loops. It implements features from ADRs, tests them, fixes what breaks, and iterates until the goal is met — all inside a terminal-native TUI with multi-session support.
@@ -211,6 +212,19 @@ npm run dev         # Run with tsx (no build needed)
 <p align="center">
   <a href="https://github.com/masoudghanbarii"><strong>Masoud Ghanbari</strong></a> — Creator & Maintainer
 </p>
+
+## Community
+
+Join [GitHub Discussions](https://github.com/masoudghanbarii/spiral/discussions) to ask questions, share ideas, and connect with other users.
+
+| Category | Use it for |
+|---|---|
+| **Announcements** | Release notes and project updates |
+| **Ideas & Feature Requests** | Propose new features before opening an issue |
+| **Q&A** | Questions and answers — mark the best answer |
+| **Show & Tell** | Share what you built with Spiral |
+
+Use [GitHub Issues](https://github.com/masoudghanbarii/spiral/issues) for bug reports and concrete feature requests. See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow.
 
 ## License
 
