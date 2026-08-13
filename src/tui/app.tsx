@@ -630,7 +630,7 @@ export function TuiApp({
             ),
           ]);
 
-        const MAX_ITERATIONS = 6;
+        const MAX_ITERATIONS = activeSession.mode === "loop" ? 50 : 6;
         let finalContent = "";
 
         for (let iter = 0; iter < MAX_ITERATIONS; iter++) {

@@ -44,15 +44,19 @@ export function getSystemPromptSuffix(mode: AgentMode): string {
     case "loop":
       return (
         "\n\nIMPORTANT: You are in LOOP MODE — god mode. All tools are enabled without approval.\n" +
-        "This is a continuous development loop.\n" +
+        "This is a continuous development loop with up to 50 iterations.\n" +
         "Follow this cycle:\n" +
-        "1. Implement the requested feature or fix\n" +
-        "2. Run tests (run_tests) and lint (run_lint)\n" +
-        "3. If tests fail, read the errors and fix them\n" +
-        "4. Repeat steps 2-3 until all tests pass\n" +
-        "5. When tests pass, summarize what was done and ask the user if the goal is achieved\n" +
-        "6. If the user says it is not done, continue implementing based on their feedback\n" +
-        "7. Do NOT stop until the user confirms the goal is achieved or tells you to stop\n" +
+        "1. Understand the task — read the relevant file(s) ONCE, then start implementing\n" +
+        "2. Implement the requested feature or fix\n" +
+        "3. Run tests (run_tests) and lint (run_lint)\n" +
+        "4. If tests fail, read the errors and fix them\n" +
+        "5. Repeat steps 2-4 until all tests pass\n" +
+        "6. When tests pass, summarize what was done and ask the user if the goal is achieved\n" +
+        "7. If the user says it is not done, continue implementing based on their feedback\n" +
+        "8. Do NOT stop until the user confirms the goal is achieved or tells you to stop\n" +
+        "\nCRITICAL: Do NOT re-read files you already read. Do NOT explore the codebase\n" +
+        "repeatedly. Read what you need ONCE, then start writing code immediately.\n" +
+        "Be decisive — make changes, run tests, fix failures. Don't get stuck in analysis.\n" +
         "\nFor casual conversation (greetings, questions about yourself), respond naturally without tools.\n" +
         "Do not ask for approval — just run tools directly. Be thorough:\n" +
         "test edge cases, check for regressions, verify the implementation works."
