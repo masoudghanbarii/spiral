@@ -3,7 +3,7 @@
 export type SessionStatus =
   "idle" | "running" | "waiting_approval" | "error" | "compacting" | "tool_call";
 
-export type SessionMode = "normal" | "plan" | "bypass" | "safe" | "interactive";
+export type SessionMode = "normal" | "plan" | "bypass" | "safe" | "interactive" | "loop";
 
 export type SessionAgent = "agent" | "verifier" | "shipper" | "engine";
 
@@ -105,9 +105,14 @@ export const MODE_META: Record<SessionMode, { color: string; label: string; desc
   bypass: { color: "#ef5350", label: "bypass", desc: "Skip all permission checks" },
   safe: { color: "#56c8d8", label: "safe", desc: "Read-only, no command execution" },
   interactive: { color: "#c678dd", label: "interactive", desc: "User can interject mid-run" },
+  loop: {
+    color: "#ff6b35",
+    label: "loop",
+    desc: "Continuous dev loop — implement, test, fix, repeat until goal met",
+  },
 };
 
-export const MODE_ORDER: SessionMode[] = ["normal", "plan", "bypass", "safe", "interactive"];
+export const MODE_ORDER: SessionMode[] = ["normal", "plan", "bypass", "safe", "interactive", "loop"];
 
 export const AGENT_META: Record<SessionAgent, { color: string; label: string; desc: string }> = {
   agent: { color: "#3ecf6a", label: "agent", desc: "Agent loop — ReAct: model → tools → observe" },

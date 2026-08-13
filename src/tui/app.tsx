@@ -466,7 +466,7 @@ export function TuiApp({
           } else {
             addLogEntry(sid, {
               kind: "system",
-              text: `Current mode: ${activeSession.mode}\nAvailable: normal, plan, bypass, safe, interactive`,
+              text: `Current mode: ${activeSession.mode}\nAvailable: normal, plan, bypass, safe, interactive, loop`,
             });
           }
           return true;
@@ -1067,8 +1067,12 @@ export function TuiApp({
       return;
     }
 
-    // ── Ctrl+Backspace or Ctrl+W (delete last word) ──
-    if ((key.ctrl && (key.backspace || key.delete)) || (key.ctrl && inputChar === "w")) {
+    // ── Ctrl+Backspace or Ctrl+W or Ctrl+H (delete last word) ──
+    // Ctrl+Backspace sends different things in different terminals:
+    // - Some: key.backspace + key.ctrl (Ink detects it)
+    // - Many: Ctrl+H (0x08) which Ink sees as inputChar 'h' with key.ctrl
+    // - Some: 0x7f (DEL) which Ink sees as key.delete + key.ctrl
+    if ((key.ctrl && (key.backspace || key.delete)) || (key.ctrl && inputChar === "w") || (key.ctrl && inputChar === "h")) {
       setInput((prev) => {
         // Remove trailing whitespace, then remove last word
         const trimmed = prev.replace(/\s+$/, "");

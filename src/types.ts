@@ -1,4 +1,4 @@
-export type AgentMode = "normal" | "plan" | "bypass" | "safe" | "interactive";
+export type AgentMode = "normal" | "plan" | "bypass" | "safe" | "interactive" | "loop";
 
 export type { MCPServerConfig } from "./managers/mcp.js";
 

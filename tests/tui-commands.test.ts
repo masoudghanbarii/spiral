@@ -94,9 +94,9 @@ describe("isValidMode", () => {
 });
 
 describe("getAvailableModes", () => {
-  it("returns all 5 modes", () => {
+  it("returns all 6 modes", () => {
     const modes = getAvailableModes();
-    expect(modes).toHaveLength(5);
+    expect(modes).toHaveLength(6); expect(modes).toContain("loop");
     expect(modes).toContain("normal");
   });
 });

@@ -66,7 +66,7 @@ Core:
   /help              Show this help
   /exit              Exit Spiral TUI (Ctrl+D also works)
   /agentplan         Set model per role — plan / build / judge
-  /mode [mode]       Switch agent mode: normal|plan|bypass|safe|interactive
+  /mode [mode]       Switch agent mode: normal|plan|bypass|safe|interactive|loop
   /status            Show session + model summary
   /clear             Clear conversation history
   /model <model>     Switch LLM model
@@ -99,7 +99,7 @@ Local shell:
 }
 
 export function getAvailableModes(): string[] {
-  return ["normal", "plan", "bypass", "safe", "interactive"];
+  return ["normal", "plan", "bypass", "safe", "interactive", "loop"];
 }
 
 export function isValidMode(mode: string): boolean {
