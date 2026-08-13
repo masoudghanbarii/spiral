@@ -55,7 +55,8 @@ function SessionRow({ session }: { session: SessionView }): React.ReactElement {
       paddingTop={0}
       paddingBottom={0}
       marginBottom={0}
-      borderStyle="single"
+      marginTop={0}
+      borderStyle={session.groupDot ? "single" : undefined}
       borderRight={false}
       borderTop={false}
       borderBottom={false}
@@ -71,7 +72,7 @@ function SessionRow({ session }: { session: SessionView }): React.ReactElement {
       <Box alignItems="center" gap={1}>
         <Text color={session.statusColor as any}>{session.statusIcon}</Text>
         <Text color="gray">{session.statusLabel}</Text>
-        {session.groupDot && <Text color={session.groupDot as any}>●</Text>}
+        {session.groupDot && <Text color={session.groupDot as any} bold>●</Text>}
         {session.canLink && <Text color={session.linkColor as any}>⇄</Text>}
       </Box>
     </Box>
