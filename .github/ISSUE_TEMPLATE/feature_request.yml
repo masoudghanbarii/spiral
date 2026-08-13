@@ -1,0 +1,35 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Spiral. Please search existing issues before submitting.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the pain point or limitation.
+      placeholder: |
+        I often need to compare two branches before Spiral commits. Currently I have to exit and run git commands manually.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: What solution would you like?
+      description: Describe the ideal behavior or feature.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What alternatives have you considered?
+      description: Any workarounds or other tools?
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, mockups, or references to other tools that do this well.

@@ -1,0 +1,57 @@
+name: Bug Report
+description: File a bug report
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug. Include steps to reproduce.
+      placeholder: |
+        1. Run `spiral init`
+        2. Select mode "plan"
+        3. The TUI crashes with...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Spiral version
+      description: Run `spiral --version` or check package.json
+      placeholder: "e.g. 0.1.0"
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: "e.g. 22.4.0"
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Linux
+        - Windows (WSL)
+        - Windows (native)
+  - type: input
+    id: terminal
+    attributes:
+      label: Terminal
+      placeholder: "e.g. iTerm2, GNOME Terminal, Windows Terminal"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      description: Paste error output or attach screenshots.
+      render: shell
