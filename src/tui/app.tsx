@@ -171,46 +171,35 @@ export function TuiApp({
     return () => setRawMode(false);
   }, [setRawMode]);
 
-  // ── Raw stdin for Shift+Enter detection ──
-  // Ink's useInput doesn't reliably detect Shift+Enter, so we listen
-  // for the raw escape sequence on stdin. Different terminals use
-  // different sequences.
+  // ── Shift+Enter detection ──
+  // Ink's useInput handles Shift+Enter via key.return && key.shift in most terminals.
+  // Some terminals send a distinct escape sequence instead. We add a passive
+  // raw stdin listener that ONLY intercepts known Shift+Enter escape sequences
+  // and never touches other bytes.
   useEffect(() => {
     if (!stdin) return;
-    let buffer = "";
+    const SHIFT_ENTER = "\x1b[13;2~";
+    const SHIFT_ENTER_KITTY = "\x1b[13;2u";
+    const ALT_ENTER = "\x1b[13;3~";
+    const sequences = [SHIFT_ENTER, SHIFT_ENTER_KITTY, ALT_ENTER];
+    const maxLen = Math.max(...sequences.map((s) => s.length));
+    let pending = "";
     const onData = (data: Buffer) => {
-      buffer += data.toString();
-      // Process complete escape sequences
-      while (buffer.length > 0) {
-        // Shift+Enter sequences by terminal:
-        // - Many terminals: \x1b[13;2~ (CSI 13;2 ~)
-        // - kitty: \x1b[13;2u (CSI 13;2 u)  
-        // - Some: \r followed by no \n (but hard to distinguish from Enter)
-        // Also support Alt+Enter: \x1b[13;3~ and Ctrl+Enter: \x1b[13;5~
-        const shiftEnterPatterns = [
-          "\x1b[13;2~",
-          "\x1b[13;2u",
-          "\x1b[13;3~", // Alt+Enter
-        ];
-        let matched = false;
-        for (const pat of shiftEnterPatterns) {
-          if (buffer.startsWith(pat)) {
-            setInput((prev) => prev + "\n");
-            buffer = buffer.slice(pat.length);
-            matched = true;
-            break;
-          }
+      pending += data.toString();
+      // Only check for our target sequences
+      for (const seq of sequences) {
+        if (pending.startsWith(seq)) {
+          setInput((prev) => prev + "\n");
+          pending = pending.slice(seq.length);
+          return;
         }
-        if (matched) continue;
-        // If buffer starts with ESC but doesn't match known patterns,
-        // keep it for next data chunk (might be incomplete)
-        if (buffer.startsWith("\x1b[") && buffer.length < 8) {
-          break;
-        }
-        // Not a recognized sequence — flush and continue
-        buffer = buffer.slice(1);
       }
-      if (buffer.length > 8) buffer = ""; // safety: don't let buffer grow
+      // If pending starts with ESC but is too short, wait for more
+      if (pending.startsWith("\x1b") && pending.length < maxLen) {
+        return;
+      }
+      // Not a Shift+Enter sequence — clear pending, let Ink handle it
+      pending = "";
     };
     stdin.on("data", onData);
     return () => {
@@ -1303,7 +1292,7 @@ export function TuiApp({
               }
             }}
             disabled={animate || overlay !== null}
-            placeholder={animate ? "agent is busy…" : overlay ? "esc to close overlay" : "send a message"}
+            placeholder={animate ? "agent is busy…" : overlay ? "esc to close overlay" : "send a message · ctrl+j for newline"}
             borderColor={animate ? "yellow" : overlay ? "magenta" : "blue"}
             model={activeSession.model}
             modeLabel={modeMeta.label}
