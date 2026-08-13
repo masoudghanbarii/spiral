@@ -214,4 +214,4 @@ npm run dev         # Run with tsx (no build needed)
 
 ## License
 
-[MIT](LICENSE) © Lanius
+[MIT](LICENSE) © Masoud Ghanbari
