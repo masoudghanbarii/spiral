@@ -1251,7 +1251,7 @@ export function TuiApp({
       >
         <Box gap={1}>
           <Text bold color="blue">
-            ◈ spiral
+            spiral
           </Text>
           <Text color="gray">v1.0</Text>
         </Box>

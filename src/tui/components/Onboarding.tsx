@@ -64,7 +64,7 @@ export function Onboarding({
         >
           <Box gap={1}>
             <Text bold color="blue">
-              ◈ SPIRAL
+              SPIRAL
             </Text>
             <Text color="gray">v1.0</Text>
           </Box>

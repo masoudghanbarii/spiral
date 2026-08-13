@@ -1,4 +1,4 @@
-# Spiral ◈ — AI co-founder built for agents and loops
+# Spiral — AI co-founder built for agents and loops
 
 <p align="center">
   <img src="docs/assets/spiral-logo.png" alt="Spiral — thin coil logo" width="200">
@@ -9,14 +9,13 @@
   <a href="https://www.npmjs.com/package/spiral"><img src="https://img.shields.io/npm/v/spiral?style=flat-square&label=npm" alt="npm version"></a>
   <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/spiral?style=flat-square" alt="Node.js version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License: MIT"></a>
-  <a href="https://discord.gg/spiral"><img src="https://img.shields.io/discord/spiral?label=discord&logo=discord&logoColor=white&color=5865F2&style=flat-square" alt="Discord"></a>
 </p>
 
 Spiral is an AI co-founder harness that runs autonomous development loops. It implements features from ADRs, tests them, fixes what breaks, and iterates until the goal is met — all inside a terminal-native TUI with multi-session support.
 
 ```
 ╭──────────────────────────────────────────────────────────────────╮
-│ ◈ spiral v1.0  2 sessions · 1 groups sharing context             │
+│ spiral v1.0  2 sessions · 1 groups sharing context             │
 ╰──────────────────────────────────────────────────────────────────╯
 ╭──────────────╮ ╭──────────────────────────────────────────────╮
 │ Sessions     │ │ #1 - auth · running                          │
@@ -202,6 +201,16 @@ npm test            # Run test suite
 npm run typecheck   # Type-check without emitting
 npm run dev         # Run with tsx (no build needed)
 ```
+
+## Contributors
+
+<p align="center">
+  <a href="https://github.com/masoudghanbarii"><img src="https://github.com/masoudghanbarii.png?size=100" width="100" height="100" alt="Masoud Ghanbari"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/masoudghanbarii"><strong>Masoud Ghanbari</strong></a> — Creator & Maintainer
+</p>
 
 ## License
 
