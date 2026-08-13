@@ -8,6 +8,7 @@ import type { MemoryManager } from "../managers/memory.js";
 import type { ToolDefinition } from "../types.js";
 import type { AgentMode } from "../types.js";
 import { getDisabledTools } from "../modes.js";
+import type { SessionBridge } from "./session-bridge.js";
 
 type ToolFn = (args: Record<string, unknown>) => Promise<string>;
 
@@ -28,6 +29,7 @@ export class ToolRegistry {
   private tools: Map<string, ToolFn> = new Map();
   private todos: Map<number, TodoItem> = new Map();
   private todoIdCounter = 0;
+  private bridge: SessionBridge | null = null;
 
   constructor(
     config: Config,
@@ -43,6 +45,10 @@ export class ToolRegistry {
     this.agentMode = agentMode;
     this.disabled = getDisabledTools(agentMode);
     this.registerAll();
+  }
+
+  setSessionBridge(bridge: SessionBridge): void {
+    this.bridge = bridge;
   }
 
   private registerAll(): void {
@@ -75,6 +81,9 @@ export class ToolRegistry {
     this.tools.set("memory_edit", (a) => this.memoryEdit(a));
     this.tools.set("code_review", (a) => this.codeReview(a));
     this.tools.set("find_skills", (a) => this.findSkills(a));
+    this.tools.set("send_to_session", (a) => this.sendToSession(a));
+    this.tools.set("link_sessions", (a) => this.linkSessions(a));
+    this.tools.set("list_sessions", () => this.listSessions());
   }
 
   getToolDefinitions(): ToolDefinition[] {
@@ -283,6 +292,29 @@ export class ToolRegistry {
       def("find_skills", "Search for available skills", {
         query: { type: "string", description: "Search query (optional)" },
       }),
+      def(
+        "list_sessions",
+        "List all active sessions in the TUI",
+        {},
+      ),
+      def(
+        "send_to_session",
+        "Send a message to another session. The message appears in that session's chat log.",
+        {
+          session_id: { type: "string", description: "Target session ID (e.g. s1, s2)" },
+          message: { type: "string", description: "Message content to send" },
+        },
+        ["session_id", "message"],
+      ),
+      def(
+        "link_sessions",
+        "Link two sessions into a shared context group. Both sessions get the same color and can exchange information.",
+        {
+          session_a: { type: "string", description: "First session ID" },
+          session_b: { type: "string", description: "Second session ID" },
+        },
+        ["session_a", "session_b"],
+      ),
     ];
   }
 
@@ -735,6 +767,9 @@ export class ToolRegistry {
 
   private async memoryRetain(a: Record<string, unknown>): Promise<string> {
     if (!this.memory) return "Error: memory manager not available";
+    if (a.key === undefined || a.value === undefined) {
+      return "Error: memory_retain requires both 'key' and 'value' arguments.";
+    }
     const key = String(a.key);
     const value = String(a.value);
     await this.memory.project.addFact(key, value);
@@ -887,6 +922,50 @@ export class ToolRegistry {
       }
     }
     return skills.length > 0 ? skills.join("\n") : "No skills found";
+  }
+
+  // ── session bridge tools ─────────────────────────────────
+
+  private async listSessions(): Promise<string> {
+    if (!this.bridge) return "Error: session bridge not available";
+    const sessions = this.bridge.listSessions();
+    if (sessions.length === 0) return "No active sessions";
+    const current = this.bridge.getCurrentSessionId();
+    return sessions
+      .map((s) => `${s.id === current ? "* " : "  "}${s.id}: ${s.name}`)
+      .join("\n");
+  }
+
+  private async sendToSession(a: Record<string, unknown>): Promise<string> {
+    if (!this.bridge) return "Error: session bridge not available";
+    const targetId = String(a.session_id);
+    const message = String(a.message);
+    const sessions = this.bridge.listSessions();
+    const target = sessions.find((s) => s.id === targetId);
+    if (!target) {
+      return `Error: session '${targetId}' not found. Available: ${sessions.map((s) => s.id).join(", ")}`;
+    }
+    const ok = this.bridge.pushLogEntry(targetId, { kind: "system", text: `Message from ${this.bridge.getCurrentSessionId()}: ${message}` });
+    if (!ok) return `Error: failed to send message to session ${targetId}`;
+    return `Message sent to session ${targetId} (${target.name}).`;
+  }
+
+  private async linkSessions(a: Record<string, unknown>): Promise<string> {
+    if (!this.bridge) return "Error: session bridge not available";
+    const sessionA = String(a.session_a);
+    const sessionB = String(a.session_b);
+    const sessions = this.bridge.listSessions();
+    const aExists = sessions.find((s) => s.id === sessionA);
+    const bExists = sessions.find((s) => s.id === sessionB);
+    if (!aExists || !bExists) {
+      return `Error: one or both sessions not found. Available: ${sessions.map((s) => s.id).join(", ")}`;
+    }
+    if (sessionA === sessionB) {
+      return "Error: cannot link a session to itself";
+    }
+    const ok = this.bridge.linkSessions(sessionA, sessionB);
+    if (!ok) return "Error: failed to link sessions";
+    return `Linked sessions ${sessionA} and ${sessionB} into a shared context group. They now share the same color and can exchange information.`;
   }
 }
 

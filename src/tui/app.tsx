@@ -32,6 +32,7 @@ import {
 import { LLMClient } from "../llm.js";
 import { Config } from "../config.js";
 import { ToolRegistry } from "../tools/registry.js";
+import type { SessionBridge } from "../tools/session-bridge.js";
 import { ManagerRegistry } from "../managers/index.js";
 import { TokenCounter } from "../context.js";
 import { getSystemPromptSuffix } from "../modes.js";
@@ -161,7 +162,7 @@ export function TuiApp({
 
   const systemPrompt = useMemo(() => {
     const suffix = getSystemPromptSuffix(activeSession.mode as AgentMode);
-    return `You are Spiral, the AI co-founder. You help developers build software.\n\nYou have tools to read/write files, search code, run commands, and manage git.\n\nIMPORTANT: Only use tools when the user's request actually requires it. For simple\ngreetings, questions, or casual conversation, respond directly WITHOUT calling any tools.\nDo not explore the codebase, run git commands, or list files unless the user asks you\nto do something that needs it.\n\nThink step by step. When you DO use tools, wait for results before proceeding.${suffix}`;
+    return `You are Spiral, the AI co-founder. You help developers build software.\n\nYou have tools to read/write files, search code, run commands, and manage git.\nYou also have tools to communicate with other sessions: list_sessions, send_to_session, and link_sessions.\n\nIMPORTANT: Only use tools when the user's request actually requires it. For simple\ngreetings, questions, or casual conversation, respond directly WITHOUT calling any tools.\nDo not explore the codebase, run git commands, or list files unless the user asks you\nto do something that needs it.\n\nWhen the user asks you to pass info to another session, use send_to_session.\nWhen the user wants sessions to share context, use link_sessions to group them.\n\nThink step by step. When you DO use tools, wait for results before proceeding.${suffix}`;
   }, [activeSession.mode]);
 
   // ── Raw mode for key handling ──
@@ -252,6 +253,34 @@ export function TuiApp({
   const addLogEntry = useCallback((id: string, entry: LogEntry) => {
     setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, log: [...s.log, entry] } : s)));
   }, []);
+
+  // ── Session bridge: lets tools interact with other sessions ──
+  useEffect(() => {
+    const bridge: SessionBridge = {
+      listSessions: () => sessions.map((s) => ({ id: s.id, name: s.name })),
+      getCurrentSessionId: () => activeSessionId,
+      pushLogEntry: (targetId, entry) => {
+        const exists = sessions.some((s) => s.id === targetId);
+        if (!exists) return false;
+        addLogEntry(targetId, entry);
+        return true;
+      },
+      linkSessions: (sessionA, sessionB) => {
+        const aExists = sessions.some((s) => s.id === sessionA);
+        const bExists = sessions.some((s) => s.id === sessionB);
+        if (!aExists || !bExists || sessionA === sessionB) return false;
+        const used = new Set(sessions.map((s) => s.groupId).filter(Boolean));
+        const gid = GROUP_LETTERS.find((l) => !used.has(l)) ?? GROUP_LETTERS[0]!;
+        setSessions((prev) =>
+          prev.map((s) =>
+            s.id === sessionA || s.id === sessionB ? { ...s, groupId: gid } : s,
+          ),
+        );
+        return true;
+      },
+    };
+    tools.setSessionBridge(bridge);
+  }, [sessions, activeSessionId, addLogEntry, tools]);
 
   const approve = useCallback(
     (id: string) => {
