@@ -173,15 +173,44 @@ export function TuiApp({
 
   // ── Raw stdin for Shift+Enter detection ──
   // Ink's useInput doesn't reliably detect Shift+Enter, so we listen
-  // for the raw escape sequence on stdin
+  // for the raw escape sequence on stdin. Different terminals use
+  // different sequences.
   useEffect(() => {
     if (!stdin) return;
+    let buffer = "";
     const onData = (data: Buffer) => {
-      const str = data.toString();
-      // Shift+Enter in some terminals: \x1b[13;2~
-      if (str === "\x1b[13;2~") {
-        setInput((prev) => prev + "\n");
+      buffer += data.toString();
+      // Process complete escape sequences
+      while (buffer.length > 0) {
+        // Shift+Enter sequences by terminal:
+        // - Many terminals: \x1b[13;2~ (CSI 13;2 ~)
+        // - kitty: \x1b[13;2u (CSI 13;2 u)  
+        // - Some: \r followed by no \n (but hard to distinguish from Enter)
+        // Also support Alt+Enter: \x1b[13;3~ and Ctrl+Enter: \x1b[13;5~
+        const shiftEnterPatterns = [
+          "\x1b[13;2~",
+          "\x1b[13;2u",
+          "\x1b[13;3~", // Alt+Enter
+        ];
+        let matched = false;
+        for (const pat of shiftEnterPatterns) {
+          if (buffer.startsWith(pat)) {
+            setInput((prev) => prev + "\n");
+            buffer = buffer.slice(pat.length);
+            matched = true;
+            break;
+          }
+        }
+        if (matched) continue;
+        // If buffer starts with ESC but doesn't match known patterns,
+        // keep it for next data chunk (might be incomplete)
+        if (buffer.startsWith("\x1b[") && buffer.length < 8) {
+          break;
+        }
+        // Not a recognized sequence — flush and continue
+        buffer = buffer.slice(1);
       }
+      if (buffer.length > 8) buffer = ""; // safety: don't let buffer grow
     };
     stdin.on("data", onData);
     return () => {

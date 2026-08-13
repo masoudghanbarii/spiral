@@ -49,10 +49,10 @@ export function ChatLog({
     setInternalOffset(scrollOffset);
   }, [scrollOffset]);
 
-  // Calculate visible window — show the most recent entries
+  // Calculate visible window — show recent entries, let overflow hide the rest
   const maxVisibleEntries = Math.min(entries.length, availableHeight);
   const startIdx = Math.max(0, entries.length - maxVisibleEntries - internalOffset);
-  const visibleEntries = entries.slice(startIdx, startIdx + maxVisibleEntries);
+  const visibleEntries = entries.slice(startIdx);
 
   return (
     <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
@@ -123,39 +123,38 @@ export function ChatLog({
 function EntryView({ entry }: { entry: LogEntry }): React.ReactElement {
   if (entry.kind === "user") {
     return (
-      <Box>
-        <Text bold color="cyan">
-          {"> "}
-        </Text>
-        <Text wrap="truncate-end">{entry.text?.replace(/\n/g, " ") ?? ""}</Text>
+      <Box flexDirection="column">
+        <Box>
+          <Text bold color="cyan">{"> "}</Text>
+          <Text>{entry.text ?? ""}</Text>
+        </Box>
       </Box>
     );
   }
   if (entry.kind === "assistant") {
     return (
-      <Box>
-        <Text bold color="green">
-          {"✦ "}
-        </Text>
-        <Text wrap="truncate-end">{entry.text?.replace(/\n/g, " ") ?? ""}</Text>
+      <Box flexDirection="column">
+        <Box>
+          <Text bold color="green">{"✦ "}</Text>
+          <Text>{entry.text ?? ""}</Text>
+        </Box>
       </Box>
     );
   }
   if (entry.kind === "tool") {
     return (
-      <Box marginLeft={2}>
-        <Text color="yellow">
-          {"⚡ "}
-          {entry.tool}
-        </Text>
-        <Text color="gray"> {entry.detail}</Text>
+      <Box marginLeft={2} flexDirection="column">
+        <Box>
+          <Text color="yellow">{"⚡ "}{entry.tool}</Text>
+          <Text color="gray"> {entry.detail}</Text>
+        </Box>
       </Box>
     );
   }
   // system
   return (
-    <Box>
-      <Text wrap="truncate-end">{entry.text?.replace(/\n/g, " ") ?? ""}</Text>
+    <Box flexDirection="column">
+      <Text>{entry.text ?? ""}</Text>
     </Box>
   );
 }
