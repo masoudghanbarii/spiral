@@ -13,7 +13,7 @@ export function Sidebar({
   sessions,
   searchQuery,
   onSearchChange,
-  width = 30,
+  width = 28,
 }: SidebarProps): React.ReactElement {
   void onSearchChange;
 
@@ -24,6 +24,7 @@ export function Sidebar({
       flexShrink={0}
       borderStyle="round"
       borderColor="gray"
+      marginRight={0}
     >
       {/* Header + Search */}
       <Box paddingX={1} paddingTop={1} paddingBottom={1} flexDirection="column">

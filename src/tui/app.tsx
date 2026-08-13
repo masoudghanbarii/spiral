@@ -350,6 +350,26 @@ export function TuiApp({
         });
         setInput("");
         setSlashIndex(0);
+      } else if (cmd === "/new" || cmd === "/newsession") {
+        const sessionNum = sessions.length + 1;
+        const newId = `s${sessionNum}`;
+        const newSession = createSession(
+          newId,
+          `#${sessionNum}`,
+          sess.model,
+          sess.provider,
+          sess.mode,
+          sess.agent,
+          sess.tokensMax,
+        );
+        setSessions((prev) => [...prev, newSession]);
+        setActiveSessionId(newId);
+        addLogEntry(newId, {
+          kind: "system",
+          text: `Session #${sessionNum} created.`,
+        });
+        setInput("");
+        setSlashIndex(0);
       } else {
         setInput("");
         setSlashIndex(0);
@@ -1114,7 +1134,7 @@ export function TuiApp({
         </Text>
       </Box>
 
-      <Box flexDirection="row" flexGrow={1}>
+      <Box flexDirection="row" flexGrow={1} gap={1}>
         {/* Session sidebar */}
         <Sidebar
           sessions={sessionsView}
@@ -1123,7 +1143,7 @@ export function TuiApp({
         />
 
         {/* Main content area */}
-        <Box flexDirection="column" flexGrow={1}>
+        <Box flexDirection="column" flexGrow={1} marginLeft={1}>
           {/* Session header */}
           <Box paddingX={1} borderStyle="round" borderColor="gray" flexShrink={0}>
             <Box gap={1}>
