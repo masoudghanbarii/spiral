@@ -161,7 +161,7 @@ export function TuiApp({
 
   const systemPrompt = useMemo(() => {
     const suffix = getSystemPromptSuffix(activeSession.mode as AgentMode);
-    return `You are Spiral, the AI co-founder. You help developers build software.\nYou have tools to read/write files, search code, run commands, and manage git.\nThink step by step. Use tools as needed.${suffix}`;
+    return `You are Spiral, the AI co-founder. You help developers build software.\n\nYou have tools to read/write files, search code, run commands, and manage git.\n\nIMPORTANT: Only use tools when the user's request actually requires it. For simple\ngreetings, questions, or casual conversation, respond directly WITHOUT calling any tools.\nDo not explore the codebase, run git commands, or list files unless the user asks you\nto do something that needs it.\n\nThink step by step. When you DO use tools, wait for results before proceeding.${suffix}`;
   }, [activeSession.mode]);
 
   // ── Raw mode for key handling ──
@@ -535,106 +535,124 @@ export function TuiApp({
             ),
           ]);
 
-        let response;
-        if (config.streamEnabled) {
-          let accumulated = "";
-          response = await withTimeout(
-            llm.chatStream(allMessages, toolDefs, (chunk: string) => {
-              accumulated += chunk;
+        const MAX_ITERATIONS = 10;
+        let finalContent = "";
+
+        for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
+          let response;
+          if (config.streamEnabled) {
+            let accumulated = "";
+            response = await withTimeout(
+              llm.chatStream(allMessages, toolDefs, (chunk: string) => {
+                accumulated += chunk;
+                setSessions((prev) =>
+                  prev.map((s) => {
+                    if (s.id !== sid) return s;
+                    const log = [...s.log];
+                    const lastIdx = log.length - 1;
+                    if (lastIdx >= 0 && log[lastIdx]!.kind === "assistant") {
+                      log[lastIdx] = { ...log[lastIdx]!, text: accumulated };
+                    }
+                    return { ...s, log };
+                  }),
+                );
+              }),
+              120_000, // 2 min timeout
+            );
+          } else {
+            response = await withTimeout(llm.chat(allMessages, toolDefs), 120_000);
+          }
+
+          const msg = response.message;
+          const content = msg.content ?? "";
+          finalContent = content;
+
+          if (!config.streamEnabled) {
+            setSessions((prev) =>
+              prev.map((s) => {
+                if (s.id !== sid) return s;
+                const log = [...s.log];
+                const lastIdx = log.length - 1;
+                if (lastIdx >= 0 && log[lastIdx]!.kind === "assistant") {
+                  log[lastIdx] = { ...log[lastIdx]!, text: content };
+                }
+                return { ...s, log };
+              }),
+            );
+          }
+
+          const toolCalls = msg.tool_calls ?? [];
+          if (toolCalls.length === 0) {
+            // No more tool calls — we're done
+            break;
+          }
+
+          // Add assistant message with tool calls to conversation
+          allMessages.push({ role: "assistant", content, tool_calls: toolCalls });
+
+          for (const tc of toolCalls) {
+            const funcName = tc.function.name;
+            let funcArgs: Record<string, unknown> = {};
+            try {
+              funcArgs = JSON.parse(tc.function.arguments) as Record<string, unknown>;
+            } catch {
+              funcArgs = {};
+            }
+
+            addLogEntry(sid, {
+              kind: "tool",
+              tool: funcName,
+              detail: JSON.stringify(funcArgs).slice(0, 100),
+            });
+
+            updateSession(sid, { status: "tool_call" });
+
+            const result = await tools.execute(funcName, funcArgs);
+
+            // Check if result is a permission denial
+            if (result.startsWith("Approval required") || result.startsWith("Error: Approval")) {
+              updateSession(sid, { status: "waiting_approval", pendingTool: funcName });
               setSessions((prev) =>
                 prev.map((s) => {
                   if (s.id !== sid) return s;
                   const log = [...s.log];
                   const lastIdx = log.length - 1;
-                  if (lastIdx >= 0 && log[lastIdx]!.kind === "assistant") {
-                    log[lastIdx] = { ...log[lastIdx]!, text: accumulated };
+                  if (lastIdx >= 0 && log[lastIdx]!.kind === "tool") {
+                    log[lastIdx] = { ...log[lastIdx]!, detail: "awaiting approval…" };
                   }
-                  return { ...s, log };
+                  return { ...s, log, pendingTool: funcName };
                 }),
               );
-            }),
-            120_000, // 2 min timeout
-          );
-        } else {
-          response = await withTimeout(llm.chat(allMessages, toolDefs), 120_000);
-        }
+              return;
+            }
 
-        const msg = response.message;
-        const content = msg.content ?? "";
-
-        if (!config.streamEnabled) {
-          setSessions((prev) =>
-            prev.map((s) => {
-              if (s.id !== sid) return s;
-              const log = [...s.log];
-              const lastIdx = log.length - 1;
-              if (lastIdx >= 0 && log[lastIdx]!.kind === "assistant") {
-                log[lastIdx] = { ...log[lastIdx]!, text: content };
-              }
-              return { ...s, log };
-            }),
-          );
-        }
-
-        const toolCalls = msg.tool_calls ?? [];
-        for (const tc of toolCalls) {
-          const funcName = tc.function.name;
-          let funcArgs: Record<string, unknown> = {};
-          try {
-            funcArgs = JSON.parse(tc.function.arguments) as Record<string, unknown>;
-          } catch {
-            funcArgs = {};
-          }
-
-          addLogEntry(sid, {
-            kind: "tool",
-            tool: funcName,
-            detail: JSON.stringify(funcArgs).slice(0, 100),
-          });
-
-          updateSession(sid, { status: "tool_call" });
-
-          const result = await tools.execute(funcName, funcArgs);
-
-          // Check if result is a permission denial
-          if (result.startsWith("Approval required") || result.startsWith("Error: Approval")) {
-            updateSession(sid, { status: "waiting_approval", pendingTool: funcName });
-            // Store the pending tool call for re-execution after approval
+            // Update last tool entry with result
             setSessions((prev) =>
               prev.map((s) => {
                 if (s.id !== sid) return s;
                 const log = [...s.log];
                 const lastIdx = log.length - 1;
                 if (lastIdx >= 0 && log[lastIdx]!.kind === "tool") {
-                  log[lastIdx] = { ...log[lastIdx]!, detail: "awaiting approval…" };
+                  log[lastIdx] = {
+                    ...log[lastIdx]!,
+                    detail: verbose ? result : result.slice(0, 200),
+                  };
                 }
-                return { ...s, log, pendingTool: funcName };
+                return { ...s, log };
               }),
             );
-            // Don't continue — wait for user approval
-            return;
+
+            allMessages.push({
+              role: "tool",
+              content: result.slice(0, 2000),
+              tool_call_id: tc.id,
+            });
           }
 
-          // Update last tool entry with result
-          setSessions((prev) =>
-            prev.map((s) => {
-              if (s.id !== sid) return s;
-              const log = [...s.log];
-              const lastIdx = log.length - 1;
-              if (lastIdx >= 0 && log[lastIdx]!.kind === "tool") {
-                log[lastIdx] = {
-                  ...log[lastIdx]!,
-                  detail: verbose ? result : result.slice(0, 200),
-                };
-              }
-              return { ...s, log };
-            }),
-          );
-
-          allMessages.push(
-            { role: "assistant", content },
-            { role: "tool", content: result.slice(0, 2000), tool_call_id: tc.id },
-          );
+          // Prepare for next iteration — clear the assistant placeholder for streaming
+          if (config.streamEnabled && iter < MAX_ITERATIONS - 1) {
+            addLogEntry(sid, { kind: "assistant", text: "" });
+          }
         }
 
         // Finalize
@@ -648,7 +666,7 @@ export function TuiApp({
                   messages: [
                     ...s.messages,
                     ...userMessages.slice(-1)!,
-                    { role: "assistant", content },
+                    { role: "assistant", content: finalContent },
                   ],
                   tokenCount,
                   tokensUsed: tokenCount,
