@@ -87,18 +87,20 @@ export function InputBar({
       </Box>
 
       {/* Model/Mode/session info row */}
-      <Box justifyContent="space-between" marginTop={1}>
-        <Box>
+      <Box justifyContent="space-between" marginTop={1} flexWrap="wrap">
+        <Box gap={1}>
           <Text color="gray">
-            Model:<Text color="white"> {model}</Text> Mode:
+            Model: <Text color="white">{model}</Text>
           </Text>
-          <Text color={modeColor as any}> {modeLabel}</Text>
-          <Text color="gray"> (shift+tab to switch)</Text>
+          <Text color="gray">·</Text>
+          <Text color="gray">Mode:</Text>
+          <Text color={modeColor as any}>{modeLabel}</Text>
+          <Text color="gray">(⇧+tab)</Text>
         </Box>
-        <Box>
-          <Text color="gray">
-            session:<Text color="blue"> {sessionShort}</Text> (tab to switch)
-          </Text>
+        <Box gap={1}>
+          <Text color="gray">session:</Text>
+          <Text color="blue">{sessionShort}</Text>
+          <Text color="gray">(tab)</Text>
         </Box>
       </Box>
     </Box>

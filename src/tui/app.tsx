@@ -212,13 +212,18 @@ export function TuiApp({
     cols: stdout?.columns ?? 80,
     rows: stdout?.rows ?? 24,
   });
+  const [resizeKey, setResizeKey] = useState(0);
 
   useEffect(() => {
     const onResize = () => {
+      // Clear screen and move cursor to top-left so Ink does a full redraw
+      // instead of trying to erase only the lines it thinks it wrote.
+      process.stdout.write("\x1b[2J\x1b[H");
       setTermSize({
         cols: stdout?.columns ?? 80,
         rows: stdout?.rows ?? 24,
       });
+      setResizeKey((k) => k + 1);
     };
     process.stdout.on("resize", onResize);
     return () => {
@@ -1075,6 +1080,7 @@ export function TuiApp({
   if (view === "onboarding") {
     return (
       <Onboarding
+        key={resizeKey}
         onLaunch={handleOnboardingLaunch}
         model={activeSession.model}
         mode={modeMeta.label}
@@ -1088,20 +1094,20 @@ export function TuiApp({
 
   // ── Main view ──
   return (
-    <Box flexDirection="column" height="100%">
+    <Box key={resizeKey} flexDirection="column" height="100%">
       {/* Top bar */}
       <Box
         justifyContent="space-between"
         paddingX={1}
-        borderStyle="single"
+        borderStyle="round"
         borderColor="gray"
         flexShrink={0}
       >
-        <Box>
+        <Box gap={1}>
           <Text bold color="blue">
-            spiral
+            ◈ spiral
           </Text>
-          <Text color="gray"> v1.0</Text>
+          <Text color="gray">v1.0</Text>
         </Box>
         <Text color="gray">
           {sessions.length} sessions · {groupCount} groups sharing context
@@ -1119,12 +1125,11 @@ export function TuiApp({
         {/* Main content area */}
         <Box flexDirection="column" flexGrow={1}>
           {/* Session header */}
-          <Box paddingX={1} borderStyle="single" borderColor="gray" flexShrink={0}>
+          <Box paddingX={1} borderStyle="round" borderColor="gray" flexShrink={0}>
             <Box gap={1}>
-              <Text bold>{activeSession.shortName}</Text>
-              <Text color="gray">[</Text>
-              <Text color={activeMeta.color as any}>{activeMeta.label} ⟳</Text>
-              <Text color="gray">]</Text>
+              <Text bold color="blue">{activeSession.shortName}</Text>
+              <Text color="gray">·</Text>
+              <Text color={activeMeta.color as any}>{activeMeta.label}</Text>
             </Box>
             {activeSession.groupId && (
               <Box marginTop={1} gap={1}>

@@ -15,7 +15,6 @@ export function Sidebar({
   onSearchChange,
   width = 30,
 }: SidebarProps): React.ReactElement {
-  // onSearchChange is used by the parent for key handling; we display the query here
   void onSearchChange;
 
   return (
@@ -23,13 +22,13 @@ export function Sidebar({
       flexDirection="column"
       width={width}
       flexShrink={0}
-      borderStyle="single"
+      borderStyle="round"
       borderColor="gray"
     >
       {/* Header + Search */}
       <Box paddingX={1} paddingTop={1} paddingBottom={1} flexDirection="column">
         <Box marginBottom={1}>
-          <Text color="white">Sessions</Text>
+          <Text bold color="white">Sessions</Text>
         </Box>
         <Box borderStyle="single" borderColor="gray" paddingX={1}>
           <Text color={searchQuery ? "white" : "gray"}>{searchQuery || "search…"}</Text>
@@ -63,7 +62,7 @@ function SessionRow({ session }: { session: SessionView }): React.ReactElement {
     >
       {/* Name + agent label */}
       <Box justifyContent="space-between">
-        <Text color={session.nameColor as any}>{session.name}</Text>
+        <Text color={session.nameColor as any} bold={session.isActive}>{session.name}</Text>
         <Text color={session.modeColor as any}>{session.agentLabel}</Text>
       </Box>
 
