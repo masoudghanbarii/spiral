@@ -288,14 +288,18 @@ describe("Harness", () => {
     vi.spyOn(managers.project, "readAdr").mockResolvedValue("# ADR\n## Feature A\ntest");
     vi.spyOn(managers.project, "readAgentsMd").mockResolvedValue("# Agents");
 
-    const llm = new LLMClient(config);
-    vi.spyOn(llm, "generate").mockResolvedValue(
+    // Mock LLMClient globally so Harness's internal client is mocked too
+    vi.spyOn(LLMClient.prototype, "generate").mockResolvedValue(
       '[{"name":"f1","description":"test","adr_section":"Feature A"}]',
+    );
+    vi.spyOn(LLMClient.prototype, "extractJson").mockReturnValue(
+      [{ name: "f1", description: "test", adr_section: "Feature A" }],
     );
     const harness = new Harness(config);
     await new Promise((r) => setTimeout(r, 300));
     await harness.initialize();
     expect(harness.state).not.toBeNull();
+    vi.restoreAllMocks();
   }, 15000);
 
   it("resumes from existing state", async () => {
