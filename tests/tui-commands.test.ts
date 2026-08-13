@@ -4,6 +4,7 @@ import {
   getHelpText,
   getAvailableModes,
   isValidMode,
+  shouldForceClearOnOverlayClose,
 } from "../src/tui/commands.js";
 
 describe("parseSlashCommand", () => {
@@ -98,5 +99,27 @@ describe("getAvailableModes", () => {
     const modes = getAvailableModes();
     expect(modes).toHaveLength(6); expect(modes).toContain("loop");
     expect(modes).toContain("normal");
+  });
+});
+
+describe("shouldForceClearOnOverlayClose", () => {
+  it("forces clear when an overlay closes", () => {
+    expect(shouldForceClearOnOverlayClose("mode", null)).toBe(true);
+    expect(shouldForceClearOnOverlayClose("session", null)).toBe(true);
+    expect(shouldForceClearOnOverlayClose("agentplan", null)).toBe(true);
+  });
+
+  it("does not clear when no overlay was open", () => {
+    expect(shouldForceClearOnOverlayClose(null, null)).toBe(false);
+  });
+
+  it("does not clear when opening or switching overlays", () => {
+    expect(shouldForceClearOnOverlayClose(null, "mode")).toBe(false);
+    expect(shouldForceClearOnOverlayClose("mode", "session")).toBe(false);
+    expect(shouldForceClearOnOverlayClose("mode", "mode")).toBe(false);
+  });
+
+  it("does not clear when an overlay stays open", () => {
+    expect(shouldForceClearOnOverlayClose("session", "session")).toBe(false);
   });
 });

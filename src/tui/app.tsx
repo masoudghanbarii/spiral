@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { Box, Text, useApp, useInput, useStdin, useStdout } from "ink";
-import { parseSlashCommand, getHelpText, isValidMode } from "./commands.js";
+import { parseSlashCommand, getHelpText, isValidMode, shouldForceClearOnOverlayClose } from "./commands.js";
 import type { AgentMode, ChatMessage } from "../types.js";
 import type {
   SessionData,
@@ -249,6 +249,18 @@ export function TuiApp({
       process.stdout.off("resize", onResize);
     };
   }, [stdout]);
+
+  // When a full-screen overlay closes, Ink's log-update erase counter is stale
+  // because the overlay frame was written via the clearTerminal path (bypassing
+  // logUpdate). Force a full clear so the shorter chat frame redraws cleanly
+  // instead of leaving overlay residuals on screen.
+  const prevOverlay = useRef<OverlayType>(null);
+  useEffect(() => {
+    if (shouldForceClearOnOverlayClose(prevOverlay.current, overlay)) {
+      process.stdout.write("\x1b[2J\x1b[H");
+    }
+    prevOverlay.current = overlay;
+  }, [overlay]);
 
   // ── Initial message ──
   useEffect(() => {

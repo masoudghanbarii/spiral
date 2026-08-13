@@ -105,3 +105,18 @@ export function getAvailableModes(): string[] {
 export function isValidMode(mode: string): boolean {
   return getAvailableModes().includes(mode);
 }
+
+/**
+ * Decide whether the TUI must force a full screen clear when the overlay state
+ * transitions. When a full-screen overlay is open, Ink writes its frame via the
+ * clearTerminal path (bypassing logUpdate), so logUpdate's erase counter goes
+ * stale. Closing the overlay then renders a shorter frame that appends instead
+ * of erasing, leaving overlay residuals on screen. Returning true triggers a
+ * `\x1b[2J\x1b[H` clear so the next frame redraws cleanly.
+ */
+export function shouldForceClearOnOverlayClose(
+  prevOverlay: string | null,
+  nextOverlay: string | null,
+): boolean {
+  return prevOverlay !== null && nextOverlay === null;
+}
