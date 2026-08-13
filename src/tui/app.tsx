@@ -181,11 +181,25 @@ export function TuiApp({
     const SHIFT_ENTER = "\x1b[13;2~";
     const SHIFT_ENTER_KITTY = "\x1b[13;2u";
     const ALT_ENTER = "\x1b[13;3~";
+    // Ctrl+Backspace in many terminals sends 0x08 (BS) or 0x7f (DEL)
+    // without any escape sequence, so Ink can't distinguish it from regular
+    // Backspace. We intercept these raw bytes and do word deletion ourselves.
+    const CTRL_BACKSPACE = "\x08";
     const sequences = [SHIFT_ENTER, SHIFT_ENTER_KITTY, ALT_ENTER];
     const maxLen = Math.max(...sequences.map((s) => s.length));
     let pending = "";
     const onData = (data: Buffer) => {
       pending += data.toString();
+      // Check for Ctrl+Backspace (raw 0x08 without ESC prefix)
+      if (pending === CTRL_BACKSPACE) {
+        setInput((prev) => {
+          const trimmed = prev.replace(/\s+$/, "");
+          const lastSpace = Math.max(trimmed.lastIndexOf(" "), trimmed.lastIndexOf("\n"));
+          return lastSpace >= 0 ? trimmed.slice(0, lastSpace + 1) : "";
+        });
+        pending = "";
+        return;
+      }
       // Only check for our target sequences
       for (const seq of sequences) {
         if (pending.startsWith(seq)) {
@@ -198,7 +212,7 @@ export function TuiApp({
       if (pending.startsWith("\x1b") && pending.length < maxLen) {
         return;
       }
-      // Not a Shift+Enter sequence — clear pending, let Ink handle it
+      // Not a recognized sequence — clear pending, let Ink handle it
       pending = "";
     };
     stdin.on("data", onData);
@@ -1079,12 +1093,11 @@ export function TuiApp({
       return;
     }
 
-    // ── Ctrl+Backspace or Ctrl+W or Ctrl+H (delete last word) ──
-    // Ctrl+Backspace sends different things in different terminals:
-    // - Some: key.backspace + key.ctrl (Ink detects it)
-    // - Many: Ctrl+H (0x08) which Ink sees as inputChar 'h' with key.ctrl
-    // - Some: 0x7f (DEL) which Ink sees as key.delete + key.ctrl
-    if ((key.ctrl && (key.backspace || key.delete)) || (key.ctrl && inputChar === "w") || (key.ctrl && inputChar === "h")) {
+    // ── Ctrl+W (delete last word) ──
+    // Ctrl+Backspace is handled in the raw stdin listener (0x08 byte)
+    // because Ink can't distinguish it from regular Backspace.
+    // Ctrl+W is reliably detected by Ink as ctrl+w.
+    if (key.ctrl && inputChar === "w") {
       setInput((prev) => {
         // Remove trailing whitespace, then remove last word
         const trimmed = prev.replace(/\s+$/, "");
