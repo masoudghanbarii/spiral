@@ -1260,7 +1260,7 @@ export function TuiApp({
         </Text>
       </Box>
 
-      <Box flexDirection="row" flexGrow={1} gap={1}>
+      <Box flexDirection="row" flexGrow={1} gap={1} overflow="hidden">
         {/* Session sidebar */}
         <Sidebar
           sessions={sessionsView}
@@ -1269,7 +1269,7 @@ export function TuiApp({
         />
 
         {/* Main content area */}
-        <Box flexDirection="column" flexGrow={1} marginLeft={1}>
+        <Box flexDirection="column" flexGrow={1} marginLeft={1} overflow="hidden">
           {/* Session header */}
           <Box paddingX={1} borderStyle="round" borderColor="gray" flexShrink={0}>
             <Box gap={1}>

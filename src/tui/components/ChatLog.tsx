@@ -49,10 +49,10 @@ export function ChatLog({
     setInternalOffset(scrollOffset);
   }, [scrollOffset]);
 
-  // Calculate visible window — show recent entries, let overflow hide the rest
+  // Calculate visible window — show recent entries within available height
   const maxVisibleEntries = Math.min(entries.length, availableHeight);
   const startIdx = Math.max(0, entries.length - maxVisibleEntries - internalOffset);
-  const visibleEntries = entries.slice(startIdx);
+  const visibleEntries = entries.slice(startIdx, startIdx + maxVisibleEntries);
 
   return (
     <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
