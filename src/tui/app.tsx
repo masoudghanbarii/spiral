@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { Box, Text, useApp, useInput, useStdin } from "ink";
+import { Box, Text, useApp, useInput, useStdin, useStdout } from "ink";
 import { parseSlashCommand, getHelpText, isValidMode } from "./commands.js";
 import type { AgentMode, ChatMessage } from "../types.js";
 import type {
@@ -205,6 +205,26 @@ export function TuiApp({
     }
     return undefined;
   }, [ctrlCCount]);
+
+  // ── Terminal resize handling ──
+  const { stdout } = useStdout();
+  const [termSize, setTermSize] = useState({
+    cols: stdout?.columns ?? 80,
+    rows: stdout?.rows ?? 24,
+  });
+
+  useEffect(() => {
+    const onResize = () => {
+      setTermSize({
+        cols: stdout?.columns ?? 80,
+        rows: stdout?.rows ?? 24,
+      });
+    };
+    process.stdout.on("resize", onResize);
+    return () => {
+      process.stdout.off("resize", onResize);
+    };
+  }, [stdout]);
 
   // ── Initial message ──
   useEffect(() => {
@@ -1061,6 +1081,7 @@ export function TuiApp({
         modeColor={modeMeta.color}
         agent={agentMeta.label}
         plugins={activeSession.plugins}
+        termCols={termSize.cols}
       />
     );
   }

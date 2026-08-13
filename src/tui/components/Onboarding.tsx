@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Text, useInput, useApp } from "ink";
+import { Box, Text, useInput, useApp, useStdout } from "ink";
 
 interface OnboardingProps {
   onLaunch: (prompt: string) => void;
@@ -8,6 +8,7 @@ interface OnboardingProps {
   modeColor?: string;
   agent?: string;
   plugins?: string[];
+  termCols?: number;
 }
 
 export function Onboarding({
@@ -17,9 +18,13 @@ export function Onboarding({
   modeColor = "green",
   agent = "agent",
   plugins = [],
+  termCols: propCols,
 }: OnboardingProps): React.ReactElement {
   const [prompt, setPrompt] = useState("");
   const { exit } = useApp();
+  const { stdout } = useStdout();
+  const cols = propCols ?? stdout?.columns ?? 80;
+  const contentWidth = Math.max(Math.min(Math.floor(cols * 0.8), 80), 40);
 
   useInput((inputChar: string, key: any) => {
     if (key.return && !key.shift) {
@@ -46,7 +51,7 @@ export function Onboarding({
 
   return (
     <Box flexDirection="column" alignItems="center" justifyContent="center" padding={2}>
-      <Box flexDirection="column" width="80%">
+      <Box flexDirection="column" width={contentWidth}>
         {/* Logo */}
         <Box marginBottom={2}>
           <Text bold color="blue">
