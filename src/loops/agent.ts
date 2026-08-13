@@ -147,7 +147,13 @@ Think step by step. Use tools as needed. When done, output FINAL_RESULT with a s
         const funcName = tc.function.name;
         let funcArgs: Record<string, unknown> = {};
         try {
-          funcArgs = JSON.parse(tc.function.arguments) as Record<string, unknown>;
+          // Ollama returns arguments as an object, OpenAI returns a JSON string
+          const raw = tc.function.arguments;
+          if (typeof raw === "string") {
+            funcArgs = JSON.parse(raw) as Record<string, unknown>;
+          } else if (typeof raw === "object") {
+            funcArgs = raw as Record<string, unknown>;
+          }
         } catch {
           funcArgs = {};
         }

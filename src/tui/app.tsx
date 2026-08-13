@@ -162,7 +162,7 @@ export function TuiApp({
 
   const systemPrompt = useMemo(() => {
     const suffix = getSystemPromptSuffix(activeSession.mode as AgentMode);
-    return `You are Spiral, the AI co-founder. You help developers build software.\n\nYou have tools to read/write files, search code, run commands, and manage git.\nYou also have tools to communicate with other sessions: list_sessions, send_to_session, and link_sessions.\n\nIMPORTANT: Only use tools when the user's request actually requires it. For simple\ngreetings, questions, or casual conversation, respond directly WITHOUT calling any tools.\nDo not explore the codebase, run git commands, or list files unless the user asks you\nto do something that needs it.\n\nWhen the user asks you to pass info to another session, use send_to_session.\nWhen the user wants sessions to share context, use link_sessions to group them.\n\nThink step by step. When you DO use tools, wait for results before proceeding.${suffix}`;
+    return `You are Spiral, the AI co-founder. You help developers build software.\n\nYou have tools to read/write files, search code, run commands, and manage git.\nYou also have tools to communicate with other sessions.\n\nIMPORTANT: Only use tools when the user's request actually requires it. For simple\ngreetings, questions, or casual conversation, respond directly WITHOUT calling any tools.\nDo not explore the codebase, run git commands, or list files unless the user asks you\nto do something that needs it.\n\n## Session Tools\n\nWhen the user asks to pass info to another session, use send_to_session:\n  {"target_session": "s2", "message": "the info to pass"}\n\nWhen the user wants sessions to share context, use link_sessions:\n  {"session_a": "s1", "session_b": "s2"}\n\nAlways pass tool arguments as valid JSON with the exact parameter names shown.\n\nThink step by step. When you DO use tools, wait for results before proceeding.${suffix}`;
   }, [activeSession.mode]);
 
   // ── Raw mode for key handling ──
@@ -576,7 +576,7 @@ export function TuiApp({
             ),
           ]);
 
-        const MAX_ITERATIONS = 10;
+        const MAX_ITERATIONS = 6;
         let finalContent = "";
 
         for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
@@ -634,9 +634,21 @@ export function TuiApp({
           for (const tc of toolCalls) {
             const funcName = tc.function.name;
             let funcArgs: Record<string, unknown> = {};
+            let rawArgs = tc.function.arguments ?? "";
             try {
-              funcArgs = JSON.parse(tc.function.arguments) as Record<string, unknown>;
+              // Ollama returns arguments as an object, OpenAI returns a JSON string
+              if (typeof rawArgs === "string") {
+                funcArgs = JSON.parse(rawArgs) as Record<string, unknown>;
+              } else if (typeof rawArgs === "object") {
+                funcArgs = rawArgs as Record<string, unknown>;
+              }
             } catch {
+              if (rawArgs && String(rawArgs).trim()) {
+                addLogEntry(sid, {
+                  kind: "system",
+                  text: `[debug] Failed to parse tool args for ${funcName}: ${String(rawArgs).slice(0, 200)}`,
+                });
+              }
               funcArgs = {};
             }
 

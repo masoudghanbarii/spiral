@@ -41,7 +41,7 @@ export interface ToolCall {
   id: string;
   function: {
     name: string;
-    arguments: string;
+    arguments: string | Record<string, unknown>;
   };
 }
 
