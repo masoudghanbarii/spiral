@@ -265,6 +265,16 @@ export function TuiApp({
         addLogEntry(targetId, entry);
         return true;
       },
+      pushContextMessage: (targetId, role, content) => {
+        setSessions((prev) =>
+          prev.map((s) =>
+            s.id === targetId
+              ? { ...s, messages: [...s.messages, { role, content }] }
+              : s,
+          ),
+        );
+        return true;
+      },
       linkSessions: (sessionA, sessionB) => {
         const aExists = sessions.some((s) => s.id === sessionA);
         const bExists = sessions.some((s) => s.id === sessionB);

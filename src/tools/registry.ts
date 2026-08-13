@@ -299,19 +299,19 @@ export class ToolRegistry {
       ),
       def(
         "send_to_session",
-        "Send a message to another session. The message appears in that session's chat log.",
+        "Send a message to another session. The message appears in that session's chat log and is used as context for future responses.",
         {
-          session_id: { type: "string", description: "Target session ID (e.g. s1, s2)" },
-          message: { type: "string", description: "Message content to send" },
+          target_session: { type: "string", description: "Target session ID (e.g. \"s1\", \"s2\"). Use list_sessions to see available IDs." },
+          message: { type: "string", description: "Message content to send to the other session" },
         },
-        ["session_id", "message"],
+        ["target_session", "message"],
       ),
       def(
         "link_sessions",
-        "Link two sessions into a shared context group. Both sessions get the same color and can exchange information.",
+        "Link two sessions into a shared context group. Both sessions get the same color in the sidebar and can exchange information.",
         {
-          session_a: { type: "string", description: "First session ID" },
-          session_b: { type: "string", description: "Second session ID" },
+          session_a: { type: "string", description: "First session ID (e.g. \"s1\")" },
+          session_b: { type: "string", description: "Second session ID (e.g. \"s2\")" },
         },
         ["session_a", "session_b"],
       ),
@@ -938,22 +938,31 @@ export class ToolRegistry {
 
   private async sendToSession(a: Record<string, unknown>): Promise<string> {
     if (!this.bridge) return "Error: session bridge not available";
-    const targetId = String(a.session_id);
-    const message = String(a.message);
-    const sessions = this.bridge.listSessions();
-    const target = sessions.find((s) => s.id === targetId);
-    if (!target) {
-      return `Error: session '${targetId}' not found. Available: ${sessions.map((s) => s.id).join(", ")}`;
+    // Accept common arg name aliases
+    const targetId = String(a.target_session ?? a.session_id ?? a.target ?? a.id ?? a.session ?? "");
+    const message = String(a.message ?? a.text ?? a.content ?? a.msg ?? "");
+    if (!targetId || !message) {
+      return `Error: send_to_session requires 'target_session' (session ID like \"s1\", \"s2\") and 'message' (text to send). You provided: target_session=${JSON.stringify(a.target_session ?? a.session_id)}, message=${JSON.stringify(a.message)}`;
     }
-    const ok = this.bridge.pushLogEntry(targetId, { kind: "system", text: `Message from ${this.bridge.getCurrentSessionId()}: ${message}` });
-    if (!ok) return `Error: failed to send message to session ${targetId}`;
-    return `Message sent to session ${targetId} (${target.name}).`;
+    const sessions = this.bridge.listSessions();
+    const target = sessions.find((s) => s.id === targetId || s.name === targetId);
+    if (!target) {
+      return `Error: session '${targetId}' not found. Available sessions: ${sessions.map((s) => `${s.id} (${s.name})`).join(", ")}`;
+    }
+    const ok = this.bridge.pushLogEntry(target.id, { kind: "system", text: `📨 Message from ${this.bridge.getCurrentSessionId()}: ${message}` });
+    if (!ok) return `Error: failed to send message to session ${target.id}`;
+    // Also add as context so the target session's LLM can use it
+    this.bridge.pushContextMessage(target.id, "system", `[Message from session ${this.bridge.getCurrentSessionId()}]: ${message}`);
+    return `✅ Message delivered to session ${target.id} (${target.name}). The message is now part of that session's context.`;
   }
 
   private async linkSessions(a: Record<string, unknown>): Promise<string> {
     if (!this.bridge) return "Error: session bridge not available";
-    const sessionA = String(a.session_a);
-    const sessionB = String(a.session_b);
+    const sessionA = String(a.session_a ?? a.target_a ?? a.first ?? a.session1 ?? a.a ?? "");
+    const sessionB = String(a.session_b ?? a.target_b ?? a.second ?? a.session2 ?? a.b ?? "");
+    if (!sessionA || !sessionB) {
+      return `Error: link_sessions requires 'session_a' and 'session_b' (session IDs like \"s1\", \"s2\"). You provided: session_a=${JSON.stringify(a.session_a)}, session_b=${JSON.stringify(a.session_b)}`;
+    }
     const sessions = this.bridge.listSessions();
     const aExists = sessions.find((s) => s.id === sessionA);
     const bExists = sessions.find((s) => s.id === sessionB);

@@ -10,6 +10,8 @@ export interface SessionBridge {
   listSessions(): SessionInfo[];
   /** Push a log entry into another session */
   pushLogEntry(targetId: string, entry: { kind: "user" | "assistant" | "tool" | "system"; text: string }): boolean;
+  /** Add a message to another session's context (messages array) */
+  pushContextMessage(targetId: string, role: "user" | "system", content: string): boolean;
   /** Link two sessions into a shared context group */
   linkSessions(sessionA: string, sessionB: string): boolean;
   /** Get the current session ID */
