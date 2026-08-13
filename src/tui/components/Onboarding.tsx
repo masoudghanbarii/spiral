@@ -28,7 +28,7 @@ export function Onboarding({
 
   useInput((inputChar: string, key: any) => {
     if (key.return && !key.shift) {
-      const text = prompt || 'ship or die, "build an app to store food calories"';
+      const text = prompt || 'ship or die'
       onLaunch(text);
       return;
     }
@@ -86,7 +86,7 @@ export function Onboarding({
         {/* Textarea with blue border */}
         <Box borderStyle="round" borderColor="blue" paddingX={1} paddingY={1}>
           <Text color={prompt ? "white" : "gray"}>
-            {prompt || 'ship or die, "build an app to store food calories"'}
+            {prompt || 'ship or die'}
           </Text>
         </Box>
 
