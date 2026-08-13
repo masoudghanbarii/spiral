@@ -1280,6 +1280,7 @@ export function TuiApp({
         borderStyle="round"
         borderColor="gray"
         flexShrink={0}
+        overflow="hidden"
       >
         <Box gap={1}>
           <Text bold color="blue">
@@ -1303,7 +1304,7 @@ export function TuiApp({
         {/* Main content area */}
         <Box flexDirection="column" flexGrow={1} marginLeft={1} overflow="hidden">
           {/* Session header */}
-          <Box paddingX={1} borderStyle="round" borderColor="gray" flexShrink={0}>
+          <Box paddingX={1} borderStyle="round" borderColor="gray" flexShrink={0} overflow="hidden">
             <Box gap={1}>
               <Text bold color="blue">{activeSession.shortName}</Text>
               <Text color="gray">·</Text>

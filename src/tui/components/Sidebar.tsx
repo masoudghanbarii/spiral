@@ -25,6 +25,7 @@ export function Sidebar({
       borderStyle="round"
       borderColor="gray"
       marginRight={0}
+      overflow="hidden"
     >
       {/* Header + Search */}
       <Box paddingX={1} paddingTop={1} paddingBottom={1} flexDirection="column">

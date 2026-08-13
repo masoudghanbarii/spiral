@@ -35,8 +35,8 @@ export function ChatLog({
 }: ChatLogProps): React.ReactElement {
   const { stdout } = useStdout();
   const termHeight = stdout?.rows ?? 24;
-  const reservedRows = 3 + 5 + 7 + 3; // topBar + sessionHeader(max) + inputBar(min+smallBuffer) + statusBar
-  const availableHeight = Math.max(termHeight - reservedRows, 6);
+  const reservedRows = 3 + 5 + 9 + 4; // topBar + sessionHeader(max) + inputBar(wrap+slash) + statusBar(wrap)
+  const availableHeight = Math.max(termHeight - reservedRows, 4);
   const [internalOffset, setInternalOffset] = useState(0);
 
   // Auto-scroll to bottom when new entries arrive
