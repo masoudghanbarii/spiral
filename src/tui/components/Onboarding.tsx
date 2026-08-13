@@ -69,7 +69,7 @@ export function Onboarding({
             <Text color="gray">v1.0</Text>
           </Box>
           <Text color="gray" italic>
-            built for long horizon tasks and loops
+            built for agents and loops ;)
           </Text>
         </Box>
 
